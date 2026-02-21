@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Simulador IRPF – PF x PJ</title>
+
+<style>
+:root{
+  --bg:#f3f5f8;
+  --card:#ffffff;
+  --primary:#1f3a5f;
+  --border:#d9dee5;
+  --danger:#d9534f;
+  --invest:#2c7a7b;
+}
+*{box-sizing:border-box}
+body{
+  font-family:Segoe UI,Arial;
+  background:var(--bg);
+  padding:30px;
+}
+.container{max-width:1200px;margin:auto}
+.card{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:20px;
+  margin-bottom:20px;
+}
+.grid{display:grid;grid-template-columns:1fr 2fr;gap:20px}
+input,select{
+  width:100%;padding:8px;border-radius:6px;border:1px solid var(--border)
+}
+table{width:100%;border-collapse:collapse;font-size:.85rem}
+th{background:var(--primary);color:#fff;padding:8px}
+td{border-bottom:1px solid var(--border);padding:8px;text-align:right}
+td:first-child,th:first-child{text-align:left}
+.result{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.result div{background:#f8fafc;padding:10px;border-radius:6px}
+.final{grid-column:1/-1;background:#eaf4ec}
+.investimento{grid-column:1/-1;background:#e6fffa;border:1px solid var(--invest);color:var(--invest)}
+button{
+  padding:12px 18px;border:none;border-radius:8px;
+  background:var(--primary);color:#fff;cursor:pointer;
+  margin-right: 5px; margin-bottom: 5px;
+}
+.btn-danger {background: var(--danger);}
+@media print{
+  button,input,select{display:none}
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<div style="margin-bottom: 20px;">
+  <h2 style="margin-bottom: 5px;">Simulador IRPF – PF x PJ</h2>
+  <span style="color: var(--primary); font-weight: bold; font-size: 0.9rem;">Elaborado por Alberto de Campos Neto</span>
+</div>
+
+<div class="grid">
+<div class="card">
+<label>Aposentadoria mensal
+<input id="apos" type="number" step="0.01"></label>
+
+<label>Idade do aposentado
+<input id="idade" type="number"></label>
+
+<label>IRRF PJ (%)
+<input id="aliqIRRF" value="1.5"></label>
+
+<label>Despesas médicas anuais
+<input id="med" type="number" step="0.01"></label>
+</div>
+
+<div class="card">
+<table id="imoveis">
+<tr>
+<th>#</th><th>Tipo</th><th>Aluguel</th><th>Despesas</th><th>Base</th><th>IR</th>
+</tr>
+<script>
+for(let i=1;i<=10;i++){
+document.write(`
+<tr>
+<td>${i}</td>
+<td>
+<select class="tipo">
+<option value="PF">PF</option>
+<option value="PJ">PJ</option>
+</select>
+</td>
+<td><input class="aluguel" type="number" step="0.01"></td>
+<td><input class="despesas" type="number" step="0.01"></td>
+<td class="base">R$ 0,00</td>
+<td class="ir">R$ 0,00</td>
+</tr>
+`);
+}
+</script>
+</table>
+</div>
+</div>
+
+<div class="card">
+<h3>Resumo de Rendimentos</h3>
+<div class="result">
+<div>Aposentadoria mensal <strong id="aposM"></strong></div>
+<div>Aposentadoria anual <strong id="aposA"></strong></div>
+<div>Aluguéis mensais <strong id="aluguM"></strong></div>
+<div>Aluguéis anuais <strong id="aluguA"></strong></div>
+<div><strong>Total mensal</strong> <strong id="totalM"></strong></div>
+<div><strong>Total anual</strong> <strong id="totalA"></strong></div>
+</div>
+</div>
+
+<div class="card">
+<h3>Apuração do IR</h3>
+<div class="result">
+
+<div>IR mensal – PF total <strong id="irPFmensal"></strong></div>
+<div>↳ Aposentadoria (visual) <strong id="irAposVis"></strong></div>
+<div>↳ Aluguéis PF (visual) <strong id="irAlugPFVis"></strong></div>
+
+<div>IRRF mensal – Aluguéis PJ <strong id="irPJmensal"></strong></div>
+
+<div>Renda bruta anual <strong id="rendaBruta"></strong></div>
+<div>Deduções <strong id="deducoes"></strong></div>
+<div>Base tributável <strong id="baseAnual"></strong></div>
+<div>IR anual <strong id="irAnual"></strong></div>
+<div>Créditos <strong id="creditos"></strong></div>
+
+<div class="final">IR a pagar <strong id="irFinal"></strong></div>
+<div class="investimento">Guardar mensalmente (rendendo 0,7% a.m.) para o ajuste: <strong id="reservaMensal"></strong></div>
+</div>
+
+<br>
+<button onclick="calcular()">Calcular</button>
+<button onclick="window.print()">Imprimir</button>
+</div>
+
+<div class="card">
+<h3>Cenários</h3>
+<select id="listaCenarios" onchange="carregarCenario(Number(this.value))">
+<option value="">Selecione um cenário</option>
+</select>
+<br><br>
+<button onclick="salvarCenario()">Salvar cenário</button>
+<button onclick="excluirCenarioIndividual()" class="btn-danger">Excluir cenário selecionado</button>
+<button onclick="limparFormulario()">Limpar formulário</button>
+<button onclick="limparTodosCenarios()" class="btn-danger">Limpar todos os cenários</button>
+</div>
+
+</div>
+
+<script>
+const tabela=[
+{l:2259.20,a:0},
+{l:2826.65,a:0.075},
+{l:3751.05,a:0.15},
+{l:4664.68,a:0.225},
+{l:Infinity,a:0.275}
+];
+const ISENCAO_APOS_65 = 2259.20;
+
+function irMensal(v){
+if(v <= 0) return 0;
+let ir=0,p=0;
+for(let f of tabela){
+let x=Math.min(v,f.l)-p;
+if(x>0) ir+=x*f.a;
+p=f.l;
+}
+return ir;
+}
+
+function fmt(v){
+return v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+}
+
+function calcular(){
+const apos = Number(document.getElementById("apos").value) || 0;
+const idade = Number(document.getElementById("idade").value) || 0;
+const aliq = Number(document.getElementById("aliqIRRF").value) / 100 || 0;
+const med  = Number(document.getElementById("med").value) || 0;
+
+let aposTrib = idade >= 65 ? Math.max(0, apos - ISENCAO_APOS_65) : apos;
+let pf=0, pj=0, alugu=0;
+
+document.querySelectorAll("#imoveis tr").forEach((r,i)=>{
+  if(i===0) return;
+  let tipo = r.querySelector(".tipo").value;
+  let a = Number(r.querySelector(".aluguel").value) || 0;
+  let d = Number(r.querySelector(".despesas").value) || 0;
+  alugu += a;
+  let base = tipo==="PF" ? Math.max(0,a-d) : a;
+  r.querySelector(".base").innerText = fmt(base);
+  if(tipo==="PF") pf += base;
+  else pj += a;
+});
+
+let carne = irMensal(pf + aposTrib);
+let irrf  = pj * aliq;
+
+document.getElementById("irPFmensal").innerText = fmt(carne);
+document.getElementById("irPJmensal").innerText = fmt(irrf);
+
+let basePFtotal = pf + aposTrib;
+document.getElementById("irAposVis").innerText = fmt(basePFtotal > 0 ? carne * (aposTrib / basePFtotal) : 0);
+document.getElementById("irAlugPFVis").innerText = fmt(basePFtotal > 0 ? carne * (pf / basePFtotal) : 0);
+
+document.querySelectorAll("#imoveis tr").forEach((r,i)=>{
+  if(i===0) return;
+  let tipo=r.querySelector(".tipo").value;
+  let bVal = Number(r.querySelector(".aluguel").value) || 0;
+  let dVal = Number(r.querySelector(".despesas").value) || 0;
+  let baseValor = tipo==="PF" ? Math.max(0, bVal - dVal) : bVal;
+  
+  r.querySelector(".ir").innerText = fmt(
+    tipo==="PF" ? (basePFtotal > 0 ? carne*(baseValor/basePFtotal) : 0) : baseValor*aliq
+  );
+});
+
+let rendaBrutaAnual = (pf + pj + apos) * 12;
+let baseAnual = Math.max(0, (pf + pj + aposTrib) * 12 - med);
+let irAnualTotal = irMensal(baseAnual / 12) * 12;
+let creditosJaPagos = (carne + irrf) * 12;
+let irFinalAPagar = Math.max(0, irAnualTotal - creditosJaPagos);
+
+const taxa = 0.007;
+const n = 12;
+let pmt = irFinalAPagar > 0 ? (irFinalAPagar * taxa) / (Math.pow(1 + taxa, n) - 1) : 0;
+
+document.getElementById("aposM").innerText = fmt(apos);
+document.getElementById("aposA").innerText = fmt(apos*12);
+document.getElementById("aluguM").innerText = fmt(alugu);
+document.getElementById("aluguA").innerText = fmt(alugu*12);
+document.getElementById("totalM").innerText = fmt(apos+alugu);
+document.getElementById("totalA").innerText = fmt((apos+alugu)*12);
+document.getElementById("rendaBruta").innerText = fmt(rendaBrutaAnual);
+document.getElementById("deducoes").innerText = fmt(med);
+document.getElementById("baseAnual").innerText = fmt(baseAnual);
+document.getElementById("irAnual").innerText = fmt(irAnualTotal);
+document.getElementById("creditos").innerText = fmt(creditosJaPagos);
+document.getElementById("irFinal").innerText = fmt(irFinalAPagar);
+document.getElementById("reservaMensal").innerText = fmt(pmt);
+}
+
+function obterCenarios(){ return JSON.parse(localStorage.getItem("simuladorIRPF_cenarios")) || []; }
+function salvarCenarios(c){ localStorage.setItem("simuladorIRPF_cenarios", JSON.stringify(c)); }
+function capturarDados(){
+  const dados={ apos:document.getElementById("apos").value, idade:document.getElementById("idade").value, aliqIRRF:document.getElementById("aliqIRRF").value, med:document.getElementById("med").value, imoveis:[] };
+  document.querySelectorAll("#imoveis tr").forEach((r,i)=>{ if(i===0)return; dados.imoveis.push({ tipo:r.querySelector(".tipo").value, aluguel:r.querySelector(".aluguel").value, despesas:r.querySelector(".despesas").value }); });
+  return dados;
+}
+function aplicarDados(d){
+  document.getElementById("apos").value=d.apos; document.getElementById("idade").value=d.idade; document.getElementById("aliqIRRF").value=d.aliqIRRF; document.getElementById("med").value=d.med;
+  document.querySelectorAll("#imoveis tr").forEach((r,i)=>{ if(i===0)return; let x=d.imoveis[i-1]; if(!x)return; r.querySelector(".tipo").value=x.tipo; r.querySelector(".aluguel").value=x.aluguel; r.querySelector(".despesas").value=x.despesas; });
+  calcular();
+}
+function salvarCenario(){
+  const nome=prompt("Nome do cenário:"); if(!nome)return;
+  const c=obterCenarios(); c.push({id:Date.now(),nome,data:new Date().toLocaleString("pt-BR"),dados:capturarDados()});
+  salvarCenarios(c); atualizarLista();
+}
+function excluirCenarioIndividual() {
+  const select = document.getElementById("listaCenarios");
+  const idParaExcluir = Number(select.value);
+  if (!idParaExcluir) { alert("Selecione um cenário."); return; }
+  if (confirm("Excluir cenário?")) { let c = obterCenarios(); c = c.filter(item => item.id !== idParaExcluir); salvarCenarios(c); atualizarLista(); limparFormulario(); }
+}
+function carregarCenario(id){ const c=obterCenarios().find(x=>x.id===id); if(c) aplicarDados(c.dados); }
+function atualizarLista(){
+  const s=document.getElementById("listaCenarios"); s.innerHTML='<option value="">Selecione um cenário</option>';
+  obterCenarios().forEach(c=>{ const o=document.createElement("option"); o.value=c.id; o.textContent=`${c.nome} (${c.data})`; s.appendChild(o); });
+}
+function limparFormulario(){
+  document.querySelectorAll("input").forEach(i=>i.value="");
+  document.querySelectorAll(".base,.ir").forEach(td=>td.innerText="R$ 0,00");
+  document.querySelectorAll("#aposM,#aposA,#aluguM,#aluguA,#totalM,#totalA,#irPFmensal,#irAposVis,#irAlugPFVis,#irPJmensal,#rendaBruta,#deducoes,#baseAnual,#irAnual,#creditos,#irFinal,#reservaMensal").forEach(el=>el.innerText="");
+}
+function limparTodosCenarios(){ if(confirm("Apagar tudo?")){ localStorage.removeItem("simuladorIRPF_cenarios"); atualizarLista(); } }
+window.onload=atualizarLista;
+</script>
+</body>
+</html>

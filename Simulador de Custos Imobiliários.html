@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador ACN — Escritura e Tributos</title>
+    <style>
+        :root {
+            --primary: #1e3a8a; --secondary: #64748b; --bg: #f8fafc;
+            --card: #ffffff; --border: #e2e8f0; --accent: #3b82f6;
+            --success: #10b981; --danger: #ef4444; --text: #1e293b;
+        }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 0; }
+        body.dark { --bg: #0f172a; --card: #1e293b; --border: #334155; --text: #f1f5f9; }
+        header { background: #002244; color: white; padding: 2rem 1rem; text-align: center; }
+        .container { max-width: 1000px; margin: -1.5rem auto 3rem; background: var(--card); padding: 2rem; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+        fieldset { border: 1px solid var(--border); border-radius: 8px; margin-bottom: 1.5rem; padding: 1.2rem; }
+        legend { font-weight: 600; padding: 0 0.5rem; color: var(--accent); font-size: 0.85rem; text-transform: uppercase; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 0.8rem; }
+        label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.3rem; color: var(--secondary); }
+        input, select { width: 100%; padding: 0.6rem; border: 1px solid var(--border); border-radius: 6px; background: transparent; color: inherit; box-sizing: border-box; }
+        optgroup { font-style: normal; font-weight: bold; color: var(--primary); }
+        
+        .actions { display: flex; flex-wrap: wrap; gap: 0.8rem; margin-top: 1rem; }
+        button { flex: 1; min-width: 150px; padding: 0.8rem; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; color: white; transition: 0.2s; }
+        
+        #btnCalcular { background: var(--accent); }
+        #btnPDF { background: var(--success); }
+        #btnLimpar { background: var(--secondary); }
+        
+        .scenarios-box { margin-top: 1.5rem; padding: 1.5rem; border: 1px dashed var(--border); border-radius: 8px; background: rgba(0,0,0,0.02); }
+        .scenarios-actions { display: flex; gap: 0.5rem; margin-top: 1rem; flex-wrap: wrap; }
+        .btn-sm { padding: 0.5rem 1rem; font-size: 0.8rem; min-width: auto; flex: none; }
+        .btn-save { background: var(--primary); }
+        .btn-delete { background: var(--danger); }
+        
+        #toggleTheme { position: absolute; top: 1rem; right: 1rem; width: auto; background: rgba(255,255,255,0.2); font-size: 0.7rem; border: 1px solid white; }
+        .resultado { margin-top: 2rem; padding: 1.5rem; background: #f1f5f9; border-radius: 12px; border: 1px solid var(--border); display: none; }
+        body.dark .resultado { background: #1e293b; }
+        .bloco { background: var(--card); padding: 1rem; border-radius: 8px; margin-bottom: 0.8rem; border: 1px solid var(--border); }
+        .bloco h4 { margin: 0 0 0.5rem 0; color: var(--accent); font-size: 0.9rem; border-bottom: 1px solid var(--border); }
+        .bloco p { margin: 0.3rem 0; font-size: 0.85rem; display: flex; justify-content: space-between; }
+        .total-destaque { font-size: 1.25rem; font-weight: 700; color: var(--primary); text-align: right; padding: 1rem; background: #dbeafe; border-radius: 8px; margin-top: 1rem; }
+    </style>
+</head>
+<body>
+
+<button id="toggleTheme">Mudar Tema</button>
+
+<header>
+    <h1 style="margin:0; font-size:1.6rem;">Simulador de Custos Imobiliários</h1>
+    <p style="margin:5px 0 0; opacity:0.8;">Alberto de Campos Neto — Parâmetros 2026</p>
+</header>
+
+<div class="container">
+    <form id="calcForm">
+        <fieldset>
+            <legend>Imóvel e Transmissão</legend>
+            <div class="grid">
+                <div><label>Valor Declarado (R$)</label><input type="number" id="valorImovel" step="0.01"></div>
+                <div><label>V. Venal Referência (R$)</label><input type="number" id="valorVenalRef" step="0.01"></div>
+                <div><label>Operação</label><select id="tipoOperacao"><option value="compra">Compra e Venda (ITBI)</option><option value="doacao">Doação (ITCMD)</option></select></div>
+            </div>
+            <div class="grid">
+                <div><label>Cidade (SP)</label>
+                    <select id="cidadeITBI">
+                        <optgroup label="Capital e Grande SP">
+                            <option value="sao_paulo" data-aliquota="3">São Paulo (3%)</option>
+                            <option value="guarulhos" data-aliquota="2.5">Guarulhos (2,5%)</option>
+                            <option value="abc" data-aliquota="2">ABC (2%)</option>
+                            <option value="osasco" data-aliquota="2">Osasco (2%)</option>
+                        </optgroup>
+                        <optgroup label="Litoral">
+                            <option value="bertioga" data-aliquota="2">Bertioga (2%)</option>
+                            <option value="caraguatatuba" data-aliquota="2">Caraguatatuba (2%)</option>
+                            <option value="guaruja" data-aliquota="2">Guarujá (2%)</option>
+                            <option value="ilhabela" data-aliquota="2">Ilhabela (2%)</option>
+                            <option value="praia_grande" data-aliquota="2">Praia Grande (2%)</option>
+                            <option value="santos" data-aliquota="2">Santos (2%)</option>
+                            <option value="sao_sebastiao" data-aliquota="2">São Sebastião (2%)</option>
+                            <option value="ubatuba" data-aliquota="2">Ubatuba (2%)</option>
+                        </optgroup>
+                        <optgroup label="Interior">
+                            <option value="bauru" data-aliquota="2">Bauru (2%)</option>
+                            <option value="campinas" data-aliquota="2.7">Campinas (2,7%)</option>
+                            <option value="jundiai" data-aliquota="2">Jundiaí (2%)</option>
+                            <option value="piracicaba" data-aliquota="2.5">Piracicaba (2,5%)</option>
+                            <option value="ribeirao_preto" data-aliquota="2">Ribeirão Preto (2%)</option>
+                            <option value="sj_campos" data-aliquota="2">São José dos Campos (2%)</option>
+                            <option value="sj_rio_preto" data-aliquota="2">São José do Rio Preto (2%)</option>
+                            <option value="sorocaba" data-aliquota="2">Sorocaba (2%)</option>
+                        </optgroup>
+                    </select>
+                </div>
+                <div><label>Alíquota ITBI (%)</label><input type="number" id="aliquotaITBI" value="3" step="0.1"></div>
+                <div><label>Usufruto?</label><select id="temUsufruto"><option value="nao">Não</option><option value="sim">Sim</option></select></div>
+            </div>
+        </fieldset>
+
+        <fieldset id="boxUsufruto" style="display:none;">
+            <legend>Partilha de Propriedade</legend>
+            <div class="grid">
+                <div><label>Nua-Propriedade (%)</label><input type="number" id="percNua" value="70"></div>
+                <div><label>Usufruto (%)</label><input type="number" id="percUsuf" value="30" readonly></div>
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend>Ganho de Capital (GCAP)</legend>
+            <div class="grid">
+                <div><label>Mês/Ano Aquisição</label><input type="month" id="dataAquisicao" value="2015-01"></div>
+                <div><label>Custo Aquisição (R$)</label><input type="number" id="valorCompra" value="0"></div>
+                <div><label>Mês/Ano Venda</label><input type="month" id="dataVenda" value="2026-02"></div>
+            </div>
+            <div class="grid">
+                <div><label>Benfeitorias (R$)</label><input type="number" id="despesasGC" value="0"></div>
+                <div><label>Valor de Venda (R$)</label><input type="number" id="valorVenda" value="0"></div>
+                <div><label>V. Reinvestido (R$)</label><input type="number" id="valorReinvestido" value="0"></div>
+            </div>
+            <div class="grid">
+                <label style="display:flex; align-items:center; gap:8px;"><input type="checkbox" id="isUnicoImovel"> Único Imóvel (até R$ 440k)</label>
+                <label style="display:flex; align-items:center; gap:8px;"><input type="checkbox" id="isResidencial"> Reinvestir Residencial</label>
+            </div>
+        </fieldset>
+    </form>
+
+    <div class="actions">
+        <button id="btnCalcular">Calcular Agora</button>
+        <button id="btnPDF">Gerar PDF</button>
+        <button id="btnLimpar">Limpar Formulário</button>
+    </div>
+
+    <div class="scenarios-box">
+        <label style="color: var(--primary); font-weight: bold;">Cenários Salvos</label>
+        <select id="selectCenarios" style="margin: 10px 0;">
+            <option value="">-- Selecione um cenário para carregar --</option>
+        </select>
+        <div class="scenarios-actions">
+            <button id="btnSalvarCenario" class="btn-sm btn-save">Salvar Atual</button>
+            <button id="btnExcluirCenario" class="btn-sm btn-delete">Excluir Selecionado</button>
+            <button id="btnLimparTodosCenarios" class="btn-sm btn-delete" style="background:#444;">Apagar Tudo</button>
+        </div>
+    </div>
+
+    <div id="resultados" class="resultado">
+        <div class="bloco">
+            <h4>Detalhamento de Tributos e Custos</h4>
+            <p><span>ITBI / ITCMD (SP):</span> <strong id="resImposto">R$ 0,00</strong></p>
+            <p><span>Escritura (Tabela 2026):</span> <strong id="resEscritura">R$ 0,00</strong></p>
+            <p><span>Registro Estimado (0,35%):</span> <strong id="resRegistro">R$ 0,00</strong></p>
+            <p><span>Taxas Complementares:</span> <strong>R$ 400,00</strong></p>
+        </div>
+        <div class="bloco">
+            <h4>Apuração de Ganho de Capital</h4>
+            <p><span>Lucro Imobiliário Bruto:</span> <strong id="resGanhoBruto">R$ 0,00</strong></p>
+            <p><span>Redução por Tempo (FR1/FR2):</span> <strong id="resRedutores">R$ 0,00</strong></p>
+            <p><span>Imposto de Renda a Pagar:</span> <strong id="resIR">R$ 0,00</strong></p>
+        </div>
+        <div class="total-destaque">Total Geral Estimado: <span id="resTotal">R$ 0,00</span></div>
+    </div>
+</div>
+
+<script>
+    // TABELA 2026
+    const tabelaEscritura2026 = [
+        { min: 0, max: 1524, total: 394.21 }, { min: 1524.01, max: 5761, total: 568.33 },
+        { min: 5761.01, max: 9603, total: 918.47 }, { min: 9603.01, max: 19210, total: 1270.33 },
+        { min: 19210.01, max: 38420, total: 1733.68 }, { min: 38420.01, max: 76840, total: 2104.28 },
+        { min: 76840.01, max: 115260, total: 2490.63 }, { min: 115260.01, max: 153680, total: 2899.13 },
+        { min: 153680.01, max: 192100, total: 3263.19 }, { min: 192100.01, max: 230520, total: 3607.49 },
+        { min: 230520.01, max: 268940, total: 4089.51 }, { min: 268940.01, max: 307360, total: 4460.02 },
+        { min: 307360.01, max: 330146, total: 4851.24 }, { min: 330146.01, max: 384200, total: 5200.09 },
+        { min: 384200.01, max: 768400, total: 5978.25 }, { min: 768400.01, max: 1152600, total: 6641.78 },
+        { min: 1152600.01, max: 1536800, total: 7342.01 }, { min: 1536800.01, max: 2345066, total: 8100.57 },
+        { min: 2345066.01, max: 3908444, total: 11014.73 }, { min: 3908444.01, max: 5862665, total: 14241.25 },
+        { min: 5862665.01, max: 7816887, total: 17467.79 }, { min: 7816887.01, max: 9771109, total: 20694.33 },
+        { min: 9771109.01, max: 11725331, total: 23920.87 }, { min: 11725331.01, max: 13679552, total: 27147.41 },
+        { min: 13679552.01, max: 15633774, total: 30373.95 }, { min: 15633774.01, max: 17587996, total: 33600.49 },
+        { min: 17587996.01, max: 19542217, total: 36827.03 }, { min: 19542217.01, max: 23450661, total: 43358.28 },
+        { min: 23450661.01, max: 27359105, total: 49889.52 }, { min: 27359105.01, max: 31267548, total: 56420.77 },
+        { min: 31267548.01, max: 35175992, total: 62952.01 }, { min: 35175992.01, max: Infinity, total: 69483.26 }
+    ];
+
+    const fmt = v => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    const getEscritura = b => (tabelaEscritura2026.find(f => b >= f.min && b <= f.max) || {total:0}).total;
+
+    // --- FUNÇÕES DE CENÁRIO ---
+    const carregarListaCenarios = () => {
+        const select = document.getElementById('selectCenarios');
+        const cenarios = JSON.parse(localStorage.getItem('cenariosACN') || '{}');
+        select.innerHTML = '<option value="">-- Selecione um cenário para carregar --</option>';
+        Object.keys(cenarios).forEach(nome => {
+            const opt = document.createElement('option');
+            opt.value = nome;
+            opt.textContent = nome;
+            select.appendChild(opt);
+        });
+    };
+
+    document.getElementById('btnSalvarCenario').onclick = () => {
+        const nome = prompt("Dê um nome para este cenário:");
+        if (!nome) return;
+        const dados = {};
+        document.querySelectorAll('#calcForm input, #calcForm select').forEach(el => {
+            if (el.type === 'checkbox') dados[el.id] = el.checked;
+            else dados[el.id] = el.value;
+        });
+        const cenarios = JSON.parse(localStorage.getItem('cenariosACN') || '{}');
+        cenarios[nome] = dados;
+        localStorage.setItem('cenariosACN', JSON.stringify(cenarios));
+        carregarListaCenarios();
+        alert("Cenário '" + nome + "' salvo com sucesso!");
+    };
+
+    document.getElementById('selectCenarios').onchange = (e) => {
+        const nome = e.target.value;
+        if (!nome) return;
+        const cenarios = JSON.parse(localStorage.getItem('cenariosACN') || '{}');
+        const dados = cenarios[nome];
+        Object.keys(dados).forEach(id => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            if (el.type === 'checkbox') el.checked = dados[id];
+            else el.value = dados[id];
+        });
+        document.getElementById('temUsufruto').dispatchEvent(new Event('change'));
+        document.getElementById('btnCalcular').click(); // Auto-calcula ao carregar
+    };
+
+    document.getElementById('btnExcluirCenario').onclick = () => {
+        const select = document.getElementById('selectCenarios');
+        const nome = select.value;
+        if (!nome) {
+            alert("Por favor, selecione um cenário na lista acima para excluir.");
+            return;
+        }
+        if(confirm("Deseja realmente excluir o cenário '" + nome + "'?")) {
+            const cenarios = JSON.parse(localStorage.getItem('cenariosACN') || '{}');
+            delete cenarios[nome];
+            localStorage.setItem('cenariosACN', JSON.stringify(cenarios));
+            carregarListaCenarios();
+            document.getElementById('btnLimpar').click();
+            alert("Cenário removido.");
+        }
+    };
+
+    document.getElementById('btnLimparTodosCenarios').onclick = () => {
+        if(confirm("ATENÇÃO: Isso apagará TODOS os cenários salvos permanentemente. Continuar?")) {
+            localStorage.removeItem('cenariosACN');
+            carregarListaCenarios();
+            document.getElementById('btnLimpar').click();
+        }
+    };
+
+    document.getElementById('btnLimpar').onclick = () => {
+        document.getElementById('calcForm').reset();
+        document.getElementById('resultados').style.display = 'none';
+        document.getElementById('boxUsufruto').style.display = 'none';
+        document.getElementById('selectCenarios').value = "";
+    };
+
+    // --- LÓGICA DE CÁLCULO ---
+    document.getElementById('cidadeITBI').onchange = e => {
+        const aliq = e.target.options[e.target.selectedIndex].dataset.aliquota;
+        if(aliq) document.getElementById('aliquotaITBI').value = aliq;
+    };
+    document.getElementById('temUsufruto').onchange = e => document.getElementById('boxUsufruto').style.display = e.target.value === 'sim' ? 'block' : 'none';
+    document.getElementById('percNua').oninput = e => document.getElementById('percUsuf').value = 100 - e.target.value;
+    document.getElementById('toggleTheme').onclick = () => document.body.classList.toggle('dark');
+    document.getElementById('btnPDF').onclick = () => window.print();
+
+    document.getElementById('btnCalcular').onclick = function() {
+        const vDecl = parseFloat(document.getElementById('valorImovel').value) || 0;
+        const vVenRef = parseFloat(document.getElementById('valorVenalRef').value) || 0;
+        const baseTransm = Math.max(vDecl, vVenRef);
+        let imposto = 0, esc = 0, reg = 0;
+
+        if (document.getElementById('temUsufruto').value === 'sim') {
+            let pNua = (parseFloat(document.getElementById('percNua').value) || 0) / 100;
+            let pUsuf = (parseFloat(document.getElementById('percUsuf').value) || 0) / 100;
+            if(document.getElementById('tipoOperacao').value === 'compra') imposto = (baseTransm * pNua) * (parseFloat(document.getElementById('aliquotaITBI').value)/100);
+            else imposto = vDecl * 0.04;
+            esc = getEscritura(vDecl * pNua) + getEscritura(vDecl * pUsuf);
+            reg = (vDecl * 0.0035); 
+        } else {
+            if(document.getElementById('tipoOperacao').value === 'compra') imposto = baseTransm * (parseFloat(document.getElementById('aliquotaITBI').value)/100);
+            else imposto = vDecl * 0.04; 
+            esc = getEscritura(vDecl);
+            reg = vDecl * 0.0035;
+        }
+
+        const vAcq = parseFloat(document.getElementById('valorCompra').value) || 0;
+        const vSell = parseFloat(document.getElementById('valorVenda').value) || 0;
+        const vDesp = parseFloat(document.getElementById('despesasGC').value) || 0;
+        const vReinvest = parseFloat(document.getElementById('valorReinvestido').value) || 0;
+        const dAq = new Date(document.getElementById('dataAquisicao').value);
+        const dVe = new Date(document.getElementById('dataVenda').value);
+        let ganhoBruto = Math.max(0, vSell - vAcq - vDesp);
+        let m = Math.floor((dVe - dAq) / (1000 * 60 * 60 * 24 * 30.4375));
+        let fr1 = 1 / Math.pow(1.006, Math.max(0, m));
+        let fr2 = 1 / Math.pow(1.0035, Math.max(0, m));
+        let ganhoReduzido = ganhoBruto * fr1 * fr2;
+        if(document.getElementById('isUnicoImovel').checked && vSell <= 440000) ganhoReduzido = 0;
+        if(document.getElementById('isResidencial').checked && vReinvest > 0) ganhoReduzido = ganhoReduzido * (1 - (vReinvest / vSell));
+        if(dAq.getFullYear() <= 1969) ganhoReduzido = 0;
+        let ir = Math.max(0, ganhoReduzido * 0.15);
+
+        document.getElementById('resImposto').textContent = fmt(imposto);
+        document.getElementById('resEscritura').textContent = fmt(esc);
+        document.getElementById('resRegistro').textContent = fmt(reg);
+        document.getElementById('resGanhoBruto').textContent = fmt(ganhoBruto);
+        document.getElementById('resRedutores').textContent = fmt(ganhoBruto - ganhoReduzido);
+        document.getElementById('resIR').textContent = fmt(ir);
+        document.getElementById('resTotal').textContent = fmt(imposto + esc + reg + ir + 400);
+        document.getElementById('resultados').style.display = 'block';
+    }
+
+    // Inicialização
+    carregarListaCenarios();
+</script>
+</body>
+</html>

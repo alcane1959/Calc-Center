@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Simulador Financeiro Completo - Edição Gemini</title>
+    <style>
+        :root { --primary: #2c3e50; --accent: #27ae60; --bg: #f4f7f6; --blue: #3498db; --orange: #e67e22; --red: #e74c3c; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); padding: 20px; color: #333; }
+        .container { max-width: 1100px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .section-card { border: 1px solid #ddd; padding: 20px; border-radius: 8px; margin-bottom: 30px; background: #fff; }
+        .grid-inputs { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .input-group { display: flex; flex-direction: column; }
+        label { font-weight: bold; margin-bottom: 5px; font-size: 0.8rem; color: var(--primary); }
+        input { padding: 10px; border: 1px solid #ccc; border-radius: 6px; }
+        ::placeholder { color: #aaa; font-style: italic; font-size: 0.85rem; }
+        .buttons { display: flex; gap: 10px; margin: 15px 0; flex-wrap: wrap; }
+        button { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.3s; color: white; }
+        .btn-calc { background: var(--accent); }
+        .btn-clear { background: var(--orange); }
+        .btn-print { background: var(--blue); }
+        .table-container { overflow-x: auto; margin-top: 15px; max-height: 400px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 10px; border: 1px solid #eee; text-align: center; font-size: 0.85rem; }
+        th { background: var(--primary); color: white; position: sticky; top: 0; }
+        .highlight { background: #e8f5e9; font-weight: bold; }
+        .negative { color: var(--red); }
+        h2 { border-left: 5px solid var(--primary); padding-left: 10px; color: var(--primary); }
+        #printFrame { display: none; }
+        @media print { .no-print { display: none; } }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1 style="text-align:center;">Painel Financeiro</h1>
+
+    <div class="section-card">
+        <h2>1. Projeção de Investimento (Visão Anual)</h2>
+        <div class="grid-inputs no-print">
+            <div class="input-group"><label>Investimento Inicial</label><input type="number" id="anual_p" placeholder="Ex: 5000"></div>
+            <div class="input-group"><label>Aporte Mensal</label><input type="number" id="anual_m" placeholder="Ex: 200"></div>
+            <div class="input-group"><label>Retirada Mensal</label><input type="number" id="anual_r" placeholder="Ex: 50"></div>
+            <div class="input-group"><label>Taxa Anual (%)</label><input type="number" id="anual_taxa" placeholder="Ex: 11.5"></div>
+            <div class="input-group"><label>Qtd Anos</label><input type="number" id="anual_anos" placeholder="Ex: 10"></div>
+        </div>
+        <div class="buttons no-print">
+            <button class="btn-calc" onclick="calcularAnual()">Calcular Anual</button>
+            <button class="btn-clear" onclick="limparCampos('anual')">Limpar</button>
+            <button class="btn-print" onclick="imprimirSilencioso('res_anual', 'Relatório de Investimento Anual')">Imprimir Relatório</button>
+        </div>
+        <div id="res_anual" class="table-container"></div>
+    </div>
+
+    <div class="section-card">
+        <h2>2. Projeção de Investimento (Visão Mensal)</h2>
+        <div class="grid-inputs no-print">
+            <div class="input-group"><label>Investimento Inicial</label><input type="number" id="mensal_p" placeholder="Ex: 1000"></div>
+            <div class="input-group"><label>Aporte Mensal</label><input type="number" id="mensal_m" placeholder="Ex: 100"></div>
+            <div class="input-group"><label>Retirada Mensal</label><input type="number" id="mensal_r" placeholder="Ex: 50"></div>
+            <div class="input-group"><label>Taxa Mensal (%)</label><input type="number" id="mensal_taxa" placeholder="Ex: 0.8"></div>
+            <div class="input-group"><label>Qtd Meses</label><input type="number" id="mensal_meses" placeholder="Ex: 24"></div>
+        </div>
+        <div class="buttons no-print">
+            <button class="btn-calc" onclick="calcularMensal()">Calcular Mensal</button>
+            <button class="btn-clear" onclick="limparCampos('mensal')">Limpar</button>
+            <button class="btn-print" onclick="imprimirSilencioso('res_mensal', 'Relatório de Investimento Mensal')">Imprimir Relatório</button>
+        </div>
+        <div id="res_mensal" class="table-container"></div>
+    </div>
+
+    <div class="section-card">
+        <h2>3. Amortização de Financiamento (SAC)</h2>
+        <div class="grid-inputs no-print">
+            <div class="input-group"><label>Valor da Dívida</label><input type="number" id="sac_v" placeholder="Ex: 50000"></div>
+            <div class="input-group"><label>Juros Anual (%)</label><input type="number" id="sac_j" placeholder="Ex: 9.5"></div>
+            <div class="input-group"><label>Prazo (Meses)</label><input type="number" id="sac_t" placeholder="Ex: 36"></div>
+        </div>
+        <div class="buttons no-print">
+            <button class="btn-calc" onclick="calcularSAC()">Calcular SAC</button>
+            <button class="btn-clear" onclick="limparCampos('sac')">Limpar</button>
+            <button class="btn-print" onclick="imprimirSilencioso('res_sac', 'Relatório de Amortização SAC')">Imprimir Relatório</button>
+        </div>
+        <div id="res_sac" class="table-container"></div>
+    </div>
+</div>
+
+<iframe id="printFrame"></iframe>
+
+<script>
+    const formatar = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+    function limparCampos(prefixo) {
+        const container = document.querySelector(`[onclick*="limparCampos('${prefixo}')"]`).closest('.section-card');
+        container.querySelectorAll('input').forEach(input => input.value = '');
+        const resId = prefixo === 'anual' ? 'res_anual' : prefixo === 'mensal' ? 'res_mensal' : 'res_sac';
+        document.getElementById(resId).innerHTML = '';
+    }
+
+    function imprimirSilencioso(id, titulo) {
+        const conteudo = document.getElementById(id).innerHTML;
+        if(!conteudo) return alert("Gere o cálculo primeiro!");
+        const frame = document.getElementById('printFrame');
+        const doc = frame.contentWindow.document;
+        doc.open();
+        doc.write(`<html><head><title>${titulo}</title><style>body{font-family:sans-serif;padding:20px;}table{width:100%;border-collapse:collapse;margin-top:20px;}th,td{border:1px solid #ddd;padding:8px;text-align:center;font-size:12px;}th{background:#2c3e50;color:white;}h1{color:#2c3e50;text-align:center;}.highlight{background:#e8f5e9;font-weight:bold;}</style></head><body><h1>${titulo}</h1>${conteudo}<script>window.onload=function(){window.print();}<\/script></body></html>`);
+        doc.close();
+    }
+
+    function calcularAnual() {
+        let p = parseFloat(document.getElementById('anual_p').value) || 0;
+        let m = parseFloat(document.getElementById('anual_m').value) || 0;
+        let r = parseFloat(document.getElementById('anual_r').value) || 0;
+        let tAnual = (parseFloat(document.getElementById('anual_taxa').value) || 0) / 100;
+        let anos = parseInt(document.getElementById('anual_anos').value) || 0;
+        if(anos <= 0) return alert("Informe a quantidade de anos.");
+        
+        let iM = Math.pow(1 + tAnual, 1/12) - 1;
+        let saldo = p;
+        let html = `<table><thead><tr><th>Ano</th><th>Aportes no Ano</th><th>Retiradas no Ano</th><th>Rendimento Ano</th><th>Saldo Final</th></tr></thead><tbody>`;
+        
+        for (let a = 1; a <= anos; a++) {
+            let inicioAno = saldo;
+            let totalAporteAno = m * 12;
+            let totalRetiradaAno = r * 12;
+            
+            for (let mes = 1; mes <= 12; mes++) { 
+                // Lógica: Saldo + Aporte -> Rende -> Tira
+                saldo = (saldo + m) * (1 + iM) - r; 
+            }
+            
+            let rendAno = saldo - inicioAno - totalAporteAno + totalRetiradaAno;
+            html += `<tr><td>Ano ${a}</td><td>${formatar(totalAporteAno)}</td><td>${formatar(totalRetiradaAno)}</td><td>${formatar(rendAno)}</td><td class="highlight ${saldo < 0 ? 'negative' : ''}">${formatar(saldo)}</td></tr>`;
+        }
+        document.getElementById('res_anual').innerHTML = html + `</tbody></table>`;
+    }
+
+    function calcularMensal() {
+        let p = parseFloat(document.getElementById('mensal_p').value) || 0;
+        let m = parseFloat(document.getElementById('mensal_m').value) || 0;
+        let r = parseFloat(document.getElementById('mensal_r').value) || 0;
+        let iM = (parseFloat(document.getElementById('mensal_taxa').value) || 0) / 100;
+        let meses = parseInt(document.getElementById('mensal_meses').value) || 0;
+        if(meses <= 0) return alert("Informe a quantidade de meses.");
+        
+        let saldo = p;
+        let html = `<table><thead><tr><th>Mês</th><th>Saldo Inicial</th><th>Aporte</th><th>Rendimento</th><th>Retirada</th><th>Saldo Final</th></tr></thead><tbody>`;
+        
+        for (let i = 1; i <= meses; i++) {
+            let inicial = saldo;
+            let rend = (saldo + m) * iM;
+            saldo = (saldo + m + rend) - r;
+            
+            html += `<tr><td>Mês ${i}</td><td>${formatar(inicial)}</td><td>${formatar(m)}</td><td>${formatar(rend)}</td><td>${formatar(r)}</td><td class="highlight ${saldo < 0 ? 'negative' : ''}">${formatar(saldo)}</td></tr>`;
+        }
+        document.getElementById('res_mensal').innerHTML = html + `</tbody></table>`;
+    }
+
+    function calcularSAC() {
+        let p = parseFloat(document.getElementById('sac_v').value) || 0;
+        let iA = (parseFloat(document.getElementById('sac_j').value) || 0) / 100;
+        let t = parseInt(document.getElementById('sac_t').value) || 0;
+        if(t <= 0) return alert("Informe o prazo.");
+        let iM = iA / 12;
+        let amort = p / t;
+        let saldo = p;
+        let html = `<table><thead><tr><th>Mês</th><th>Prestação</th><th>Juros</th><th>Amortização</th><th>Saldo Devedor</th></tr></thead><tbody>`;
+        for (let i = 1; i <= t; i++) {
+            let juros = saldo * iM;
+            let prest = amort + juros;
+            saldo -= amort;
+            html += `<tr><td>${i}</td><td>${formatar(prest)}</td><td>${formatar(juros)}</td><td>${formatar(amort)}</td><td>${formatar(Math.abs(saldo))}</td></tr>`;
+        }
+        document.getElementById('res_sac').innerHTML = html + `</tbody></table>`;
+    }
+</script>
+</body>
+</html>
