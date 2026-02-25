@@ -39,12 +39,37 @@ td:first-child,th:first-child{text-align:left}
 .result div{background:#f8fafc;padding:10px;border-radius:6px}
 .final{grid-column:1/-1;background:#eaf4ec}
 .investimento{grid-column:1/-1;background:#e6fffa;border:1px solid var(--invest);color:var(--invest)}
-button{
-  padding:12px 18px;border:none;border-radius:8px;
-  background:var(--primary);color:#fff;cursor:pointer;
-  margin-right: 5px; margin-bottom: 5px;
+
+/* Cirurgia Estética: Botões com fundo branco */
+button {
+  padding: 12px 18px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #ffffff;
+  color: var(--primary);
+  cursor: pointer;
+  margin-right: 5px;
+  margin-bottom: 5px;
+  font-weight: 600;
+  transition: background 0.3s, border-color 0.3s;
 }
-.btn-danger {background: var(--danger);}
+
+button:hover {
+  background: #f0f2f5;
+  border-color: var(--primary);
+}
+
+/* Removendo a cor vermelha do botão de perigo */
+.btn-danger {
+  color: var(--danger);
+  border-color: var(--border);
+}
+
+.btn-danger:hover {
+  background: #fff5f5;
+  border-color: var(--danger);
+}
+
 @media print{
   button,input,select{display:none}
 }

@@ -13,11 +13,24 @@
         label { font-weight: bold; margin-bottom: 5px; font-size: 0.8rem; color: var(--primary); }
         input { padding: 10px; border: 1px solid #ccc; border-radius: 6px; }
         ::placeholder { color: #aaa; font-style: italic; font-size: 0.85rem; }
+        
+        /* Cirurgia Estética: Botões com fundo branco */
         .buttons { display: flex; gap: 10px; margin: 15px 0; flex-wrap: wrap; }
-        button { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.3s; color: white; }
-        .btn-calc { background: var(--accent); }
-        .btn-clear { background: var(--orange); }
-        .btn-print { background: var(--blue); }
+        button { 
+            padding: 10px 20px; 
+            border: 1px solid #ccc; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            transition: 0.3s; 
+            color: var(--primary); 
+            background: white; 
+        }
+        button:hover { 
+            background: #f0f0f0; 
+            border-color: var(--primary); 
+        }
+        
         .table-container { overflow-x: auto; margin-top: 15px; max-height: 400px; }
         table { width: 100%; border-collapse: collapse; }
         th, td { padding: 10px; border: 1px solid #eee; text-align: center; font-size: 0.85rem; }
@@ -44,9 +57,9 @@
             <div class="input-group"><label>Qtd Anos</label><input type="number" id="anual_anos" placeholder="Ex: 10"></div>
         </div>
         <div class="buttons no-print">
-            <button class="btn-calc" onclick="calcularAnual()">Calcular Anual</button>
-            <button class="btn-clear" onclick="limparCampos('anual')">Limpar</button>
-            <button class="btn-print" onclick="imprimirSilencioso('res_anual', 'Relatório de Investimento Anual')">Imprimir Relatório</button>
+            <button onclick="calcularAnual()">Calcular Anual</button>
+            <button onclick="limparCampos('anual')">Limpar</button>
+            <button onclick="imprimirSilencioso('res_anual', 'Relatório de Investimento Anual')">Imprimir Relatório</button>
         </div>
         <div id="res_anual" class="table-container"></div>
     </div>
@@ -61,9 +74,9 @@
             <div class="input-group"><label>Qtd Meses</label><input type="number" id="mensal_meses" placeholder="Ex: 24"></div>
         </div>
         <div class="buttons no-print">
-            <button class="btn-calc" onclick="calcularMensal()">Calcular Mensal</button>
-            <button class="btn-clear" onclick="limparCampos('mensal')">Limpar</button>
-            <button class="btn-print" onclick="imprimirSilencioso('res_mensal', 'Relatório de Investimento Mensal')">Imprimir Relatório</button>
+            <button onclick="calcularMensal()">Calcular Mensal</button>
+            <button onclick="limparCampos('mensal')">Limpar</button>
+            <button onclick="imprimirSilencioso('res_mensal', 'Relatório de Investimento Mensal')">Imprimir Relatório</button>
         </div>
         <div id="res_mensal" class="table-container"></div>
     </div>
@@ -76,9 +89,9 @@
             <div class="input-group"><label>Prazo (Meses)</label><input type="number" id="sac_t" placeholder="Ex: 36"></div>
         </div>
         <div class="buttons no-print">
-            <button class="btn-calc" onclick="calcularSAC()">Calcular SAC</button>
-            <button class="btn-clear" onclick="limparCampos('sac')">Limpar</button>
-            <button class="btn-print" onclick="imprimirSilencioso('res_sac', 'Relatório de Amortização SAC')">Imprimir Relatório</button>
+            <button onclick="calcularSAC()">Calcular SAC</button>
+            <button onclick="limparCampos('sac')">Limpar</button>
+            <button onclick="imprimirSilencioso('res_sac', 'Relatório de Amortização SAC')">Imprimir Relatório</button>
         </div>
         <div id="res_sac" class="table-container"></div>
     </div>
@@ -124,7 +137,6 @@
             let totalRetiradaAno = r * 12;
             
             for (let mes = 1; mes <= 12; mes++) { 
-                // Lógica: Saldo + Aporte -> Rende -> Tira
                 saldo = (saldo + m) * (1 + iM) - r; 
             }
             
