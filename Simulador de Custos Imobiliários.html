@@ -36,7 +36,7 @@
 
 <header>
     <h1 style="margin:0; font-size:1.6rem;">Simulador de Custos Imobiliários</h1>
-    <p id="subtituloDinamico" style="margin:5px 0 0; opacity:0.8;">Alberto de Campos Neto — Parâmetros 2026</p>
+    <p id="subtituloDinamico" style="margin:5px 0 0; opacity:0.8;">Calc Center Soft — Parâmetros 2026</p>
 </header>
 
 <div class="container">
@@ -140,7 +140,7 @@
     const dataSistema = new Date();
     const anoAtual = dataSistema.getFullYear();
     const mesAtual = String(dataSistema.getMonth() + 1).padStart(2, '0');
-    document.getElementById('subtituloDinamico').textContent = `Alberto de Campos Neto — Parâmetros ${anoAtual}`;
+    document.getElementById('subtituloDinamico').textContent = `Calc Center Soft — Parâmetros ${anoAtual}`;
     document.getElementById('dataVenda').value = `${anoAtual}-${mesAtual}`;
 
     const tabelasHistoricas = {
