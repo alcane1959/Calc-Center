@@ -29,7 +29,7 @@ body{
 }
 .grid{display:grid;grid-template-columns:1fr 2fr;gap:20px}
 input,select{
-  width:100%;padding:8px;border-radius:6px;border:1px solid var(--border)
+  width:100%;padding:8px;border-radius:6px;border:1px solid var(--border);margin-bottom: 10px;
 }
 table{width:100%;border-collapse:collapse;font-size:.85rem}
 th{background:var(--primary);color:#fff;padding:8px}
@@ -38,11 +38,9 @@ td:first-child,th:first-child{text-align:left}
 .result{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
 .result div{background:#f8fafc;padding:10px;border-radius:6px}
 .final{grid-column:1/-1;background:#eaf4ec}
-.investimento{grid-column:1/-1;background:#e6fffa;border:1px solid var(--invest);color:var(--invest)}
 
-/* Cirurgia Estética: Botões com fundo branco */
 button {
-  padding: 12px 18px;
+  padding: 10px 15px;
   border: 1px solid var(--border);
   border-radius: 8px;
   background: #ffffff;
@@ -51,27 +49,27 @@ button {
   margin-right: 5px;
   margin-bottom: 5px;
   font-weight: 600;
-  transition: background 0.3s, border-color 0.3s;
+  transition: background 0.3s;
 }
+button:hover { background: #f0f2f5; border-color: var(--primary); }
+.btn-danger { color: var(--danger); border-color: var(--danger); }
+.btn-add { background: var(--invest); color: white; border: none; }
+.btn-add:hover { background: #245e5f; }
+.btn-del { padding: 4px 8px; font-size: 0.75rem; }
 
-button:hover {
-  background: #f0f2f5;
-  border-color: var(--primary);
-}
-
-/* Removendo a cor vermelha do botão de perigo */
-.btn-danger {
-  color: var(--danger);
-  border-color: var(--border);
-}
-
-.btn-danger:hover {
-  background: #fff5f5;
-  border-color: var(--danger);
-}
-
-@media print{
-  button,input,select{display:none}
+@media print{ 
+  button, input, select, .no-print { display:none !important; }
+  body { 
+    padding: 0;
+    padding-right: 20px; /* Margem de segurança na direita */
+    background: #fff; 
+    transform: scale(0.8); 
+    transform-origin: top left; 
+    width: 120%; /* Ajustado de 125% para 120% para evitar o corte */
+  }
+  .card { border: none; padding: 10px 0; margin-bottom: 10px; }
+  table { width: 100% !important; border: 1px solid #eee; }
+  .grid { display: block; }
 }
 </style>
 </head>
@@ -86,226 +84,220 @@ button:hover {
 
 <div class="grid">
 <div class="card">
-<label>Aposentadoria mensal
-<input id="apos" type="number" step="0.01"></label>
+<label class="no-print">Aposentadoria mensal</label>
+<input id="apos" type="number" step="0.01" oninput="calcular()">
 
-<label>Idade do aposentado
-<input id="idade" type="number"></label>
+<label class="no-print">Idade do aposentado</label>
+<input id="idade" type="number" oninput="calcular()">
 
-<label>IRRF PJ (%)
-<input id="aliqIRRF" value="1.5"></label>
-
-<label>Despesas médicas anuais
-<input id="med" type="number" step="0.01"></label>
+<label class="no-print">Despesas médicas anuais</label>
+<input id="med" type="number" step="0.01" oninput="calcular()">
 </div>
 
 <div class="card">
 <table id="imoveis">
+<thead>
 <tr>
-<th>#</th><th>Tipo</th><th>Aluguel</th><th>Despesas</th><th>Base</th><th>IR</th>
+<th>#</th><th>Tipo</th><th>Aluguel</th><th>Despesas</th><th>Base</th><th>IR</th><th class="no-print">Ação</th>
 </tr>
-<script>
-for(let i=1;i<=10;i++){
-document.write(`
-<tr>
-<td>${i}</td>
-<td>
-<select class="tipo">
-<option value="PF">PF</option>
-<option value="PJ">PJ</option>
-</select>
-</td>
-<td><input class="aluguel" type="number" step="0.01"></td>
-<td><input class="despesas" type="number" step="0.01"></td>
-<td class="base">R$ 0,00</td>
-<td class="ir">R$ 0,00</td>
-</tr>
-`);
-}
-</script>
+</thead>
+<tbody id="corpoTabela"></tbody>
 </table>
+<button class="btn-add no-print" onclick="adicionarLinha()" style="margin-top:10px">+ Adicionar Imóvel</button>
 </div>
 </div>
 
 <div class="card">
-<h3>Resumo de Rendimentos</h3>
+<h3>Apuração Mensal (Cálculos Isolados)</h3>
 <div class="result">
-<div>Aposentadoria mensal <strong id="aposM"></strong></div>
-<div>Aposentadoria anual <strong id="aposA"></strong></div>
-<div>Aluguéis mensais <strong id="aluguM"></strong></div>
-<div>Aluguéis anuais <strong id="aluguA"></strong></div>
-<div><strong>Total mensal</strong> <strong id="totalM"></strong></div>
-<div><strong>Total anual</strong> <strong id="totalA"></strong></div>
+<div>IR sobre Aposentadoria <strong id="resApos"></strong></div>
+<div>Total IR Aluguéis PF <strong id="resPF"></strong></div>
+<div>Total IR Aluguéis PJ <strong id="resPJ"></strong></div>
+<div style="background:#fff3cd"><strong>Total Mensal Retido</strong> <strong id="resTotalM"></strong></div>
 </div>
 </div>
 
 <div class="card">
-<h3>Apuração do IR</h3>
+<h3>Ajuste Anual (Consolidação)</h3>
 <div class="result">
-
-<div>IR mensal – PF total <strong id="irPFmensal"></strong></div>
-<div>↳ Aposentadoria (visual) <strong id="irAposVis"></strong></div>
-<div>↳ Aluguéis PF (visual) <strong id="irAlugPFVis"></strong></div>
-
-<div>IRRF mensal – Aluguéis PJ <strong id="irPJmensal"></strong></div>
-
-<div>Renda bruta anual <strong id="rendaBruta"></strong></div>
-<div>Deduções <strong id="deducoes"></strong></div>
-<div>Base tributável <strong id="baseAnual"></strong></div>
-<div>IR anual <strong id="irAnual"></strong></div>
-<div>Créditos <strong id="creditos"></strong></div>
-
-<div class="final">IR a pagar <strong id="irFinal"></strong></div>
-<div class="investimento">Guardar mensalmente (rendendo 0,7% a.m.) para o ajuste: <strong id="reservaMensal"></strong></div>
+<div>Aposentadoria Informada: <strong id="repApos"></strong></div>
+<div>Idade Informada: <strong id="repIdade"></strong></div>
+<div>Despesas Médicas Anuais: <strong id="repMed"></strong></div>
+<hr style="grid-column: 1/-1; border: 0; border-top: 1px solid var(--border); margin: 5px 0;">
+<div>Renda Bruta Anual: <strong id="rendaBruta"></strong></div>
+<div>Total Retido no Ano: <strong id="pagoAno"></strong></div>
+<div class="final"><strong>Saldo Final de IR a Pagar:</strong> <strong id="irFinal"></strong></div>
 </div>
-
 <br>
-<button onclick="calcular()">Calcular</button>
-<button onclick="window.print()">Imprimir</button>
+<button class="no-print" onclick="window.print()">Imprimir PDF</button>
 </div>
 
-<div class="card">
-<h3>Cenários</h3>
-<select id="listaCenarios" onchange="carregarCenario(Number(this.value))">
-<option value="">Selecione um cenário</option>
-</select>
-<br><br>
-<button onclick="salvarCenario()">Salvar cenário</button>
-<button onclick="excluirCenarioIndividual()" class="btn-danger">Excluir cenário selecionado</button>
-<button onclick="limparFormulario()">Limpar formulário</button>
-<button onclick="limparTodosCenarios()" class="btn-danger">Limpar todos os cenários</button>
+<div class="card no-print">
+<h3>Gerenciar Dados (JSON)</h3>
+<button onclick="exportarDados()">Exportar Dados (Salvar)</button>
+<label for="inputImport" style="padding: 10px 15px; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; font-weight: 600; display: inline-block; background: white;">
+    Importar Dados (Carregar)
+</label>
+<input type="file" id="inputImport" style="display:none" accept=".json" onchange="importarDados(event)">
+<button onclick="limparFormulario()" class="btn-danger">Limpar Tudo</button>
 </div>
 
 </div>
 
 <script>
-const tabela=[
-{l:2259.20,a:0},
-{l:2826.65,a:0.075},
-{l:3751.05,a:0.15},
-{l:4664.68,a:0.225},
-{l:Infinity,a:0.275}
-];
-const ISENCAO_APOS_65 = 2259.20;
+const ISENCAO_65 = 2259.20;
 
-function irMensal(v){
-if(v <= 0) return 0;
-let ir=0,p=0;
-for(let f of tabela){
-let x=Math.min(v,f.l)-p;
-if(x>0) ir+=x*f.a;
-p=f.l;
-}
-return ir;
+function motor2026(valor) {
+    if (valor <= 5000) return 0;
+    const base = valor - 607.20;
+    let imp = 0;
+    if (base <= 2428.80) imp = 0;
+    else if (base <= 2826.65) imp = (base * 0.075) - 182.16;
+    else if (base <= 3751.05) imp = (base * 0.15) - 394.16;
+    else if (base <= 4664.68) imp = (base * 0.225) - 675.49;
+    else imp = (base * 0.275) - 908.73;
+
+    let redutor = 0;
+    if (valor <= 7350) redutor = 978.62 - (0.133145 * valor);
+    return Math.max(0, imp - redutor);
 }
 
-function fmt(v){
-return v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+function fmt(v){ return v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"}); }
+
+function adicionarLinha(dados = null) {
+    const corpo = document.getElementById("corpoTabela");
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+        <td class="idx"></td>
+        <td>
+            <select class="tipo" onchange="calcular()">
+                <option value="PF" ${dados?.tipo === 'PF' ? 'selected' : ''}>PF</option>
+                <option value="PJ" ${dados?.tipo === 'PJ' ? 'selected' : ''}>PJ</option>
+            </select>
+        </td>
+        <td><input class="aluguel" type="number" step="0.01" value="${dados?.aluguel || ''}" oninput="calcular()"></td>
+        <td><input class="despesas" type="number" step="0.01" value="${dados?.despesas || ''}" oninput="calcular()"></td>
+        <td class="base">R$ 0,00</td>
+        <td class="ir">R$ 0,00</td>
+        <td class="no-print"><button class="btn-danger btn-del" onclick="removerLinha(this)">Excluir</button></td>
+    `;
+    corpo.appendChild(tr);
+    renumerar();
+    calcular();
+}
+
+function removerLinha(btn) {
+    btn.closest('tr').remove();
+    renumerar();
+    calcular();
+}
+
+function renumerar() {
+    document.querySelectorAll(".idx").forEach((td, i) => td.innerText = i + 1);
 }
 
 function calcular(){
-const apos = Number(document.getElementById("apos").value) || 0;
-const idade = Number(document.getElementById("idade").value) || 0;
-const aliq = Number(document.getElementById("aliqIRRF").value) / 100 || 0;
-const med  = Number(document.getElementById("med").value) || 0;
+    const apos = Number(document.getElementById("apos").value) || 0;
+    const idade = Number(document.getElementById("idade").value) || 0;
+    const med = Number(document.getElementById("med").value) || 0;
 
-let aposTrib = idade >= 65 ? Math.max(0, apos - ISENCAO_APOS_65) : apos;
-let pf=0, pj=0, alugu=0;
+    const baseApos = (idade >= 65) ? Math.max(0, apos - ISENCAO_65) : apos;
+    const irApos = motor2026(baseApos);
 
-document.querySelectorAll("#imoveis tr").forEach((r,i)=>{
-  if(i===0) return;
-  let tipo = r.querySelector(".tipo").value;
-  let a = Number(r.querySelector(".aluguel").value) || 0;
-  let d = Number(r.querySelector(".despesas").value) || 0;
-  alugu += a;
-  let base = tipo==="PF" ? Math.max(0,a-d) : a;
-  r.querySelector(".base").innerText = fmt(base);
-  if(tipo==="PF") pf += base;
-  else pj += a;
-});
+    let totalIRPF = 0, totalIRPJ = 0;
+    let brutoAnual = apos * 12, baseAnualSoma = baseApos;
 
-let carne = irMensal(pf + aposTrib);
-let irrf  = pj * aliq;
+    document.querySelectorAll("#corpoTabela tr").forEach(r => {
+        const tipo = r.querySelector(".tipo").value;
+        const v = Number(r.querySelector(".aluguel").value) || 0;
+        const d = Number(r.querySelector(".despesas").value) || 0;
+        
+        const baseLinha = Math.max(0, v - d);
+        r.querySelector(".base").innerText = fmt(baseLinha);
+        brutoAnual += (v * 12);
+        baseAnualSoma += baseLinha;
 
-document.getElementById("irPFmensal").innerText = fmt(carne);
-document.getElementById("irPJmensal").innerText = fmt(irrf);
+        let irLinha = (tipo === "PF") ? motor2026(baseLinha) : motor2026(v);
+        if (tipo === "PF") totalIRPF += irLinha; else totalIRPJ += irLinha;
+        r.querySelector(".ir").innerText = fmt(irLinha);
+    });
 
-let basePFtotal = pf + aposTrib;
-document.getElementById("irAposVis").innerText = fmt(basePFtotal > 0 ? carne * (aposTrib / basePFtotal) : 0);
-document.getElementById("irAlugPFVis").innerText = fmt(basePFtotal > 0 ? carne * (pf / basePFtotal) : 0);
+    const pagoMensal = irApos + totalIRPF + totalIRPJ;
+    document.getElementById("resApos").innerText = fmt(irApos);
+    document.getElementById("resPF").innerText = fmt(totalIRPF);
+    document.getElementById("resPJ").innerText = fmt(totalIRPJ);
+    document.getElementById("resTotalM").innerText = fmt(pagoMensal);
 
-document.querySelectorAll("#imoveis tr").forEach((r,i)=>{
-  if(i===0) return;
-  let tipo=r.querySelector(".tipo").value;
-  let bVal = Number(r.querySelector(".aluguel").value) || 0;
-  let dVal = Number(r.querySelector(".despesas").value) || 0;
-  let baseValor = tipo==="PF" ? Math.max(0, bVal - dVal) : bVal;
-  
-  r.querySelector(".ir").innerText = fmt(
-    tipo==="PF" ? (basePFtotal > 0 ? carne*(baseValor/basePFtotal) : 0) : baseValor*aliq
-  );
-});
+    const irAnual = motor2026(Math.max(0, (baseAnualSoma * 12) - med) / 12) * 12;
+    document.getElementById("rendaBruta").innerText = fmt(brutoAnual);
+    document.getElementById("pagoAno").innerText = fmt(pagoMensal * 12);
+    document.getElementById("irFinal").innerText = fmt(Math.max(0, irAnual - (pagoMensal * 12)));
 
-let rendaBrutaAnual = (pf + pj + apos) * 12;
-let baseAnual = Math.max(0, (pf + pj + aposTrib) * 12 - med);
-let irAnualTotal = irMensal(baseAnual / 12) * 12;
-let creditosJaPagos = (carne + irrf) * 12;
-let irFinalAPagar = Math.max(0, irAnualTotal - creditosJaPagos);
-
-const taxa = 0.007;
-const n = 12;
-let pmt = irFinalAPagar > 0 ? (irFinalAPagar * taxa) / (Math.pow(1 + taxa, n) - 1) : 0;
-
-document.getElementById("aposM").innerText = fmt(apos);
-document.getElementById("aposA").innerText = fmt(apos*12);
-document.getElementById("aluguM").innerText = fmt(alugu);
-document.getElementById("aluguA").innerText = fmt(alugu*12);
-document.getElementById("totalM").innerText = fmt(apos+alugu);
-document.getElementById("totalA").innerText = fmt((apos+alugu)*12);
-document.getElementById("rendaBruta").innerText = fmt(rendaBrutaAnual);
-document.getElementById("deducoes").innerText = fmt(med);
-document.getElementById("baseAnual").innerText = fmt(baseAnual);
-document.getElementById("irAnual").innerText = fmt(irAnualTotal);
-document.getElementById("creditos").innerText = fmt(creditosJaPagos);
-document.getElementById("irFinal").innerText = fmt(irFinalAPagar);
-document.getElementById("reservaMensal").innerText = fmt(pmt);
+    document.getElementById("repApos").innerText = fmt(apos);
+    document.getElementById("repIdade").innerText = idade + " anos";
+    document.getElementById("repMed").innerText = fmt(med);
 }
 
-function obterCenarios(){ return JSON.parse(localStorage.getItem("simuladorIRPF_cenarios")) || []; }
-function salvarCenarios(c){ localStorage.setItem("simuladorIRPF_cenarios", JSON.stringify(c)); }
-function capturarDados(){
-  const dados={ apos:document.getElementById("apos").value, idade:document.getElementById("idade").value, aliqIRRF:document.getElementById("aliqIRRF").value, med:document.getElementById("med").value, imoveis:[] };
-  document.querySelectorAll("#imoveis tr").forEach((r,i)=>{ if(i===0)return; dados.imoveis.push({ tipo:r.querySelector(".tipo").value, aluguel:r.querySelector(".aluguel").value, despesas:r.querySelector(".despesas").value }); });
-  return dados;
+function exportarDados() {
+    const agora = new Date();
+    
+    // Extração dos componentes da data e hora
+    const dia = String(agora.getDate()).padStart(2, '0');
+    const mes = String(agora.getMonth() + 1).padStart(2, '0'); // Meses começam em 0
+    const ano = agora.getFullYear();
+    const hora = String(agora.getHours()).padStart(2, '0');
+    const min = String(agora.getMinutes()).padStart(2, '0');
+
+    // Construção do nome conforme solicitado
+    const nomeArquivo = `backup_irpf_${ano}_${dia}-${mes}-${ano}_${hora}h${min}.json`;
+
+    const dados = {
+        apos: document.getElementById("apos").value,
+        idade: document.getElementById("idade").value,
+        med: document.getElementById("med").value,
+        imoveis: Array.from(document.querySelectorAll("#corpoTabela tr")).map(r => ({
+            tipo: r.querySelector(".tipo").value,
+            aluguel: r.querySelector(".aluguel").value,
+            despesas: r.querySelector(".despesas").value
+        }))
+    };
+
+    const blob = new Blob([JSON.stringify(dados, null, 2)], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = nomeArquivo; // Utiliza a nova variável aqui
+    a.click();
 }
-function aplicarDados(d){
-  document.getElementById("apos").value=d.apos; document.getElementById("idade").value=d.idade; document.getElementById("aliqIRRF").value=d.aliqIRRF; document.getElementById("med").value=d.med;
-  document.querySelectorAll("#imoveis tr").forEach((r,i)=>{ if(i===0)return; let x=d.imoveis[i-1]; if(!x)return; r.querySelector(".tipo").value=x.tipo; r.querySelector(".aluguel").value=x.aluguel; r.querySelector(".despesas").value=x.despesas; });
-  calcular();
+
+function importarDados(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+        try {
+            const d = JSON.parse(ev.target.result);
+            document.getElementById("apos").value = d.apos;
+            document.getElementById("idade").value = d.idade;
+            document.getElementById("med").value = d.med;
+            document.getElementById("corpoTabela").innerHTML = "";
+            d.imoveis.forEach(i => adicionarLinha(i));
+        } catch(err) {
+            alert("Erro ao importar o arquivo JSON.");
+        }
+    };
+    reader.readAsText(file);
 }
-function salvarCenario(){
-  const nome=prompt("Nome do cenário:"); if(!nome)return;
-  const c=obterCenarios(); c.push({id:Date.now(),nome,data:new Date().toLocaleString("pt-BR"),dados:capturarDados()});
-  salvarCenarios(c); atualizarLista();
+
+function limparFormulario() {
+    if(confirm("Deseja limpar todos os dados?")) {
+        document.querySelectorAll("input").forEach(i => i.value = "");
+        document.getElementById("corpoTabela").innerHTML = "";
+        for(let i=0; i<10; i++) adicionarLinha();
+        calcular();
+    }
 }
-function excluirCenarioIndividual() {
-  const select = document.getElementById("listaCenarios");
-  const idParaExcluir = Number(select.value);
-  if (!idParaExcluir) { alert("Selecione um cenário."); return; }
-  if (confirm("Excluir cenário?")) { let c = obterCenarios(); c = c.filter(item => item.id !== idParaExcluir); salvarCenarios(c); atualizarLista(); limparFormulario(); }
-}
-function carregarCenario(id){ const c=obterCenarios().find(x=>x.id===id); if(c) aplicarDados(c.dados); }
-function atualizarLista(){
-  const s=document.getElementById("listaCenarios"); s.innerHTML='<option value="">Selecione um cenário</option>';
-  obterCenarios().forEach(c=>{ const o=document.createElement("option"); o.value=c.id; o.textContent=`${c.nome} (${c.data})`; s.appendChild(o); });
-}
-function limparFormulario(){
-  document.querySelectorAll("input").forEach(i=>i.value="");
-  document.querySelectorAll(".base,.ir").forEach(td=>td.innerText="R$ 0,00");
-  document.querySelectorAll("#aposM,#aposA,#aluguM,#aluguA,#totalM,#totalA,#irPFmensal,#irAposVis,#irAlugPFVis,#irPJmensal,#rendaBruta,#deducoes,#baseAnual,#irAnual,#creditos,#irFinal,#reservaMensal").forEach(el=>el.innerText="");
-}
-function limparTodosCenarios(){ if(confirm("Apagar tudo?")){ localStorage.removeItem("simuladorIRPF_cenarios"); atualizarLista(); } }
-window.onload=atualizarLista;
+
+window.onload = () => { for(let i=0; i<10; i++) adicionarLinha(); };
 </script>
 </body>
 </html>

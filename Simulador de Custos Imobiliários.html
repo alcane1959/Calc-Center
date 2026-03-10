@@ -30,6 +30,15 @@
         .bloco p { margin: 0.3rem 0; font-size: 0.85rem; display: flex; justify-content: space-between; }
         .res-soma { font-size: 0.85rem; color: var(--secondary); text-align: right; margin-top: 5px; }
         .total-final { font-size: 1.1rem; font-weight: 700; color: var(--primary); text-align: right; padding: 0.8rem; background: #dbeafe; border-radius: 8px; border: 1px solid var(--accent); margin-top: 10px; }
+
+        /* AJUSTE SOLICITADO: ZOOM 80% NA IMPRESSÃO */
+        @media print {
+            body {
+                zoom: 80%;
+                -webkit-print-color-adjust: exact;
+            }
+            .actions { display: none; } /* Oculta os botões no PDF por padrão */
+        }
     </style>
 </head>
 <body>
