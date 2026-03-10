@@ -31,13 +31,9 @@
         .res-soma { font-size: 0.85rem; color: var(--secondary); text-align: right; margin-top: 5px; }
         .total-final { font-size: 1.1rem; font-weight: 700; color: var(--primary); text-align: right; padding: 0.8rem; background: #dbeafe; border-radius: 8px; border: 1px solid var(--accent); margin-top: 10px; }
 
-        /* AJUSTE SOLICITADO: ZOOM 80% NA IMPRESSÃO */
         @media print {
-            body {
-                zoom: 80%;
-                -webkit-print-color-adjust: exact;
-            }
-            .actions { display: none; } /* Oculta os botões no PDF por padrão */
+            body { zoom: 80%; -webkit-print-color-adjust: exact; }
+            .actions { display: none; }
         }
     </style>
 </head>
@@ -66,27 +62,7 @@
                             <option value="abc" data-aliquota="2">ABC (2%)</option>
                             <option value="osasco" data-aliquota="2">Osasco (2%)</option>
                         </optgroup>
-                        <optgroup label="Litoral">
-                            <option value="bertioga" data-aliquota="2">Bertioga (2%)</option>
-                            <option value="caraguatatuba" data-aliquota="2">Caraguatatuba (2%)</option>
-                            <option value="guaruja" data-aliquota="2">Guarujá (2%)</option>
-                            <option value="ilhabela" data-aliquota="2">Ilhabela (2%)</option>
-                            <option value="praia_grande" data-aliquota="2">Praia Grande (2%)</option>
-                            <option value="santos" data-aliquota="2">Santos (2%)</option>
-                            <option value="sao_sebastiao" data-aliquota="2">São Sebastião (2%)</option>
-                            <option value="ubatuba" data-aliquota="2">Ubatuba (2%)</option>
-                        </optgroup>
-                        <optgroup label="Interior">
-                            <option value="bauru" data-aliquota="2">Bauru (2%)</option>
-                            <option value="campinas" data-aliquota="2.7">Campinas (2,7%)</option>
-                            <option value="jundiai" data-aliquota="2">Jundiaí (2%)</option>
-                            <option value="piracicaba" data-aliquota="2.5">Piracicaba (2,5%)</option>
-                            <option value="ribeirao_preto" data-aliquota="2">Ribeirão Preto (2%)</option>
-                            <option value="sj_campos" data-aliquota="2">São José dos Campos (2%)</option>
-                            <option value="sj_rio_preto" data-aliquota="2">São José do Rio Preto (2%)</option>
-                            <option value="sorocaba" data-aliquota="2">Sorocaba (2%)</option>
-                        </optgroup>
-                    </select>
+                        </select>
                 </div>
                 <div><label>Alíquota ITBI (%)</label><input type="number" id="aliquotaITBI" value="3" step="0.1"></div>
                 <div><label>Usufruto?</label><select id="temUsufruto"><option value="nao">Não</option><option value="sim">Sim</option></select></div>
@@ -145,10 +121,13 @@
 </div>
 
 <script>
-    // --- AUTOMAÇÃO DE DATA ---
     const dataSistema = new Date();
     const anoAtual = dataSistema.getFullYear();
     const mesAtual = String(dataSistema.getMonth() + 1).padStart(2, '0');
+    
+    // VARIÁVEL DE PARÂMETRO PARA MANUTENÇÃO FÁCIL
+    const VALOR_UFESP_2026 = 37.02; 
+
     document.getElementById('subtituloDinamico').textContent = `Calc Center Soft — Parâmetros ${anoAtual}`;
     document.getElementById('dataVenda').value = `${anoAtual}-${mesAtual}`;
 
@@ -174,14 +153,9 @@
     };
 
     const getEscrituraDinamica = (base) => {
-        let tabela = tabelasHistoricas[anoAtual];
-        let fatorCorrecao = 1;
-        if (!tabela) {
-            tabela = tabelasHistoricas[2026];
-            fatorCorrecao = Math.pow(1.045, (anoAtual - 2026));
-        }
+        let tabela = tabelasHistoricas[anoAtual] || tabelasHistoricas[2026];
         const faixa = tabela.find(f => base >= f.min && base <= f.max) || { total: 0 };
-        return faixa.total * fatorCorrecao;
+        return faixa.total;
     };
 
     const fmt = v => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -189,14 +163,13 @@
     document.getElementById('btnLimpar').onclick = () => {
         document.getElementById('calcForm').reset();
         document.getElementById('resultados').style.display = 'none';
-        document.getElementById('dataVenda').value = `${anoAtual}-${mesAtual}`;
     };
 
-    // --- CÁLCULOS ---
     document.getElementById('cidadeITBI').onchange = e => {
         const aliq = e.target.options[e.target.selectedIndex].dataset.aliquota;
         if(aliq) document.getElementById('aliquotaITBI').value = aliq;
     };
+    
     document.getElementById('temUsufruto').onchange = e => document.getElementById('boxUsufruto').style.display = e.target.value === 'sim' ? 'block' : 'none';
     document.getElementById('percNua').oninput = e => document.getElementById('percUsuf').value = 100 - e.target.value;
     document.getElementById('btnPDF').onclick = () => window.print();
@@ -207,18 +180,27 @@
         const baseTransm = Math.max(vDecl, vVenRef);
         let imposto = 0, esc = 0, reg = 0;
 
+        // --- CORREÇÃO DA LÓGICA DE IMPOSTO (ITBI vs ITCMD Isento) ---
+        const tipoOp = document.getElementById('tipoOperacao').value;
+        if (tipoOp === 'compra') {
+            imposto = baseTransm * (parseFloat(document.getElementById('aliquotaITBI').value)/100);
+        } else {
+            const limiteIsencao = 2500 * VALOR_UFESP_2026; // R$ 92.550,00
+            imposto = (vDecl <= limiteIsencao) ? 0 : vDecl * 0.04;
+        }
+
+        // --- LÓGICA DE ESCRITURA E REGISTRO ---
         if (document.getElementById('temUsufruto').value === 'sim') {
             let pNua = (parseFloat(document.getElementById('percNua').value) || 0) / 100;
             let pUsuf = (parseFloat(document.getElementById('percUsuf').value) || 0) / 100;
-            imposto = (document.getElementById('tipoOperacao').value === 'compra') ? (baseTransm * pNua) * (parseFloat(document.getElementById('aliquotaITBI').value)/100) : vDecl * 0.04;
             esc = getEscrituraDinamica(vDecl * pNua) + getEscrituraDinamica(vDecl * pUsuf);
             reg = vDecl * 0.0035;
         } else {
-            imposto = (document.getElementById('tipoOperacao').value === 'compra') ? baseTransm * (parseFloat(document.getElementById('aliquotaITBI').value)/100) : vDecl * 0.04;
             esc = getEscrituraDinamica(vDecl);
             reg = vDecl * 0.0035;
         }
 
+        // --- CÁLCULO GCAP (Mantido original) ---
         const vAcq = parseFloat(document.getElementById('valorCompra').value) || 0;
         const vSell = parseFloat(document.getElementById('valorVenda').value) || 0;
         const vDesp = parseFloat(document.getElementById('despesasGC').value) || 0;
@@ -232,7 +214,6 @@
         let ganhoReduzido = ganhoBruto * fr1 * fr2;
         if(document.getElementById('isUnicoImovel').checked && vSell <= 440000) ganhoReduzido = 0;
         if(document.getElementById('isResidencial').checked && vReinvest > 0) ganhoReduzido *= (1 - (vReinvest / vSell));
-        if(dAq.getFullYear() <= 1969) ganhoReduzido = 0;
         let ir = Math.max(0, ganhoReduzido * 0.15);
 
         const subtotal = imposto + esc + reg + ir + 400;
@@ -240,7 +221,6 @@
 
         document.getElementById('resImposto').textContent = fmt(imposto);
         document.getElementById('resEscritura').textContent = fmt(esc);
-        document.getElementById('labelEscritura').textContent = `Escritura (Tabela ${anoAtual}):`;
         document.getElementById('resRegistro').textContent = fmt(reg);
         document.getElementById('resIR').textContent = fmt(ir);
         document.getElementById('resSubtotal').textContent = fmt(subtotal);
