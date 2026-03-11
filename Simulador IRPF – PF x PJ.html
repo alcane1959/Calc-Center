@@ -31,10 +31,26 @@ body{
 input,select{
   width:100%;padding:8px;border-radius:6px;border:1px solid var(--border);margin-bottom: 10px;
 }
+
+/* Identificação Pessoal */
+.identificacao-pessoal {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 15px;
+}
+.identificacao-pessoal div { flex: 1; }
+.identificacao-pessoal label { font-size: 0.8rem; font-weight: bold; color: var(--primary); display: block; margin-bottom: 4px; }
+
+/* Alinhamento dos campos na tabela */
+#imoveis input { text-align: right; padding-right: 8px; }
+#imoveis select { text-align-last: right; padding-right: 20px; }
+
 table{width:100%;border-collapse:collapse;font-size:.85rem}
-th{background:var(--primary);color:#fff;padding:8px}
-td{border-bottom:1px solid var(--border);padding:8px;text-align:right}
-td:first-child,th:first-child{text-align:left}
+th{background:var(--primary);color:#fff;padding:8px; text-align: right;}
+th:first-child, th:nth-child(2) { text-align: left; }
+td{border-bottom:1px solid var(--border);padding:8px 4px;text-align:right}
+td:first-child, td:nth-child(2) { text-align: left; }
+
 .result{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
 .result div{background:#f8fafc;padding:10px;border-radius:6px}
 .final{grid-column:1/-1;background:#eaf4ec}
@@ -58,18 +74,39 @@ button:hover { background: #f0f2f5; border-color: var(--primary); }
 .btn-del { padding: 4px 8px; font-size: 0.75rem; }
 
 @media print{ 
-  button, input, select, .no-print { display:none !important; }
+  button, .no-print, .btn-del, .input-card-topo { display:none !important; }
+  
+  input, select {
+    border: none !important;
+    background: transparent !important;
+    appearance: none;
+    -webkit-appearance: none;
+    color: #000 !important;
+    font-size: 0.85rem;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    text-align: right !important;
+  }
+  
+  /* Mantém nome e CPF alinhados à esquerda na impressão */
+  .identificacao-pessoal input { text-align: left !important; font-weight: bold; font-size: 1rem; }
+  .identificacao-pessoal label { color: #555; }
+
+  #imoveis select { text-align-last: left !important; text-align: left !important; }
+
   body { 
     padding: 0;
-    padding-right: 20px; /* Margem de segurança na direita */
+    padding-right: 20px; 
     background: #fff; 
-    transform: scale(0.8); 
+    transform: scale(0.85); 
     transform-origin: top left; 
-    width: 120%; /* Ajustado de 125% para 120% para evitar o corte */
+    width: 115%; 
   }
   .card { border: none; padding: 10px 0; margin-bottom: 10px; }
   table { width: 100% !important; border: 1px solid #eee; }
   .grid { display: block; }
+  .result div { border: 1px solid #f0f0f0; }
 }
 </style>
 </head>
@@ -82,23 +119,42 @@ button:hover { background: #f0f2f5; border-color: var(--primary); }
   <span style="color: var(--primary); font-weight: bold; font-size: 0.9rem;">Elaborado por Calc Center Soft</span>
 </div>
 
-<div class="grid">
 <div class="card">
-<label class="no-print">Aposentadoria mensal</label>
-<input id="apos" type="number" step="0.01" oninput="calcular()">
+  <div class="identificacao-pessoal">
+    <div>
+      <label>Nome do Contribuinte:</label>
+      <input type="text" id="userName" placeholder="Digite o nome completo" oninput="this.setAttribute('value', this.value)">
+    </div>
+    <div style="max-width: 300px;">
+      <label>CPF:</label>
+      <input type="text" id="userCPF" placeholder="000.000.000-00" oninput="this.setAttribute('value', this.value)">
+    </div>
+  </div>
+</div>
 
-<label class="no-print">Idade do aposentado</label>
-<input id="idade" type="number" oninput="calcular()">
+<div class="grid">
+<div class="card input-card-topo">
+<label>Aposentadoria mensal</label>
+<input id="apos" type="number" step="0.01" oninput="this.setAttribute('value', this.value); calcular()">
 
-<label class="no-print">Despesas médicas anuais</label>
-<input id="med" type="number" step="0.01" oninput="calcular()">
+<label>Idade do aposentado</label>
+<input id="idade" type="number" oninput="this.setAttribute('value', this.value); calcular()">
+
+<label>Despesas médicas anuais</label>
+<input id="med" type="number" step="0.01" oninput="this.setAttribute('value', this.value); calcular()">
 </div>
 
 <div class="card">
 <table id="imoveis">
 <thead>
 <tr>
-<th>#</th><th>Tipo</th><th>Aluguel</th><th>Despesas</th><th>Base</th><th>IR</th><th class="no-print">Ação</th>
+<th style="text-align:left; width: 30px;">#</th>
+<th style="text-align:left;">Tipo</th>
+<th>Aluguel</th>
+<th>Despesas</th>
+<th>Base</th>
+<th>IR</th>
+<th class="no-print">Ação</th>
 </tr>
 </thead>
 <tbody id="corpoTabela"></tbody>
@@ -118,15 +174,15 @@ button:hover { background: #f0f2f5; border-color: var(--primary); }
 </div>
 
 <div class="card">
-<h3>Ajuste Anual (Consolidação)</h3>
+<h3>Ajuste Anual (Consolidação de Dados)</h3>
 <div class="result">
-<div>Aposentadoria Informada: <strong id="repApos"></strong></div>
-<div>Idade Informada: <strong id="repIdade"></strong></div>
-<div>Despesas Médicas Anuais: <strong id="repMed"></strong></div>
-<hr style="grid-column: 1/-1; border: 0; border-top: 1px solid var(--border); margin: 5px 0;">
-<div>Renda Bruta Anual: <strong id="rendaBruta"></strong></div>
-<div>Total Retido no Ano: <strong id="pagoAno"></strong></div>
-<div class="final"><strong>Saldo Final de IR a Pagar:</strong> <strong id="irFinal"></strong></div>
+    <div><strong>Aposentadoria Mensal:</strong> <span id="repApos"></span></div>
+    <div><strong>Idade do Contribuinte:</strong> <span id="repIdade"></span></div>
+    <div><strong>Assistência Médica Anual:</strong> <span id="repMed"></span></div>
+    <hr style="grid-column: 1/-1; border: 0; border-top: 1px solid var(--border); margin: 5px 0;">
+    <div>Renda Bruta Anual (Total): <strong id="rendaBruta"></strong></div>
+    <div>Total de IR Retido (Ano): <strong id="pagoAno"></strong></div>
+    <div class="final"><strong>Saldo Final de IR (Ajuste):</strong> <strong id="irFinal"></strong></div>
 </div>
 <br>
 <button class="no-print" onclick="window.print()">Imprimir PDF</button>
@@ -170,20 +226,32 @@ function adicionarLinha(dados = null) {
     tr.innerHTML = `
         <td class="idx"></td>
         <td>
-            <select class="tipo" onchange="calcular()">
+            <select class="tipo" onchange="atualizarAtributoSelect(this); calcular()">
                 <option value="PF" ${dados?.tipo === 'PF' ? 'selected' : ''}>PF</option>
                 <option value="PJ" ${dados?.tipo === 'PJ' ? 'selected' : ''}>PJ</option>
             </select>
         </td>
-        <td><input class="aluguel" type="number" step="0.01" value="${dados?.aluguel || ''}" oninput="calcular()"></td>
-        <td><input class="despesas" type="number" step="0.01" value="${dados?.despesas || ''}" oninput="calcular()"></td>
+        <td><input class="aluguel" type="number" step="0.01" value="${dados?.aluguel || ''}" oninput="this.setAttribute('value', this.value); calcular()"></td>
+        <td><input class="despesas" type="number" step="0.01" value="${dados?.despesas || ''}" oninput="this.setAttribute('value', this.value); calcular()"></td>
         <td class="base">R$ 0,00</td>
         <td class="ir">R$ 0,00</td>
         <td class="no-print"><button class="btn-danger btn-del" onclick="removerLinha(this)">Excluir</button></td>
     `;
     corpo.appendChild(tr);
     renumerar();
+    
+    tr.querySelectorAll('input').forEach(i => i.setAttribute('value', i.value));
+    atualizarAtributoSelect(tr.querySelector('select'));
+
     calcular();
+}
+
+function atualizarAtributoSelect(el) {
+    const options = el.querySelectorAll('option');
+    options.forEach(opt => {
+        if(opt.value === el.value) opt.setAttribute('selected', 'selected');
+        else opt.removeAttribute('selected');
+    });
 }
 
 function removerLinha(btn) {
@@ -234,24 +302,22 @@ function calcular(){
     document.getElementById("irFinal").innerText = fmt(Math.max(0, irAnual - (pagoMensal * 12)));
 
     document.getElementById("repApos").innerText = fmt(apos);
-    document.getElementById("repIdade").innerText = idade + " anos";
+    document.getElementById("repIdade").innerText = idade > 0 ? idade + " anos" : "---";
     document.getElementById("repMed").innerText = fmt(med);
 }
 
 function exportarDados() {
     const agora = new Date();
-    
-    // Extração dos componentes da data e hora
     const dia = String(agora.getDate()).padStart(2, '0');
-    const mes = String(agora.getMonth() + 1).padStart(2, '0'); // Meses começam em 0
+    const mes = String(agora.getMonth() + 1).padStart(2, '0');
     const ano = agora.getFullYear();
     const hora = String(agora.getHours()).padStart(2, '0');
     const min = String(agora.getMinutes()).padStart(2, '0');
-
-    // Construção do nome conforme solicitado
     const nomeArquivo = `backup_irpf_${ano}_${dia}-${mes}-${ano}_${hora}h${min}.json`;
 
     const dados = {
+        userName: document.getElementById("userName").value,
+        userCPF: document.getElementById("userCPF").value,
         apos: document.getElementById("apos").value,
         idade: document.getElementById("idade").value,
         med: document.getElementById("med").value,
@@ -265,7 +331,7 @@ function exportarDados() {
     const blob = new Blob([JSON.stringify(dados, null, 2)], { type: "application/json" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = nomeArquivo; // Utiliza a nova variável aqui
+    a.download = nomeArquivo;
     a.click();
 }
 
@@ -276,9 +342,14 @@ function importarDados(e) {
     reader.onload = (ev) => {
         try {
             const d = JSON.parse(ev.target.result);
+            if(d.userName) { document.getElementById("userName").value = d.userName; document.getElementById("userName").setAttribute('value', d.userName); }
+            if(d.userCPF) { document.getElementById("userCPF").value = d.userCPF; document.getElementById("userCPF").setAttribute('value', d.userCPF); }
             document.getElementById("apos").value = d.apos;
+            document.getElementById("apos").setAttribute('value', d.apos);
             document.getElementById("idade").value = d.idade;
+            document.getElementById("idade").setAttribute('value', d.idade);
             document.getElementById("med").value = d.med;
+            document.getElementById("med").setAttribute('value', d.med);
             document.getElementById("corpoTabela").innerHTML = "";
             d.imoveis.forEach(i => adicionarLinha(i));
         } catch(err) {
@@ -290,7 +361,9 @@ function importarDados(e) {
 
 function limparFormulario() {
     if(confirm("Deseja limpar todos os dados?")) {
-        document.querySelectorAll("input").forEach(i => i.value = "");
+        document.getElementById("userName").value = "";
+        document.getElementById("userCPF").value = "";
+        document.querySelectorAll("input").forEach(i => { i.value = ""; i.removeAttribute('value'); });
         document.getElementById("corpoTabela").innerHTML = "";
         for(let i=0; i<10; i++) adicionarLinha();
         calcular();
