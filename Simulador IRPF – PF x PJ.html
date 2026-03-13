@@ -203,6 +203,54 @@ button:hover { background: #f0f2f5; border-color: var(--primary); }
 <script>
 const ISENCAO_65 = 2259.20;
 
+// --- NOVAS FUNÇÕES DE PERSISTÊNCIA ---
+function salvarLocalmente() {
+    const dados = {
+        userName: document.getElementById("userName").value,
+        userCPF: document.getElementById("userCPF").value,
+        apos: document.getElementById("apos").value,
+        idade: document.getElementById("idade").value,
+        med: document.getElementById("med").value,
+        imoveis: Array.from(document.querySelectorAll("#corpoTabela tr")).map(r => ({
+            tipo: r.querySelector(".tipo").value,
+            aluguel: r.querySelector(".aluguel").value,
+            despesas: r.querySelector(".despesas").value
+        }))
+    };
+    localStorage.setItem('dadosSimuladorIRPF', JSON.stringify(dados));
+}
+
+function carregarLocalmente() {
+    const salvo = localStorage.getItem('dadosSimuladorIRPF');
+    if (!salvo) return false;
+    
+    try {
+        const d = JSON.parse(salvo);
+        document.getElementById("userName").value = d.userName || "";
+        document.getElementById("userCPF").value = d.userCPF || "";
+        document.getElementById("apos").value = d.apos || "";
+        document.getElementById("idade").value = d.idade || "";
+        document.getElementById("med").value = d.med || "";
+        
+        // Sincroniza atributos de valor para o HTML
+        document.querySelectorAll('.card-topo input, .identificacao-pessoal input').forEach(i => {
+            i.setAttribute('value', i.value);
+        });
+
+        document.getElementById("corpoTabela").innerHTML = "";
+        if (d.imoveis && d.imoveis.length > 0) {
+            d.imoveis.forEach(i => adicionarLinha(i));
+        } else {
+            for(let i=0; i<10; i++) adicionarLinha();
+        }
+        return true;
+    } catch(err) {
+        console.error("Erro ao carregar dados do localStorage", err);
+        return false;
+    }
+}
+// -------------------------------------
+
 function motor2026(valor) {
     if (valor <= 5000) return 0;
     const base = valor - 607.20;
@@ -226,23 +274,21 @@ function adicionarLinha(dados = null) {
     tr.innerHTML = `
         <td class="idx"></td>
         <td>
-            <select class="tipo" onchange="atualizarAtributoSelect(this); calcular()">
+            <select class="tipo" onchange="atualizarAtributoSelect(this); calcular(); salvarLocalmente()">
                 <option value="PF" ${dados?.tipo === 'PF' ? 'selected' : ''}>PF</option>
                 <option value="PJ" ${dados?.tipo === 'PJ' ? 'selected' : ''}>PJ</option>
             </select>
         </td>
-        <td><input class="aluguel" type="number" step="0.01" value="${dados?.aluguel || ''}" oninput="this.setAttribute('value', this.value); calcular()"></td>
-        <td><input class="despesas" type="number" step="0.01" value="${dados?.despesas || ''}" oninput="this.setAttribute('value', this.value); calcular()"></td>
+        <td><input class="aluguel" type="number" step="0.01" value="${dados?.aluguel || ''}" oninput="this.setAttribute('value', this.value); calcular(); salvarLocalmente()"></td>
+        <td><input class="despesas" type="number" step="0.01" value="${dados?.despesas || ''}" oninput="this.setAttribute('value', this.value); calcular(); salvarLocalmente()"></td>
         <td class="base">R$ 0,00</td>
         <td class="ir">R$ 0,00</td>
         <td class="no-print"><button class="btn-danger btn-del" onclick="removerLinha(this)">Excluir</button></td>
     `;
     corpo.appendChild(tr);
     renumerar();
-    
     tr.querySelectorAll('input').forEach(i => i.setAttribute('value', i.value));
     atualizarAtributoSelect(tr.querySelector('select'));
-
     calcular();
 }
 
@@ -258,6 +304,7 @@ function removerLinha(btn) {
     btn.closest('tr').remove();
     renumerar();
     calcular();
+    salvarLocalmente();
 }
 
 function renumerar() {
@@ -268,6 +315,9 @@ function calcular(){
     const apos = Number(document.getElementById("apos").value) || 0;
     const idade = Number(document.getElementById("idade").value) || 0;
     const med = Number(document.getElementById("med").value) || 0;
+
+    // Salva campos simples ao calcular
+    salvarLocalmente();
 
     const baseApos = (idade >= 65) ? Math.max(0, apos - ISENCAO_65) : apos;
     const irApos = motor2026(baseApos);
@@ -352,6 +402,7 @@ function importarDados(e) {
             document.getElementById("med").setAttribute('value', d.med);
             document.getElementById("corpoTabela").innerHTML = "";
             d.imoveis.forEach(i => adicionarLinha(i));
+            salvarLocalmente(); // Salva no local storage após importar
         } catch(err) {
             alert("Erro ao importar o arquivo JSON.");
         }
@@ -361,6 +412,7 @@ function importarDados(e) {
 
 function limparFormulario() {
     if(confirm("Deseja limpar todos os dados?")) {
+        localStorage.removeItem('dadosSimuladorIRPF'); // Limpa o banco local também
         document.getElementById("userName").value = "";
         document.getElementById("userCPF").value = "";
         document.querySelectorAll("input").forEach(i => { i.value = ""; i.removeAttribute('value'); });
@@ -370,7 +422,13 @@ function limparFormulario() {
     }
 }
 
-window.onload = () => { for(let i=0; i<10; i++) adicionarLinha(); };
+window.onload = () => { 
+    const carregou = carregarLocalmente();
+    if (!carregou) {
+        for(let i=0; i<10; i++) adicionarLinha(); 
+    }
+    calcular();
+};
 </script>
 </body>
 </html>
