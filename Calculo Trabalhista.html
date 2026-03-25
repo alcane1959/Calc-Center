@@ -152,6 +152,12 @@
             font-style: italic;
         }
 
+        .fgts-total {
+            background-color: #d6eaf8;
+            font-weight: bold;
+            color: var(--fgts-color);
+        }
+
         .negative { color: #c0392b; }
         .positive { color: #27ae60; }
 
@@ -170,6 +176,7 @@
             #results { display: block !important; margin-top: 0; }
             .total-row { background-color: #e8f5e9 !important; }
             .employer-row { background-color: #f3e5f5 !important; }
+            #nomeFuncionarioDiv { font-size: 1.5em; border-bottom: 2px solid #2c3e50; }
         }
     </style>
 </head>
@@ -259,7 +266,7 @@
             <tbody id="resultBody"></tbody>
         </table>
 
-        <div class="section-title" id="emp-title">2. Resumo de Custo para o Empregador (Mensal)</div>
+        <div class="section-title" id="emp-title">2. Resumo de Custo para o Empregador (Mensal Provisionado)</div>
         <table>
             <thead>
                 <tr>
@@ -270,7 +277,7 @@
             <tbody id="employerBody"></tbody>
         </table>
         
-        <p style="font-size: 0.8em; margin-top: 20px; color: #7f8c8d;">Cálculo patronal baseado na alíquota padrão de 20% de INSS empresa + 8% FGTS.</p>
+        <p style="font-size: 0.8em; margin-top: 20px; color: #7f8c8d;">* Custos provisionados incluem Férias e 13º mensais. Rendimento FGTS calculado com base em 3% ao ano sobre o saldo acumulado conforme solicitado.</p>
     </div>
 </div>
 
@@ -298,7 +305,6 @@
         return 908.85; 
     }
 
-    // AJUSTE NA LÓGICA DE IRRF PARA INCLUIR PENSÃO
     function calcularIRRF(salario, dependentes, pensao) {
         const base = salario - calcularINSS(salario) - (dependentes * 189.59) - pensao;
         if (base <= 2259.20) return 0;
@@ -316,7 +322,6 @@
         const fgtsInicial = parseFloat(document.getElementById('fgtsAnterior').value) || 0;
         const nome = document.getElementById('nome').value || "Não Informado";
         
-        // Novos descontos
         const vt = parseFloat(document.getElementById('vt').value) || 0;
         const vr = parseFloat(document.getElementById('vr').value) || 0;
         const saude = parseFloat(document.getElementById('saude').value) || 0;
@@ -327,25 +332,27 @@
         const inssEmpregado = calcularINSS(salario);
         const irrf = calcularIRRF(salario, dependentes, pensao);
 
-        // Custo Empregador
+        // --- CÁLCULO CUSTO EMPREGADOR ---
         const inssPatronal = salario * 0.20; 
         const fgtsMensal = salario * 0.08;
-        const custoTotalMensal = salario + inssPatronal + fgtsMensal;
+        const provisao13 = salario / 12;
+        const provisaoFerias = (salario / 12) * 1.3333;
+        const fgtsSobreProvisoes = (provisao13 + provisaoFerias) * 0.08;
+        const custoTotalReal = salario + inssPatronal + fgtsMensal + provisao13 + provisaoFerias + fgtsSobreProvisoes;
 
-        // Reajuste FGTS Acumulado
-        const taxaMensal = 0.002466; 
-        let saldoComJuros = fgtsInicial;
+        // --- RENDIMENTO FGTS (3% a.a.) ---
+        const taxaMensal = 0.00246627; 
+        let saldoAcumulado = fgtsInicial;
         for (let i = 0; i < meses; i++) {
-            saldoComJuros = (saldoComJuros + fgtsMensal) * (1 + taxaMensal);
+            saldoAcumulado = (saldoAcumulado + fgtsMensal) * (1 + taxaMensal);
         }
 
-        // Tabela 1: Funcionário
         let htmlFunc = `
-            <tr><td>Salário Mensal</td><td class="positive">${formatar(salario)}</td><td>-</td></tr>
-            <tr><td>INSS (Desconto Empregado)</td><td>-</td><td class="negative">${formatar(inssEmpregado)}</td></tr>
-            <tr><td>IRRF (Base c/ Abatimento de Pensão)</td><td>-</td><td class="negative">${formatar(irrf)}</td></tr>
-            <tr><td>Pensão Alimentícia (Retenção)</td><td>-</td><td class="negative">${formatar(pensao)}</td></tr>
-            <tr><td>Total Outros Benefícios/Descontos</td><td>-</td><td class="negative">${formatar(vt + vr + saude)}</td></tr>
+            <tr><td>Salário Mensal Bruto</td><td class="positive">${formatar(salario)}</td><td>-</td></tr>
+            <tr><td>INSS (Desconto)</td><td>-</td><td class="negative">${formatar(inssEmpregado)}</td></tr>
+            <tr><td>IRRF (Base c/ Pensão e Depend.)</td><td>-</td><td class="negative">${formatar(irrf)}</td></tr>
+            <tr><td>Pensão Alimentícia</td><td>-</td><td class="negative">${formatar(pensao)}</td></tr>
+            <tr><td>Outros Descontos (VT/VR/Saúde)</td><td>-</td><td class="negative">${formatar(vt + vr + saude)}</td></tr>
         `;
 
         let totalProventos = salario;
@@ -355,24 +362,33 @@
             const mesesProp = meses % 12 || 12;
             const decimo = (salario / 12) * mesesProp;
             const ferias = ((salario / 12) * mesesProp) * 1.3333;
-            htmlFunc += `<tr><td>13º e Férias (+1/3) Proporcionais</td><td class="positive">${formatar(decimo + ferias)}</td><td>-</td></tr>`;
+            htmlFunc += `<tr><td>13º e Férias Proporcionais</td><td class="positive">${formatar(decimo + ferias)}</td><td>-</td></tr>`;
             totalProventos += (decimo + ferias);
+            
             if (tipo === 'semJusta') {
                 const aviso = salario;
-                const multa = saldoComJuros * 0.40;
-                htmlFunc += `<tr><td>Aviso Prévio + Multa FGTS (40%)</td><td class="positive">${formatar(aviso + multa)}</td><td>-</td></tr>`;
+                const multa = saldoAcumulado * 0.40;
+                
+                htmlFunc += `<tr><td>Aviso Prévio Indenizado</td><td class="positive">${formatar(aviso)}</td><td>-</td></tr>`;
+                
+                // --- DETALHAMENTO DO FGTS PARA O FUNCIONÁRIO ---
+                htmlFunc += `<tr class="fgts-row"><td>Saldo Acumulado no Banco (Corrigido 3% a.a.)</td><td class="positive">${formatar(saldoAcumulado)}</td><td>-</td></tr>`;
+                htmlFunc += `<tr class="fgts-row"><td>Multa Rescisória (40% sobre o saldo)</td><td class="positive">${formatar(multa)}</td><td>-</td></tr>`;
+                
                 totalProventos += (aviso + multa);
+                
+                htmlFunc += `<tr class="fgts-total"><td>VALOR TOTAL PARA SAQUE NA CAIXA (Saldo + Multa)</td><td colspan="2" style="text-align:right">${formatar(saldoAcumulado + multa)}</td></tr>`;
             }
         }
 
-        htmlFunc += `<tr class="total-row"><td>TOTAL LÍQUIDO A RECEBER</td><td colspan="2" style="text-align:right">${formatar(totalProventos - totalDescontos)}</td></tr>`;
+        htmlFunc += `<tr class="total-row"><td>TOTAL LÍQUIDO FINAL (Rescisão + Multa)</td><td colspan="2" style="text-align:right">${formatar(totalProventos - totalDescontos)}</td></tr>`;
 
-        // Tabela 2: Empregador
         let htmlEmp = `
-            <tr><td>Salário Bruto Nominal</td><td>${formatar(salario)}</td></tr>
-            <tr><td>INSS Patronal (20% sobre Bruto)</td><td>${formatar(inssPatronal)}</td></tr>
-            <tr><td>FGTS (8% Depósito Mensal)</td><td>${formatar(fgtsMensal)}</td></tr>
-            <tr class="employer-row"><td>CUSTO TOTAL MENSAL (Sem benefícios)</td><td>${formatar(custoTotalMensal)}</td></tr>
+            <tr><td>Salário Bruto + INSS Patronal (20%)</td><td>${formatar(salario + inssPatronal)}</td></tr>
+            <tr><td>FGTS Mensal (Depósito 8%)</td><td>${formatar(fgtsMensal)}</td></tr>
+            <tr><td>Provisão Mensal (13º + Férias)</td><td>${formatar(provisao13 + provisaoFerias)}</td></tr>
+            <tr><td>FGTS sobre Provisões</td><td>${formatar(fgtsSobreProvisoes)}</td></tr>
+            <tr class="employer-row"><td>CUSTO REAL MENSAL PARA EMPRESA</td><td>${formatar(custoTotalReal)}</td></tr>
         `;
 
         document.getElementById('resultBody').innerHTML = htmlFunc;
