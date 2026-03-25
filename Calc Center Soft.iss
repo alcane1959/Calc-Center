@@ -40,6 +40,7 @@ Source: "C:\MeusProjetos\CalcCenter\CENTRO_DE_CALCULO.html"; DestDir: "{app}"; F
 Source: "C:\MeusProjetos\CalcCenter\Relatório de Projeção Financeira.html"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\MeusProjetos\CalcCenter\Simulador de Custos Imobiliários.html"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\MeusProjetos\CalcCenter\Simulador IRPF – PF x PJ.html"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\MeusProjetos\CalcCenter\Calculo Trabalhista.html"; DestDir: "{app}"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Registry]
