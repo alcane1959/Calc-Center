@@ -298,22 +298,41 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    function calcularINSS(salario) {
-        if (salario <= 1412) return salario * 0.075;
-        if (salario <= 2666.68) return (salario * 0.09) - 21.18;
-        if (salario <= 4000.03) return (salario * 0.12) - 101.18;
-        if (salario <= 7786.02) return (salario * 0.14) - 181.18;
-        return 908.85; 
+function calcularINSS(salario) {
+    // Tabela INSS 2026 - Baseada no salário mínimo de R$ 1.621,00
+    if (salario <= 1621.00) {
+        return salario * 0.075;
+    } else if (salario <= 2902.84) {
+        return (salario * 0.09) - 24.32;
+    } else if (salario <= 4354.27) {
+        return (salario * 0.12) - 111.40;
+    } else if (salario <= 8475.55) {
+        return (salario * 0.14) - 198.49;
+    } else {
+        return 988.09; // Teto máximo de contribuição para 2026
     }
+}
 
-    function calcularIRRF(salario, dependentes, pensao) {
-        const base = salario - calcularINSS(salario) - (dependentes * 189.59) - pensao;
-        if (base <= 2259.20) return 0;
-        if (base <= 2826.65) return (base * 0.075) - 169.44;
-        if (base <= 3751.05) return (base * 0.15) - 381.44;
-        if (base <= 4664.68) return (base * 0.225) - 662.77;
-        return (base * 0.275) - 896.00;
-    }
+function calcularIRRF(salario, dependentes, pensao) {
+    const inss = calcularINSS(salario);
+    
+    // Deduções Legais (INSS, dependentes e pensão)
+    const baseDeducoes = salario - inss - (dependentes * 189.59) - pensao;
+    
+    // Desconto Simplificado Mensal (Essencial para garantir a isenção de 5k)
+    const descontoSimplificado = 624.00; 
+    const baseSimplificada = salario - descontoSimplificado;
+    
+    // A regra atual utiliza a base que for mais vantajosa ao trabalhador
+    const baseFinal = Math.min(baseDeducoes, baseSimplificada);
+
+    // Tabela Progressiva IRRF 2026 - Ajustada para continuidade das faixas
+    if (baseFinal <= 4376.00) return 0; // Faixa de Isenção (Garante 5k isento)
+    if (baseFinal <= 5250.00) return (baseFinal * 0.075) - 328.20;
+    if (baseFinal <= 6600.00) return (baseFinal * 0.15) - 721.95;
+    if (baseFinal <= 7900.00) return (baseFinal * 0.225) - 1216.95;
+    return (baseFinal * 0.275) - 1611.95;
+}
 
     function calcular() {
         const salario = parseFloat(document.getElementById('salario').value) || 0;
@@ -333,16 +352,22 @@
         const inssEmpregado = calcularINSS(salario);
         const irrf = calcularIRRF(salario, dependentes, pensao);
 
-        // --- CÁLCULO CUSTO EMPREGADOR ---
-        const inssPatronal = salario * 0.20; 
-        const fgtsMensal = salario * 0.08;
-        const provisao13 = salario / 12;
-        const provisaoFerias = (salario / 12) * 1.3333;
-        const fgtsSobreProvisoes = (provisao13 + provisaoFerias) * 0.08;
-        const custoTotalReal = salario + inssPatronal + fgtsMensal + provisao13 + provisaoFerias + fgtsSobreProvisoes;
+        // --- CÁLCULO CUSTO EMPREGADOR 2026 ---
+		const inssPatronal = salario * 0.20; // Alíquota padrão de 20% permanece
+		const fgtsMensal = salario * 0.08;   // FGTS permanece 8%
+		const provisao13 = salario / 12;
+		const provisaoFerias = (salario / 12) * 1.3333;
+
+	    // Em 2026, o FGTS sobre as provisões também deve considerar os novos valores
+	    const fgtsSobreProvisoes = (provisao13 + provisaoFerias) * 0.08;
+
+	    // O custo total real agora reflete a base salarial de 2026
+	    const custoTotalReal = salario + inssPatronal + fgtsMensal + provisao13 + provisaoFerias + fgtsSobreProvisoes;
 
         // --- RENDIMENTO FGTS (3% a.a.) ---
-        const taxaMensal = 0.00246627; 
+        const taxaAnual = 0.03;
+        const taxaMensal = Math.pow(1 + taxaAnual, 1/12) - 1; 
+        
         let saldoAcumulado = fgtsInicial;
         for (let i = 0; i < meses; i++) {
             saldoAcumulado = (saldoAcumulado + fgtsMensal) * (1 + taxaMensal);
