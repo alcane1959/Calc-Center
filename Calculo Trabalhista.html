@@ -352,17 +352,18 @@ function calcularIRRF(salario, dependentes, pensao) {
         const inssEmpregado = calcularINSS(salario);
         const irrf = calcularIRRF(salario, dependentes, pensao);
 
-        // --- CÁLCULO CUSTO EMPREGADOR 2026 ---
-		const inssPatronal = salario * 0.20; // Alíquota padrão de 20% permanece
-		const fgtsMensal = salario * 0.08;   // FGTS permanece 8%
+       // --- CÁLCULO CUSTO EMPREGADOR 2026 ---
+		const inssPatronal = salario * 0.20; 
+		const fgtsMensal = salario * 0.08;   
 		const provisao13 = salario / 12;
 		const provisaoFerias = (salario / 12) * 1.3333;
+		const fgtsSobreProvisoes = (provisao13 + provisaoFerias) * 0.08;
 
-	    // Em 2026, o FGTS sobre as provisões também deve considerar os novos valores
-	    const fgtsSobreProvisoes = (provisao13 + provisaoFerias) * 0.08;
+	// SOMA DOS BENEFÍCIOS AO CUSTO (Pontual)
+		const custoBeneficios = vt + vr + saude;
 
-	    // O custo total real agora reflete a base salarial de 2026
-	    const custoTotalReal = salario + inssPatronal + fgtsMensal + provisao13 + provisaoFerias + fgtsSobreProvisoes;
+	// O custo total real agora reflete o salário, encargos e benefícios informados
+		const custoTotalReal = salario + inssPatronal + fgtsMensal + provisao13 + provisaoFerias + fgtsSobreProvisoes + custoBeneficios;
 
         // --- RENDIMENTO FGTS (3% a.a.) ---
         const taxaAnual = 0.03;
@@ -410,12 +411,13 @@ function calcularIRRF(salario, dependentes, pensao) {
         htmlFunc += `<tr class="total-row"><td>TOTAL LÍQUIDO FINAL (Rescisão + Multa)</td><td colspan="2" style="text-align:right">${formatar(totalProventos - totalDescontos)}</td></tr>`;
 
         let htmlEmp = `
-            <tr><td>Salário Bruto + INSS Patronal (20%)</td><td>${formatar(salario + inssPatronal)}</td></tr>
-            <tr><td>FGTS Mensal (Depósito 8%)</td><td>${formatar(fgtsMensal)}</td></tr>
-            <tr><td>Provisão Mensal (13º + Férias)</td><td>${formatar(provisao13 + provisaoFerias)}</td></tr>
-            <tr><td>FGTS sobre Provisões</td><td>${formatar(fgtsSobreProvisoes)}</td></tr>
-            <tr class="employer-row"><td>CUSTO REAL MENSAL PARA EMPRESA</td><td>${formatar(custoTotalReal)}</td></tr>
-        `;
+    		<tr><td>Salário Bruto + INSS Patronal (20%)</td><td>${formatar(salario + inssPatronal)}</td></tr>
+    		<tr><td>FGTS Mensal (Depósito 8%)</td><td>${formatar(fgtsMensal)}</td></tr>
+    		<tr><td>Provisão Mensal (13º + Férias)</td><td>${formatar(provisao13 + provisaoFerias)}</td></tr>
+    		<tr><td>FGTS sobre Provisões</td><td>${formatar(fgtsSobreProvisoes)}</td></tr>
+    		<tr><td>Benefícios (VT + VR + Saúde)</td><td>${formatar(custoBeneficios)}</td></tr>
+    		<tr class="employer-row"><td>CUSTO REAL MENSAL PARA EMPRESA</td><td>${formatar(custoTotalReal)}</td></tr>
+	`;
 
         document.getElementById('resultBody').innerHTML = htmlFunc;
         document.getElementById('employerBody').innerHTML = htmlEmp;
