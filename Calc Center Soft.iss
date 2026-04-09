@@ -25,6 +25,7 @@ DisableProgramGroupPage=yes
 ;PrivilegesRequired=lowest
 OutputDir=C:\Users\alcan\OneDrive\Documentos\Inno Setup Output
 OutputBaseFilename=Calc_Center_Install
+SetupIconFile=C:\MeusProjetos\CalcCenter\icon.ico
 SolidCompression=yes
 WizardStyle=classic windows11
 
@@ -41,17 +42,18 @@ Source: "C:\MeusProjetos\CalcCenter\Relatório de Projeção Financeira.html"; D
 Source: "C:\MeusProjetos\CalcCenter\Simulador de Custos Imobiliários.html"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\MeusProjetos\CalcCenter\Simulador IRPF – PF x PJ.html"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\MeusProjetos\CalcCenter\Calculo Trabalhista.html"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\MeusProjetos\CalcCenter\icon.ico"; DestDir: "{app}"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Registry]
 Root: HKA; Subkey: "Software\Classes\{#MyAppAssocExt}\OpenWithProgids"; ValueType: string; ValueName: "{#MyAppAssocKey}"; ValueData: ""; Flags: uninsdeletevalue
 Root: HKA; Subkey: "Software\Classes\{#MyAppAssocKey}"; ValueType: string; ValueName: ""; ValueData: "{#MyAppAssocName}"; Flags: uninsdeletekey
-Root: HKA; Subkey: "Software\Classes\{#MyAppAssocKey}\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\{#MyAppExeName},0"
+Root: HKA; Subkey: "Software\Classes\{#MyAppAssocKey}\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\icon.ico"
 Root: HKA; Subkey: "Software\Classes\{#MyAppAssocKey}\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#MyAppExeName}"" ""%1"""
 
 [Icons]
-Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
-Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
+Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\icon.ico"
+Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon; IconFilename: "{app}\icon.ico"
 
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: shellexec postinstall skipifsilent
