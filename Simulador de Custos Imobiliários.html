@@ -121,15 +121,19 @@
 </div>
 
 <script>
-    const dataSistema = new Date();
-    const anoAtual = dataSistema.getFullYear();
-    const mesAtual = String(dataSistema.getMonth() + 1).padStart(2, '0');
-    
-    // VARIÁVEL DE PARÂMETRO PARA MANUTENÇÃO FÁCIL
-    const VALOR_UFESP_2026 = 37.02; 
+    // --- FUNÇÕES DE INICIALIZAÇÃO ---
+    const configurarDataPadrao = () => {
+        const dataSistema = new Date();
+        const ano = dataSistema.getFullYear();
+        const mes = String(dataSistema.getMonth() + 1).padStart(2, '0');
+        document.getElementById('dataVenda').value = `${ano}-${mes}`;
+        document.getElementById('subtituloDinamico').textContent = `Calc Center Soft — Parâmetros ${ano}`;
+    };
 
-    document.getElementById('subtituloDinamico').textContent = `Calc Center Soft — Parâmetros ${anoAtual}`;
-    document.getElementById('dataVenda').value = `${anoAtual}-${mesAtual}`;
+    // Chama ao carregar a página
+    configurarDataPadrao();
+
+    const VALOR_UFESP_2026 = 37.02; 
 
     const tabelasHistoricas = {
         2026: [
@@ -153,15 +157,18 @@
     };
 
     const getEscrituraDinamica = (base) => {
-        let tabela = tabelasHistoricas[anoAtual] || tabelasHistoricas[2026];
+        let tabela = tabelasHistoricas[2026];
         const faixa = tabela.find(f => base >= f.min && base <= f.max) || { total: 0 };
         return faixa.total;
     };
 
     const fmt = v => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
+    // --- ALTERAÇÃO PONTUAL: BOTÃO LIMPAR ---
     document.getElementById('btnLimpar').onclick = () => {
         document.getElementById('calcForm').reset();
+        configurarDataPadrao(); // Garante que a data de venda volte a ser preenchida
+        document.getElementById('boxUsufruto').style.display = 'none';
         document.getElementById('resultados').style.display = 'none';
     };
 
@@ -175,21 +182,25 @@
     document.getElementById('btnPDF').onclick = () => window.print();
 
     document.getElementById('btnCalcular').onclick = function() {
+        // Validação simples para evitar erro se o campo data estiver vazio
+        if (!document.getElementById('dataVenda').value) {
+            alert("Por favor, preencha a data de venda.");
+            return;
+        }
+
         const vDecl = parseFloat(document.getElementById('valorImovel').value) || 0;
         const vVenRef = parseFloat(document.getElementById('valorVenalRef').value) || 0;
         const baseTransm = Math.max(vDecl, vVenRef);
         let imposto = 0, esc = 0, reg = 0;
 
-        // --- CORREÇÃO DA LÓGICA DE IMPOSTO (ITBI vs ITCMD Isento) ---
         const tipoOp = document.getElementById('tipoOperacao').value;
         if (tipoOp === 'compra') {
             imposto = baseTransm * (parseFloat(document.getElementById('aliquotaITBI').value)/100);
         } else {
-            const limiteIsencao = 2500 * VALOR_UFESP_2026; // R$ 92.550,00
+            const limiteIsencao = 2500 * VALOR_UFESP_2026; 
             imposto = (vDecl <= limiteIsencao) ? 0 : vDecl * 0.04;
         }
 
-        // --- LÓGICA DE ESCRITURA E REGISTRO ---
         if (document.getElementById('temUsufruto').value === 'sim') {
             let pNua = (parseFloat(document.getElementById('percNua').value) || 0) / 100;
             let pUsuf = (parseFloat(document.getElementById('percUsuf').value) || 0) / 100;
@@ -200,7 +211,6 @@
             reg = vDecl * 0.0035;
         }
 
-        // --- CÁLCULO GCAP (Mantido original) ---
         const vAcq = parseFloat(document.getElementById('valorCompra').value) || 0;
         const vSell = parseFloat(document.getElementById('valorVenda').value) || 0;
         const vDesp = parseFloat(document.getElementById('despesasGC').value) || 0;
