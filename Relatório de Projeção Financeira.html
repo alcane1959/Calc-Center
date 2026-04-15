@@ -175,13 +175,16 @@
         let iM = iA / 12;
         let amort = p / t;
         let saldo = p;
+        let totalPago = 0;
         let html = `<table><thead><tr><th>Mês</th><th>Prestação</th><th>Juros</th><th>Amortização</th><th>Saldo Devedor</th></tr></thead><tbody>`;
         for (let i = 1; i <= t; i++) {
             let juros = saldo * iM;
             let prest = amort + juros;
+            totalPago += prest;
             saldo -= amort;
             html += `<tr><td>${i}</td><td>${formatar(prest)}</td><td>${formatar(juros)}</td><td>${formatar(amort)}</td><td>${formatar(Math.abs(saldo))}</td></tr>`;
         }
+        html += `<tr class="highlight"><td colspan="1">TOTAL PAGO</td><td colspan="4" style="text-align:left; padding-left:20px;">${formatar(totalPago)}</td></tr>`;
         document.getElementById('res_sac').innerHTML = html + `</tbody></table>`;
     }
 </script>
