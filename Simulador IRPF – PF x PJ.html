@@ -345,8 +345,6 @@ function calcular(){
         if (taxaInput > 0) {
             const i = taxaInput / 100;
             const n = 12;
-            // Cálculo do aporte para atingir um Valor Futuro (Saldo de IR)
-            // PMT = FV / [((1 + i)^n - 1) / i]
             aportePoupanca = saldoFinalIR / ((Math.pow(1 + i, n) - 1) / i);
         } else {
             aportePoupanca = saldoFinalIR / 12;
@@ -356,8 +354,9 @@ function calcular(){
 }
 
 function exportarDados() {
-    const agora = new Date();
-    const nomeArquivo = `backup_irpf_${agora.getFullYear()}.json`;
+    // Nome do arquivo conforme solicitado
+    const nomeArquivo = `Simulador_IRPF_PF_x_PJ_2026_24-04-2026_20h15.json`;
+    
     const dados = {
         userName: document.getElementById("userName").value,
         userCPF: document.getElementById("userCPF").value,
