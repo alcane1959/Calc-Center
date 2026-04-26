@@ -30,10 +30,16 @@
         .bloco p { margin: 0.3rem 0; font-size: 0.85rem; display: flex; justify-content: space-between; }
         .res-soma { font-size: 0.85rem; color: var(--secondary); text-align: right; margin-top: 5px; }
         .total-final { font-size: 1.1rem; font-weight: 700; color: var(--primary); text-align: right; padding: 0.8rem; background: #dbeafe; border-radius: 8px; border: 1px solid var(--accent); margin-top: 10px; }
+        .bloco-operacao { background: #fffbeb; border: 1px solid #f59e0b; }
 
         @media print {
-            body { zoom: 80%; -webkit-print-color-adjust: exact; }
-            .actions { display: none; }
+            body { zoom: 80%; background: white !important; color: black !important; -webkit-print-color-adjust: exact; }
+            .container { box-shadow: none !important; margin: 0 !important; padding: 10px !important; max-width: 100% !important; }
+            header { background: white !important; color: black !important; border-bottom: 2px solid black; padding: 1rem !important; }
+            .actions, #btnLimpar, #btnCalcular, #btnPDF { display: none !important; }
+            fieldset { border: 1px solid #ccc !important; }
+            .resultado, .bloco, .bloco-operacao, .total-final { background: white !important; border: 1px solid #000 !important; box-shadow: none !important; }
+            input, select { border: none !important; font-weight: bold; }
         }
     </style>
 </head>
@@ -47,7 +53,7 @@
 <div class="container">
     <form id="calcForm">
         <fieldset>
-            <legend>Imóvel e Transmissão</legend>
+            <legend>Imóvel e Transmissão (COMPRA)</legend>
             <div class="grid">
                 <div><label>Valor Declarado (R$)</label><input type="number" id="valorImovel" step="0.01"></div>
                 <div><label>V. Venal Referência (R$)</label><input type="number" id="valorVenalRef" step="0.01"></div>
@@ -62,7 +68,7 @@
                             <option value="abc" data-aliquota="2">ABC (2%)</option>
                             <option value="osasco" data-aliquota="2">Osasco (2%)</option>
                         </optgroup>
-                        </select>
+                    </select>
                 </div>
                 <div><label>Alíquota ITBI (%)</label><input type="number" id="aliquotaITBI" value="3" step="0.1"></div>
                 <div><label>Usufruto?</label><select id="temUsufruto"><option value="nao">Não</option><option value="sim">Sim</option></select></div>
@@ -78,7 +84,7 @@
         </fieldset>
 
         <fieldset>
-            <legend>Ganho de Capital (GCAP)</legend>
+            <legend>Venda do Imóvel Atual & Ganho de Capital</legend>
             <div class="grid">
                 <div><label>Mês/Ano Aquisição</label><input type="month" id="dataAquisicao" value="2015-01"></div>
                 <div><label>Custo Aquisição (R$)</label><input type="number" id="valorCompra" value="0"></div>
@@ -87,9 +93,10 @@
             <div class="grid">
                 <div><label>Benfeitorias (R$)</label><input type="number" id="despesasGC" value="0"></div>
                 <div><label>Valor de Venda (R$)</label><input type="number" id="valorVenda" value="0"></div>
-                <div><label>V. Reinvestido (R$)</label><input type="number" id="valorReinvestido" value="0"></div>
+                <div><label>Comissão Venda (%)</label><input type="number" id="comissaoInputPerc" value="6" step="0.1"></div>
             </div>
             <div class="grid">
+                <div><label>V. Reinvestido (R$)</label><input type="number" id="valorReinvestido" value="0"></div>
                 <label style="display:flex; align-items:center; gap:8px;"><input type="checkbox" id="isUnicoImovel"> Único Imóvel (até R$ 440k)</label>
                 <label style="display:flex; align-items:center; gap:8px;"><input type="checkbox" id="isResidencial"> Reinvestir Residencial</label>
             </div>
@@ -104,24 +111,34 @@
 
     <div id="resultados" class="resultado">
         <div class="bloco">
-            <h4>Detalhamento de Tributos e Custos</h4>
+            <h4>Detalhamento de Tributos e Custos (Compra)</h4>
             <p><span>ITBI / ITCMD (SP):</span> <strong id="resImposto">R$ 0,00</strong></p>
             <p><span id="labelEscritura">Escritura:</span> <strong id="resEscritura">R$ 0,00</strong></p>
             <p><span>Registro Estimado (0,35%):</span> <strong id="resRegistro">R$ 0,00</strong></p>
-            <p><span>Taxas Complementares:</span> <strong>R$ 400,00</strong></p>
+            <p><span>Taxas Complementares:</span> <strong id="resTaxasComp">R$ 400,00</strong></p>
+            <p style="border-top: 1px dashed var(--border); margin-top: 8px; padding-top: 4px; font-weight: bold;"><span>Subtotal Compra (+3% Margem):</span> <strong id="resSubtotalCompra">R$ 0,00</strong></p>
         </div>
         <div class="bloco">
-            <h4>Apuração de Ganho de Capital</h4>
+            <h4>Apuração de Ganho de Capital (Venda)</h4>
+            <p><span>Comissão de Venda (<span id="resPercLabel">0</span>%):</span> <strong id="resComissao">R$ 0,00</strong></p>
             <p><span>Imposto de Renda (IR):</span> <strong id="resIR">R$ 0,00</strong></p>
+            <p style="border-top: 1px dashed var(--border); margin-top: 8px; padding-top: 4px;"><span>Subtotal Venda:</span> <strong id="resSubtotalVenda">R$ 0,00</strong></p>
         </div>
-        <div class="res-soma">Subtotal: <span id="resSubtotal">R$ 0,00</span></div>
-        <div class="res-soma">Margem de Segurança (3%): <span id="resMargem">R$ 0,00</span></div>
-        <div class="total-final">TOTAL ESTIMADO: <span id="resTotalFinal">R$ 0,00</span></div>
+
+        <div class="bloco bloco-operacao">
+            <h4>Fluxo Líquido da Operação (Venda -> Compra)</h4>
+            <p><span>Crédito da Venda (Venda - Comissão):</span> <strong id="resCreditoVenda">R$ 0,00</strong></p>
+            <p><span>Débito de Impostos/Taxas (Venda + Compra):</span> <strong id="resDebitoTotal" style="color: var(--danger);">R$ 0,00</strong></p>
+            <p><span>Saldo Líquido Disponível:</span> <strong id="resSaldoDisponivel">R$ 0,00</strong></p>
+            <p style="border-top: 1px solid #f59e0b; padding-top: 5px; font-weight: bold;"><span>Balanço Final (Saldo - Valor da Compra):</span> <strong id="resBalancoFinal">R$ 0,00</strong></p>
+        </div>
+
+        <div class="res-soma">Soma de Taxas e Impostos: <span id="resSubtotal">R$ 0,00</span></div>
+        <div class="total-final">TOTAL ESTIMADO DE TAXAS: <span id="resTotalFinal">R$ 0,00</span></div>
     </div>
 </div>
 
 <script>
-    // --- FUNÇÕES DE INICIALIZAÇÃO ---
     const configurarDataPadrao = () => {
         const dataSistema = new Date();
         const ano = dataSistema.getFullYear();
@@ -130,7 +147,6 @@
         document.getElementById('subtituloDinamico').textContent = `Calc Center Soft — Parâmetros ${ano}`;
     };
 
-    // Chama ao carregar a página
     configurarDataPadrao();
 
     const VALOR_UFESP_2026 = 37.02; 
@@ -164,10 +180,9 @@
 
     const fmt = v => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
-    // --- ALTERAÇÃO PONTUAL: BOTÃO LIMPAR ---
     document.getElementById('btnLimpar').onclick = () => {
         document.getElementById('calcForm').reset();
-        configurarDataPadrao(); // Garante que a data de venda volte a ser preenchida
+        configurarDataPadrao();
         document.getElementById('boxUsufruto').style.display = 'none';
         document.getElementById('resultados').style.display = 'none';
     };
@@ -182,7 +197,6 @@
     document.getElementById('btnPDF').onclick = () => window.print();
 
     document.getElementById('btnCalcular').onclick = function() {
-        // Validação simples para evitar erro se o campo data estiver vazio
         if (!document.getElementById('dataVenda').value) {
             alert("Por favor, preencha a data de venda.");
             return;
@@ -191,51 +205,110 @@
         const vDecl = parseFloat(document.getElementById('valorImovel').value) || 0;
         const vVenRef = parseFloat(document.getElementById('valorVenalRef').value) || 0;
         const baseTransm = Math.max(vDecl, vVenRef);
-        let imposto = 0, esc = 0, reg = 0;
+        let imposto = 0, esc = 0, reg = 0, txComp = 0;
 
-        const tipoOp = document.getElementById('tipoOperacao').value;
-        if (tipoOp === 'compra') {
-            imposto = baseTransm * (parseFloat(document.getElementById('aliquotaITBI').value)/100);
-        } else {
-            const limiteIsencao = 2500 * VALOR_UFESP_2026; 
-            imposto = (vDecl <= limiteIsencao) ? 0 : vDecl * 0.04;
-        }
+        if (vDecl > 0) {
+            txComp = 400;
+            const tipoOp = document.getElementById('tipoOperacao').value;
+            if (tipoOp === 'compra') {
+                imposto = baseTransm * (parseFloat(document.getElementById('aliquotaITBI').value)/100);
+            } else {
+                const limiteIsencao = 2500 * VALOR_UFESP_2026; 
+                imposto = (vDecl <= limiteIsencao) ? 0 : vDecl * 0.04;
+            }
 
-        if (document.getElementById('temUsufruto').value === 'sim') {
-            let pNua = (parseFloat(document.getElementById('percNua').value) || 0) / 100;
-            let pUsuf = (parseFloat(document.getElementById('percUsuf').value) || 0) / 100;
-            esc = getEscrituraDinamica(vDecl * pNua) + getEscrituraDinamica(vDecl * pUsuf);
-            reg = vDecl * 0.0035;
-        } else {
-            esc = getEscrituraDinamica(vDecl);
-            reg = vDecl * 0.0035;
+            if (document.getElementById('temUsufruto').value === 'sim') {
+                let pNua = (parseFloat(document.getElementById('percNua').value) || 0) / 100;
+                let pUsuf = (parseFloat(document.getElementById('percUsuf').value) || 0) / 100;
+                esc = getEscrituraDinamica(vDecl * pNua) + getEscrituraDinamica(vDecl * pUsuf);
+                reg = vDecl * 0.0035;
+            } else {
+                esc = getEscrituraDinamica(vDecl);
+                reg = vDecl * 0.0035;
+            }
         }
 
         const vAcq = parseFloat(document.getElementById('valorCompra').value) || 0;
         const vSell = parseFloat(document.getElementById('valorVenda').value) || 0;
         const vDesp = parseFloat(document.getElementById('despesasGC').value) || 0;
         const vReinvest = parseFloat(document.getElementById('valorReinvestido').value) || 0;
+        const percComissao = parseFloat(document.getElementById('comissaoInputPerc').value) || 0;
+        
+        const valorComissao = vSell * (percComissao / 100);
+        const valorVendaLiquida = vSell - valorComissao;
+
         const dAq = new Date(document.getElementById('dataAquisicao').value);
         const dVe = new Date(document.getElementById('dataVenda').value);
-        let ganhoBruto = Math.max(0, vSell - vAcq - vDesp);
-        let m = Math.floor((dVe - dAq) / (1000 * 60 * 60 * 24 * 30.4375));
-        let fr1 = 1 / Math.pow(1.006, Math.max(0, m));
-        let fr2 = 1 / Math.pow(1.0035, Math.max(0, m));
-        let ganhoReduzido = ganhoBruto * fr1 * fr2;
-        if(document.getElementById('isUnicoImovel').checked && vSell <= 440000) ganhoReduzido = 0;
-        if(document.getElementById('isResidencial').checked && vReinvest > 0) ganhoReduzido *= (1 - (vReinvest / vSell));
+        const anoAquisicao = dAq.getFullYear();
+
+        let ganhoBruto = Math.max(0, valorVendaLiquida - vAcq - vDesp);
+
+        let fatorReducaoAntigo = 0;
+        if (anoAquisicao <= 1969) {
+            fatorReducaoAntigo = 1.0;
+        } else if (anoAquisicao <= 1988) {
+            const reducoes = {
+                1970: 0.95, 1971: 0.90, 1972: 0.85, 1973: 0.80, 1974: 0.75,
+                1975: 0.70, 1976: 0.65, 1977: 0.60, 1978: 0.55, 1979: 0.50,
+                1980: 0.45, 1981: 0.40, 1982: 0.35, 1983: 0.30, 1984: 0.25,
+                1985: 0.20, 1986: 0.15, 1987: 0.10, 1988: 0.05
+            };
+            fatorReducaoAntigo = reducoes[anoAquisicao] || 0;
+        }
+        let ganhoAposReducaoAntiga = ganhoBruto * (1 - fatorReducaoAntigo);
+
+        const dataCorteFR = new Date(2005, 0, 1);
+        const dataInicioReducao = dAq > dataCorteFR ? dAq : dataCorteFR;
+        let m = (dVe.getFullYear() - dataInicioReducao.getFullYear()) * 12 + (dVe.getMonth() - dataInicioReducao.getMonth());
+        m = Math.max(0, m);
+
+        let fr1 = 1 / Math.pow(1.006, m);
+        let fr2 = 1 / Math.pow(1.0035, m);
+        let ganhoReduzido = ganhoAposReducaoAntiga * fr1 * fr2;
+
+        if(document.getElementById('isUnicoImovel').checked && vSell <= 440000) {
+            ganhoReduzido = 0;
+        }
+        if(document.getElementById('isResidencial').checked && vReinvest > 0) {
+            let proporcaoIsenta = Math.min(1, vReinvest / valorVendaLiquida);
+            ganhoReduzido = ganhoReduzido * (1 - proporcaoIsenta);
+        }
+
         let ir = Math.max(0, ganhoReduzido * 0.15);
 
-        const subtotal = imposto + esc + reg + ir + 400;
-        const margem = subtotal * 0.03;
+        const creditoVenda = vSell - valorComissao;
+        
+        // Aplicação da Margem de 3% sobre os custos de compra
+        const baseCustosCompra = imposto + esc + reg + txComp;
+        const subtotalCompraComMargem = baseCustosCompra * 1.03;
+        
+        const subtotalVenda = valorComissao + ir;
+        const debitoTotalTotal = subtotalCompraComMargem + subtotalVenda;
+        
+        const saldoFinal = creditoVenda - debitoTotalTotal;
+        const balancoFinal = saldoFinal - vDecl;
 
         document.getElementById('resImposto').textContent = fmt(imposto);
         document.getElementById('resEscritura').textContent = fmt(esc);
         document.getElementById('resRegistro').textContent = fmt(reg);
+        document.getElementById('resTaxasComp').textContent = fmt(txComp);
+        document.getElementById('resSubtotalCompra').textContent = fmt(subtotalCompraComMargem);
+
         document.getElementById('resIR').textContent = fmt(ir);
-        document.getElementById('resSubtotal').textContent = fmt(subtotal);
-        document.getElementById('resMargem').textContent = fmt(margem);
-        document.getElementById('resTotalFinal').textContent = fmt(subtotal + margem);
+        document.getElementById('resPercLabel').textContent = percComissao;
+        document.getElementById('resComissao').textContent = fmt(valorComissao);
+        document.getElementById('resSubtotalVenda').textContent = fmt(subtotalVenda);
+        
+        document.getElementById('resCreditoVenda').textContent = fmt(creditoVenda);
+        document.getElementById('resDebitoTotal').textContent = fmt(debitoTotalTotal);
+        document.getElementById('resSaldoDisponivel').textContent = fmt(saldoFinal);
+        
+        const elBalanco = document.getElementById('resBalancoFinal');
+        elBalanco.textContent = fmt(balancoFinal);
+        elBalanco.style.color = balancoFinal < 0 ? 'var(--danger)' : 'var(--accent)';
+
+        document.getElementById('resSubtotal').textContent = fmt(debitoTotalTotal);
+        document.getElementById('resTotalFinal').textContent = fmt(debitoTotalTotal);
         document.getElementById('resultados').style.display = 'block';
     }
 </script>
