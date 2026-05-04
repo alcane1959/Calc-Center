@@ -249,18 +249,27 @@ function carregarLocalmente() {
 }
 
 function motor2026(valor) {
-    if (valor <= 5000) return 0;
-    const base = valor - 607.20;
+    // 1. Base de Cálculo com Desconto Simplificado da Receita Federal (R$ 564,80)
+    // Isso garante a isenção para quem ganha até R$ 2.824,00 (2 salários mínimos)
+    const base = Math.max(0, valor - 564.80);
+    
     let imp = 0;
-    if (base <= 2428.80) imp = 0;
-    else if (base <= 2826.65) imp = (base * 0.075) - 182.16;
-    else if (base <= 3751.05) imp = (base * 0.15) - 394.16;
-    else if (base <= 4664.68) imp = (base * 0.225) - 675.49;
-    else imp = (base * 0.275) - 908.73;
-    let redutor = (valor <= 7350) ? 978.62 - (0.133145 * valor) : 0;
-    return Math.max(0, imp - redutor);
-}
 
+    // 2. Tabela Progressiva Oficial 2024/2025
+    if (base <= 2259.20) {
+        imp = 0;
+    } else if (base <= 2826.65) {
+        imp = (base * 0.075) - 169.44;
+    } else if (base <= 3751.05) {
+        imp = (base * 0.15) - 381.44;
+    } else if (base <= 4664.68) {
+        imp = (base * 0.225) - 662.77;
+    } else {
+        imp = (base * 0.275) - 896.00;
+    }
+
+    return Math.max(0, imp);
+}
 function fmt(v){ return v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"}); }
 
 function adicionarLinha(dados = null) {
