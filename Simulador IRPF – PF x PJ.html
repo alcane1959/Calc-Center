@@ -41,15 +41,36 @@ input,select{
 .identificacao-pessoal div { flex: 1; }
 .identificacao-pessoal label { font-size: 0.8rem; font-weight: bold; color: var(--primary); display: block; margin-bottom: 4px; }
 
-/* Alinhamento dos campos na tabela */
+/* Ajuste de Alinhamento das Células */
 #imoveis input { text-align: right; padding-right: 8px; }
 #imoveis select { text-align-last: right; padding-right: 20px; }
 
 table{width:100%;border-collapse:collapse;font-size:.85rem}
 th{background:var(--primary);color:#fff;padding:8px; text-align: right;}
 th:first-child, th:nth-child(2) { text-align: left; }
-td{border-bottom:1px solid var(--border);padding:8px 4px;text-align:right}
+td{border-bottom:1px solid var(--border);padding:8px 4px;text-align:right; vertical-align: middle;}
 td:first-child, td:nth-child(2) { text-align: left; }
+
+/* Correção específica para o alinhamento da coluna IR */
+.ir-cell-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+/* Estilos para a Memória de Cálculo Expansível */
+.btn-toggle {
+  background: none; border: none; cursor: pointer; color: var(--primary);
+  font-size: 10px; padding: 2px; transition: transform 0.2s;
+  display: flex; align-items: center;
+}
+.btn-toggle.open { transform: rotate(180deg); }
+.memo-row { display: none; background: #fcfcfc; }
+.memo-content { 
+  text-align: left; padding: 10px; font-size: 0.75rem; color: #555; 
+  border-left: 3px solid var(--invest); margin: 5px 10px;
+}
 
 .result{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
 .result div{background:#f8fafc;padding:10px;border-radius:6px}
@@ -74,7 +95,7 @@ button:hover { background: #f0f2f5; border-color: var(--primary); }
 .btn-del { padding: 4px 8px; font-size: 0.75rem; }
 
 @media print{ 
-  button, .no-print, .btn-del, .input-card-topo { display:none !important; }
+  button, .no-print, .btn-del, .input-card-topo, .btn-toggle, .memo-row { display:none !important; }
   
   input, select {
     border: none !important;
@@ -208,7 +229,7 @@ button:hover { background: #f0f2f5; border-color: var(--primary); }
 </div>
 
 <script>
-const ISENCAO_65 = 2259.20;
+const ISENCAO_65 = 2428.80;
 
 function salvarLocalmente() {
     const dados = {
@@ -218,7 +239,7 @@ function salvarLocalmente() {
         idade: document.getElementById("idade").value,
         med: document.getElementById("med").value,
         taxaJuros: document.getElementById("taxaJuros").value,
-        imoveis: Array.from(document.querySelectorAll("#corpoTabela tr")).map(r => ({
+        imoveis: Array.from(document.querySelectorAll("#corpoTabela tr:not(.memo-row)")).map(r => ({
             tipo: r.querySelector(".tipo").value,
             aluguel: r.querySelector(".aluguel").value,
             despesas: r.querySelector(".despesas").value
@@ -238,43 +259,49 @@ function carregarLocalmente() {
         document.getElementById("idade").value = d.idade || "";
         document.getElementById("med").value = d.med || "";
         if(d.taxaJuros !== undefined) document.getElementById("taxaJuros").value = d.taxaJuros;
-        document.querySelectorAll('.card-topo input, .identificacao-pessoal input, #taxaJuros').forEach(i => {
-            i.setAttribute('value', i.value);
-        });
         document.getElementById("corpoTabela").innerHTML = "";
         if (d.imoveis && d.imoveis.length > 0) d.imoveis.forEach(i => adicionarLinha(i));
-        else for(let i=0; i<10; i++) adicionarLinha();
+        else for(let i=0; i<5; i++) adicionarLinha();
         return true;
     } catch(err) { return false; }
 }
 
-function motor2026(valor) {
-    // 1. Base de Cálculo com Desconto Simplificado da Receita Federal (R$ 564,80)
-    // Isso garante a isenção para quem ganha até R$ 2.824,00 (2 salários mínimos)
-    const base = Math.max(0, valor - 564.80);
-    
-    let imp = 0;
-
-    // 2. Tabela Progressiva Oficial 2024/2025
-    if (base <= 2259.20) {
-        imp = 0;
-    } else if (base <= 2826.65) {
-        imp = (base * 0.075) - 169.44;
-    } else if (base <= 3751.05) {
-        imp = (base * 0.15) - 381.44;
-    } else if (base <= 4664.68) {
-        imp = (base * 0.225) - 662.77;
-    } else {
-        imp = (base * 0.275) - 896.00;
-    }
-
-    return Math.max(0, imp);
+function toggleMemo(btn) {
+    const memoRow = btn.closest('tr').nextElementSibling;
+    const isVisible = memoRow.style.display === 'table-row';
+    memoRow.style.display = isVisible ? 'none' : 'table-row';
+    btn.classList.toggle('open', !isVisible);
 }
+
+function motor2026(valor) {
+    let baseCompensada = Math.max(0, valor - 607.20);
+    let imp = 0;
+    let memoria = `Base Bruta: ${fmt(valor)} | Desc. Simplificado: R$ 607,20 | Base p/ Tabela: ${fmt(baseCompensada)}. `;
+
+    if (baseCompensada <= 2428.80) imp = 0;
+    else if (baseCompensada <= 2826.65) imp = (baseCompensada * 0.075) - 182.16;
+    else if (baseCompensada <= 3751.05) imp = (baseCompensada * 0.15) - 394.16;
+    else if (baseCompensada <= 4664.68) imp = (baseCompensada * 0.225) - 675.49;
+    else imp = (baseCompensada * 0.275) - 908.73;
+
+    if (valor <= 5000) {
+        return { valor: 0, msg: "Isento: Renda mensal até R$ 5.000,00." };
+    } else if (valor <= 7350) {
+        let reducao = 978.62 - (0.133145 * valor);
+        let final = Math.max(0, imp - reducao);
+        return { valor: final, msg: `${memoria} Aplicada Redução Especial de ${fmt(reducao)} conforme Lei 15.270.` };
+    }
+    return { valor: imp, msg: `${memoria} Cálculo via Tabela Progressiva Padrão.` };
+}
+
 function fmt(v){ return v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"}); }
 
 function adicionarLinha(dados = null) {
     const corpo = document.getElementById("corpoTabela");
     const tr = document.createElement("tr");
+    const trMemo = document.createElement("tr");
+    trMemo.className = "memo-row";
+    
     tr.innerHTML = `
         <td class="idx"></td>
         <td>
@@ -286,13 +313,20 @@ function adicionarLinha(dados = null) {
         <td><input class="aluguel" type="number" step="0.01" value="${dados?.aluguel || ''}" oninput="this.setAttribute('value', this.value); calcular(); salvarLocalmente()"></td>
         <td><input class="despesas" type="number" step="0.01" value="${dados?.despesas || ''}" oninput="this.setAttribute('value', this.value); calcular(); salvarLocalmente()"></td>
         <td class="base">R$ 0,00</td>
-        <td class="ir">R$ 0,00</td>
+        <td>
+            <div class="ir-cell-container">
+                <span class="ir-val">R$ 0,00</span>
+                <button class="btn-toggle no-print" onclick="toggleMemo(this)">▼</button>
+            </div>
+        </td>
         <td class="no-print"><button class="btn-danger btn-del" onclick="removerLinha(this)">Excluir</button></td>
     `;
+    
+    trMemo.innerHTML = `<td colspan="7"><div class="memo-content">Aguardando valores...</div></td>`;
+    
     corpo.appendChild(tr);
+    corpo.appendChild(trMemo);
     renumerar();
-    tr.querySelectorAll('input').forEach(i => i.setAttribute('value', i.value));
-    atualizarAtributoSelect(tr.querySelector('select'));
     calcular();
 }
 
@@ -303,7 +337,13 @@ function atualizarAtributoSelect(el) {
     });
 }
 
-function removerLinha(btn) { btn.closest('tr').remove(); renumerar(); calcular(); salvarLocalmente(); }
+function removerLinha(btn) { 
+    const tr = btn.closest('tr');
+    tr.nextElementSibling.remove();
+    tr.remove(); 
+    renumerar(); calcular(); salvarLocalmente(); 
+}
+
 function renumerar() { document.querySelectorAll(".idx").forEach((td, i) => td.innerText = i + 1); }
 
 function calcular(){
@@ -315,29 +355,33 @@ function calcular(){
     salvarLocalmente();
 
     const baseApos = (idade >= 65) ? Math.max(0, apos - ISENCAO_65) : apos;
-    const irApos = motor2026(baseApos);
+    const resApos = motor2026(baseApos);
     let totalIRPF = 0, totalIRPJ = 0, brutoAnual = apos * 12, baseAnualSoma = baseApos;
 
-    document.querySelectorAll("#corpoTabela tr").forEach(r => {
+    document.querySelectorAll("#corpoTabela tr:not(.memo-row)").forEach(r => {
         const tipo = r.querySelector(".tipo").value;
         const v = Number(r.querySelector(".aluguel").value) || 0;
         const d = Number(r.querySelector(".despesas").value) || 0;
         const baseLinha = Math.max(0, v - d);
+        
         r.querySelector(".base").innerText = fmt(baseLinha);
         brutoAnual += (v * 12);
         baseAnualSoma += baseLinha;
-        let irLinha = (tipo === "PF") ? motor2026(baseLinha) : motor2026(v);
-        if (tipo === "PF") totalIRPF += irLinha; else totalIRPJ += irLinha;
-        r.querySelector(".ir").innerText = fmt(irLinha);
+        
+        const calc = motor2026(tipo === "PF" ? baseLinha : v);
+        if (tipo === "PF") totalIRPF += calc.valor; else totalIRPJ += calc.valor;
+        
+        r.querySelector(".ir-val").innerText = fmt(calc.valor);
+        r.nextElementSibling.querySelector(".memo-content").innerHTML = `<strong>Memória de Cálculo:</strong> ${calc.msg}`;
     });
 
-    const pagoMensal = irApos + totalIRPF + totalIRPJ;
-    document.getElementById("resApos").innerText = fmt(irApos);
+    const pagoMensal = resApos.valor + totalIRPF + totalIRPJ;
+    document.getElementById("resApos").innerText = fmt(resApos.valor);
     document.getElementById("resPF").innerText = fmt(totalIRPF);
     document.getElementById("resPJ").innerText = fmt(totalIRPJ);
     document.getElementById("resTotalM").innerText = fmt(pagoMensal);
 
-    const irAnualTotal = motor2026(Math.max(0, (baseAnualSoma * 12) - med) / 12) * 12;
+    const irAnualTotal = motor2026(Math.max(0, (baseAnualSoma * 12) - med) / 12).valor * 12;
     const saldoFinalIR = Math.max(0, irAnualTotal - (pagoMensal * 12));
     
     document.getElementById("rendaBruta").innerText = fmt(brutoAnual);
@@ -347,24 +391,18 @@ function calcular(){
     document.getElementById("repIdade").innerText = idade > 0 ? idade + " anos" : "---";
     document.getElementById("repMed").innerText = fmt(med);
 
-    // LÓGICA DE APORTE MENSAL CORRIGIDA
     let aportePoupanca = 0;
-    if (saldoFinalIR > 0) {
-        if (taxaInput > 0) {
-            const i = taxaInput / 100;
-            const n = 12;
-            aportePoupanca = saldoFinalIR / ((Math.pow(1 + i, n) - 1) / i);
-        } else {
-            aportePoupanca = saldoFinalIR / 12;
-        }
+    if (saldoFinalIR > 0 && taxaInput > 0) {
+        const i = taxaInput / 100, n = 12;
+        aportePoupanca = saldoFinalIR / ((Math.pow(1 + i, n) - 1) / i);
+    } else if (saldoFinalIR > 0) {
+        aportePoupanca = saldoFinalIR / 12;
     }
     document.getElementById("resProvisao").innerText = fmt(aportePoupanca);
 }
 
 function exportarDados() {
-    // Nome do arquivo conforme solicitado
     const nomeArquivo = `Simulador_IRPF_PF_x_PJ_2026_24-04-2026_20h15.json`;
-    
     const dados = {
         userName: document.getElementById("userName").value,
         userCPF: document.getElementById("userCPF").value,
@@ -372,7 +410,7 @@ function exportarDados() {
         idade: document.getElementById("idade").value,
         med: document.getElementById("med").value,
         taxaJuros: document.getElementById("taxaJuros").value,
-        imoveis: Array.from(document.querySelectorAll("#corpoTabela tr")).map(r => ({
+        imoveis: Array.from(document.querySelectorAll("#corpoTabela tr:not(.memo-row)")).map(r => ({
             tipo: r.querySelector(".tipo").value,
             aluguel: r.querySelector(".aluguel").value,
             despesas: r.querySelector(".despesas").value
@@ -400,7 +438,6 @@ function importarDados(e) {
             document.getElementById("taxaJuros").value = d.taxaJuros || 0.85;
             document.getElementById("corpoTabela").innerHTML = "";
             d.imoveis.forEach(i => adicionarLinha(i));
-            salvarLocalmente();
         } catch(err) { alert("Erro ao importar."); }
     };
     reader.readAsText(file);
@@ -413,7 +450,7 @@ function limparFormulario() {
     }
 }
 
-window.onload = () => { if (!carregarLocalmente()) for(let i=0; i<10; i++) adicionarLinha(); calcular(); };
+window.onload = () => { if (!carregarLocalmente()) for(let i=0; i<5; i++) adicionarLinha(); calcular(); };
 </script>
 </body>
 </html>
