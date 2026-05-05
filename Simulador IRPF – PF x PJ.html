@@ -402,7 +402,10 @@ function calcular(){
 }
 
 function exportarDados() {
-    const nomeArquivo = `Simulador_IRPF_PF_x_PJ_2026_24-04-2026_20h15.json`;
+    const agora = new Date();
+    const dataFormatada = agora.toLocaleDateString('pt-BR').replace(/\//g, '-');
+    const horaFormatada = agora.getHours() + 'h' + agora.getMinutes().toString().padStart(2, '0');
+    const nomeArquivo = `Simulador_IRPF_PF_x_PJ_2026_${dataFormatada}_${horaFormatada}.json`;
     const dados = {
         userName: document.getElementById("userName").value,
         userCPF: document.getElementById("userCPF").value,
