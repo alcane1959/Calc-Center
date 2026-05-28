@@ -294,6 +294,21 @@ function motor2026(valor) {
     return { valor: imp, msg: `${memoria} Cálculo via Tabela Progressiva Padrão.` };
 }
 
+/* Motor de cálculo estrito para aluguel (Retenção pura na fonte por PJ) */
+function motorAluguel2026(valor) {
+    let baseCompensada = Math.max(0, valor); // Retenção na fonte por padrão ocorre sobre a base cheia
+    let imp = 0;
+    let memoria = `Base p/ Tabela: ${fmt(baseCompensada)}. `;
+
+    if (baseCompensada <= 2428.80) imp = 0;
+    else if (baseCompensada <= 2826.65) imp = (baseCompensada * 0.075) - 182.16;
+    else if (baseCompensada <= 3751.05) imp = (baseCompensada * 0.15) - 394.16;
+    else if (baseCompensada <= 4664.68) imp = (baseCompensada * 0.225) - 675.49;
+    else imp = (baseCompensada * 0.275) - 908.73;
+
+    return { valor: imp, msg: `${memoria} Cálculo estrito via Tabela Progressiva Mensal de Retenção.` };
+}
+
 function fmt(v){ return v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"}); }
 
 function adicionarLinha(dados = null) {
@@ -368,7 +383,8 @@ function calcular(){
         brutoAnual += (v * 12);
         baseAnualSoma += baseLinha;
         
-        const calc = motor2026(tipo === "PF" ? baseLinha : v);
+        /* Modificado: os aluguéis agora chamam o motor de retenção direta */
+        const calc = motorAluguel2026(tipo === "PF" ? baseLinha : v);
         if (tipo === "PF") totalIRPF += calc.valor; else totalIRPJ += calc.valor;
         
         r.querySelector(".ir-val").innerText = fmt(calc.valor);
@@ -381,7 +397,7 @@ function calcular(){
     document.getElementById("resPJ").innerText = fmt(totalIRPJ);
     document.getElementById("resTotalM").innerText = fmt(pagoMensal);
 
-    const irAnualTotal = motor2026(Math.max(0, (baseAnualSoma * 12) - med) / 12).valor * 12;
+    const irAnualTotal = motorAluguel2026(Math.max(0, (baseAnualSoma * 12) - med) / 12).valor * 12;
     const saldoFinalIR = Math.max(0, irAnualTotal - (pagoMensal * 12));
     
     document.getElementById("rendaBruta").innerText = fmt(brutoAnual);
