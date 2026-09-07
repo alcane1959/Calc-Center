@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle de Gastos da Reforma</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --danger-color: #e74c3c;
+            --print-color: #8e44ad;
+            --backup-color: #e67e22;
+            --light-bg: #f8f9fa;
+            --border-color: #ddd;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f9;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 24px;
+        }
+
+        .actions-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .action-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            padding: 12px 10px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        td input, td select {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        td input:focus, td select:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn {
+            padding: 8px 14px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            transition: background 0.2s;
+        }
+
+        .btn-add {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .btn-add:hover {
+            background-color: #219653;
+        }
+
+        .btn-print {
+            background-color: var(--print-color);
+            color: white;
+        }
+
+        .btn-print:hover {
+            background-color: #732d91;
+        }
+
+        .btn-backup {
+            background-color: var(--backup-color);
+            color: white;
+        }
+
+        .btn-backup:hover {
+            background-color: #d35400;
+        }
+
+        .btn-delete {
+            background-color: var(--danger-color);
+            color: white;
+            padding: 6px 10px;
+        }
+
+        .btn-delete:hover {
+            background-color: #c0392b;
+        }
+
+        .total-container {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            background-color: var(--light-bg);
+            padding: 15px 20px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .total-container span {
+            margin-left: 10px;
+            color: var(--success-color);
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        @media print {
+            body {
+                background-color: #fff;
+                padding: 0;
+            }
+            .container {
+                box-shadow: none;
+                padding: 0;
+                max-width: 100%;
+            }
+            .no-print {
+                display: none !important;
+            }
+            table {
+                border: 1px solid #ddd;
+            }
+            th {
+                background-color: #2c3e50 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            td input, td select {
+                border: none;
+                background: transparent;
+                appearance: none;
+                padding: 0;
+                font-size: 14px;
+                color: #333;
+            }
+            td select::-ms-expand {
+                display: none;
+            }
+            .total-container {
+                border: 1px solid #ddd;
+                background-color: #f8f9fa !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Orçamento / Controle de Reforma</h1>
+
+        <div class="actions-bar">
+            <button class="btn btn-add no-print" onclick="adicionarLinha()">+ Adicionar Item</button>
+            
+            <div class="action-group">
+                <button class="btn btn-backup no-print" onclick="exportarBackup()">📤 Backup</button>
+                <button class="btn btn-backup no-print" onclick="document.getElementById('inputImportar').click()">📥 Importar Backup</button>
+                <input type="file" id="inputImportar" style="display: none;" accept=".json" onchange="importarBackup(event)">
+                
+                <button class="btn btn-print no-print" onclick="window.print()">🖨️ Imprimir / Salvar PDF</button>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table id="tabelaReforma">
+                <thead>
+                    <tr>
+                        <th style="width: 18%;">Tipo</th>
+                        <th style="width: 32%;">Descrição</th>
+                        <th style="width: 10%;" class="text-center">Qtd</th>
+                        <th style="width: 15%;" class="text-right">Valor Unitário (R$)</th>
+                        <th style="width: 15%;" class="text-right">Subtotal (R$)</th>
+                        <th style="width: 10%;" class="text-center no-print">Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="corpoTabela">
+                    <!-- Linhas carregadas dinamicamente -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="total-container">
+            Total Geral da Reforma: <span id="totalGeral">R$ 0,00</span>
+        </div>
+    </div>
+
+    <script>
+        function formatarMoeda(valor) {
+            return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        }
+
+        function adicionarLinha(dados = { tipo: 'Material', descricao: '', qtd: 1, valorUnit: 0 }) {
+            const tbody = document.getElementById('corpoTabela');
+            const tr = document.createElement('tr');
+
+            tr.innerHTML = `
+                <td>
+                    <select onchange="salvarDados()">
+                        <option value="Material" ${dados.tipo === 'Material' ? 'selected' : ''}>Material</option>
+                        <option value="Peças" ${dados.tipo === 'Peças' ? 'selected' : ''}>Peças</option>
+                        <option value="Mão de Obra" ${dados.tipo === 'Mão de Obra' ? 'selected' : ''}>Mão de Obra</option>
+                    </select>
+                </td>
+                <td>
+                    <input type="text" value="${dados.descricao}" placeholder="Ex: Cimento, Encanador..." oninput="salvarDados()">
+                </td>
+                <td class="text-center">
+                    <input type="number" value="${dados.qtd}" min="0" step="any" oninput="salvarDados()">
+                </td>
+                <td class="text-right">
+                    <input type="number" value="${dados.valorUnit}" min="0" step="0.01" oninput="salvarDados()">
+                </td>
+                <td class="text-right subtotal">R$ 0,00</td>
+                <td class="text-center no-print">
+                    <button class="btn btn-delete" onclick="removerLinha(this)">Excluir</button>
+                </td>
+            `;
+
+            tbody.appendChild(tr);
+            salvarDados();
+        }
+
+        function removerLinha(botao) {
+            const tr = botao.closest('tr');
+            tr.remove();
+            salvarDados();
+        }
+
+        function salvarDados() {
+            const linhas = document.querySelectorAll('#corpoTabela tr');
+            const dadosTabela = [];
+            let totalGeral = 0;
+
+            linhas.forEach(linha => {
+                const tipo = linha.querySelector('td:nth-child(1) select').value;
+                const descricao = linha.querySelector('td:nth-child(2) input').value;
+                const qtdInput = linha.querySelector('td:nth-child(3) input');
+                const valorInput = linha.querySelector('td:nth-child(4) input');
+                const subtotalTd = linha.querySelector('.subtotal');
+
+                const qtd = parseFloat(qtdInput.value) || 0;
+                const valorUnit = parseFloat(valorInput.value) || 0;
+                const subtotal = qtd * valorUnit;
+
+                subtotalTd.textContent = formatarMoeda(subtotal);
+                totalGeral += subtotal;
+
+                dadosTabela.push({ tipo, descricao, qtd: qtdInput.value, valorUnit: valorInput.value });
+            });
+
+            document.getElementById('totalGeral').textContent = formatarMoeda(totalGeral);
+            localStorage.setItem('dadosReforma', JSON.stringify(dadosTabela));
+        }
+
+        function exportarBackup() {
+            const dadosSalvos = localStorage.getItem('dadosReforma');
+            if (!dadosSalvos || JSON.parse(dadosSalvos).length === 0) {
+                alert('Não há dados para exportar.');
+                return;
+            }
+
+            const blob = new Blob([dadosSalvos], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            
+            a.href = url;
+            a.download = 'controle_de_reforma_2026_07-09-2026_13h59.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function importarBackup(event) {
+            const arquivo = event.target.files[0];
+            if (!arquivo) return;
+
+            const leitor = new FileReader();
+            leitor.onload = function(e) {
+                try {
+                    const dadosImportados = JSON.parse(e.target.result);
+                    if (Array.isArray(dadosImportados)) {
+                        document.getElementById('corpoTabela').innerHTML = '';
+                        
+                        dadosImportados.forEach(item => {
+                            adicionarLinha({
+                                tipo: item.tipo,
+                                descricao: item.descricao,
+                                qtd: parseFloat(item.qtd) || 0,
+                                valorUnit: parseFloat(item.valorUnit) || 0
+                            });
+                        });
+                        alert('Backup importado com sucesso!');
+                    } else {
+                        alert('O arquivo selecionado não é um formato de backup válido.');
+                    }
+                } catch (erro) {
+                    alert('Erro ao ler o arquivo de backup.');
+                }
+                event.target.value = '';
+            };
+            leitor.readAsText(arquivo);
+        }
+
+        window.onload = function() {
+            const dadosSalvos = localStorage.getItem('dadosReforma');
+            if (dadosSalvos) {
+                const arrayDados = JSON.parse(dadosSalvos);
+                if (arrayDados.length > 0) {
+                    arrayDados.forEach(item => {
+                        adicionarLinha({
+                            tipo: item.tipo,
+                            descricao: item.descricao,
+                            qtd: parseFloat(item.qtd) || 0,
+                            valorUnit: parseFloat(item.valorUnit) || 0
+                        });
+                    });
+                    return;
+                }
+            }
+            adicionarLinha();
+        };
+    </script>
+
+</body>
+</html>
