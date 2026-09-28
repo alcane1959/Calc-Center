@@ -353,19 +353,52 @@
             return { valor: imp, msg: `${memoria} Cálculo via Tabela Progressiva Padrão.` };
         }
 
-        /* Motor de cálculo estrito para aluguel (Retenção pura na fonte por PJ) */
+        /* Motor de cálculo estrito para aluguel com detalhamento completo na memória */
         function motorAluguel2026(valor) {
             let baseCompensada = Math.max(0, valor);
-            let imp = 0;
-            let memoria = `Base p/ Tabela: ${fmt(baseCompensada)}. `;
+            let impBruto = 0;
+            let aliquota = 0;
+            let deducaoParcela = 0;
 
-            if (baseCompensada <= 2428.80) imp = 0;
-            else if (baseCompensada <= 2826.65) imp = (baseCompensada * 0.075) - 182.16;
-            else if (baseCompensada <= 3751.05) imp = (baseCompensada * 0.15) - 394.16;
-            else if (baseCompensada <= 4664.68) imp = (baseCompensada * 0.225) - 675.49;
-            else imp = (baseCompensada * 0.275) - 908.73;
+            // 1. Apuração pela Tabela Progressiva Padrão
+            if (baseCompensada <= 2428.80) {
+                aliquota = 0;
+                deducaoParcela = 0;
+            } else if (baseCompensada <= 2826.65) {
+                aliquota = 0.075;
+                deducaoParcela = 182.16;
+            } else if (baseCompensada <= 3751.05) {
+                aliquota = 0.15;
+                deducaoParcela = 394.16;
+            } else if (baseCompensada <= 4664.68) {
+                aliquota = 0.225;
+                deducaoParcela = 675.49;
+            } else {
+                aliquota = 0.275;
+                deducaoParcela = 908.73;
+            }
 
-            return { valor: imp, msg: `${memoria} Cálculo estrito via Tabela Progressiva Mensal de Retenção.` };
+            impBruto = Math.max(0, (baseCompensada * aliquota) - deducaoParcela);
+
+            // 2. Aplicação das Regras da Lei 15.270/2025
+            if (valor <= 5000) {
+                return { 
+                    valor: 0, 
+                    msg: `Base tributável: ${fmt(valor)} | Alíquota da Tabela: ${(aliquota * 100).toFixed(1)}% | Parcela a Deduzir: ${fmt(deducaoParcela)} | Imposto Bruto Tabela: ${fmt(impBruto)} | Isenção total de IRRF conforme Lei 15.270 (Renda até R$ 5.000,00) | Imposto Retido Final: R$ 0,00.` 
+                };
+            } else if (valor <= 7350) {
+                let reducao = 978.62 - (0.133145 * valor);
+                let impFinal = Math.max(0, impBruto - reducao);
+                return { 
+                    valor: impFinal, 
+                    msg: `Base tributável: ${fmt(valor)} | Alíquota da Tabela: ${(aliquota * 100).toFixed(1)}% | Parcela a Deduzir: ${fmt(deducaoParcela)} | Imposto Bruto Tabela: ${fmt(impBruto)} | Redução Especial (Lei 15.270): ${fmt(reducao)} | Imposto Retido Final: ${fmt(impFinal)}.` 
+                };
+            }
+
+            return { 
+                valor: impBruto, 
+                msg: `Base tributável: ${fmt(valor)} | Alíquota da Tabela: ${(aliquota * 100).toFixed(1)}% | Parcela a Deduzir: ${fmt(deducaoParcela)} | Imposto Retido Final: ${fmt(impBruto)}.` 
+            };
         }
 
         function fmt(v){ return v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"}); }
