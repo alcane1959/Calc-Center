@@ -151,9 +151,49 @@
     <div id="welcome-screen" class="welcome">
         <h2 class="titulo-master">Calc Center</h2>
         <p class="subtitulo-master">Sistema Patrimonial Elite</p>
+    
+    <!-- Cartão de Alerta de Backup e Política de Uso na Tela Inicial -->
+        <div style="margin-top: 35px; background: rgba(10, 20, 40, 0.6); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 4px; padding: 20px; max-width: 500px; text-align: center; backdrop-filter: blur(10px);">
+            <p style="font-size: 0.75rem; letter-spacing: 0.1em; color: var(--accent); text-transform: uppercase; font-weight: 600; margin-bottom: 8px;">
+                ⚠️ POLÍTICA DE USO & ISENÇÃO DE RESPONSABILIDADE
+            </p>
+            <p style="font-size: 0.75rem; color: #cbd5e1; line-height: 1.5; margin-bottom: 15px;">
+                Os dados são salvos <strong>localmente no seu navegador</strong>. O sistema não realiza backups automáticos em nuvem nem se responsabiliza por eventuais perdas de dados por ausência de cópia de segurança.
+            </p>
+            <button class="primary-btn" onclick="abrirAvisoBackup()" style="width: auto; padding: 8px 20px;">
+                Ler Termo de Responsabilidade & Backup
+            </button>
+        </div>
     </div>
     <iframe id="content-frame"></iframe>
 </main>
+
+<!-- Modal Completo de Política de Backup e Isenção de Responsabilidade -->
+<div id="backup-modal" style="position: fixed; inset: 0; background: rgba(0,0,0,0.92); display: none; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(10px);">
+    <div class="glass-card" style="width: 480px; max-width: 90%; border: 1px solid var(--accent); text-align: left; padding: 30px;">
+        <h3 style="font-family: 'Cinzel'; margin-bottom: 15px; font-size: 1.1rem; color: var(--accent); text-align: center;">POLÍTICA DE USO & BACKUP DE DADOS</h3>
+        
+        <div style="font-size: 0.8rem; line-height: 1.6; color: #cbd5e1; margin-bottom: 20px; max-height: 350px; overflow-y: auto; padding-right: 5px;">
+            <p style="margin-bottom: 12px;">
+                <strong>1. Armazenamento Local:</strong><br>
+                Este sistema opera de forma local e armazena suas informações diretamente na memória do seu navegador web (<em>LocalStorage</em>). Não há servidor externo ou banco de dados em nuvem sincronizando suas informações.
+            </p>
+
+            <p style="margin-bottom: 12px;">
+                <strong>2. Responsabilidade pelos Dados e Backups:</strong><br>
+                A realização de backups periódicos é de <strong>total e exclusiva responsabilidade do usuário</strong>. Para manter seus dados em segurança, utilize regularmente a funcionalidade de exportação/backup disponível nos módulos do sistema e salve os arquivos em um local seguro (disco local, pen drive ou nuvem).
+            </p>
+
+            <div style="background: rgba(255, 0, 0, 0.1); border-left: 3px solid #ff4d4d; padding: 10px 12px; margin-bottom: 12px; border-radius: 2px;">
+                <strong style="color: #ff6b6b;">3. Isenção de Responsabilidade:</strong><br>
+                O sistema, seus desenvolvedores e mantenedores <strong>não se responsabilizam por qualquer perda, corrupção ou eliminação de dados</strong> decorrentes de limpeza do navegador, formatação do dispositivo, falhas do sistema operacional, ação de antivírus ou ausência de cópias de segurança realizadas pelo usuário.
+            </div>
+        </div>
+
+        <button class="primary-btn" onclick="fecharAvisoBackup()">Estou Ciente e De Acordo</button>
+    </div>
+</div>
+
 
 <script>
    let SENHA_MESTRE = localStorage.getItem('senhaMaster') !== null ? localStorage.getItem('senhaMaster') : "";
@@ -218,6 +258,14 @@
     }
 
     document.getElementById('senhaSistema').addEventListener('keypress', (e) => { if (e.key === 'Enter') fazerLogin(); });
+
+    function abrirAvisoBackup() { 
+    document.getElementById('backup-modal').style.display = 'flex'; 
+}
+
+function fecharAvisoBackup() { 
+    document.getElementById('backup-modal').style.display = 'none'; 
+}
 </script>
 
 </body>
