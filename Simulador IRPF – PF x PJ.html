@@ -1,568 +1,151 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulador IRPF – PF x PJ</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    },
-                    colors: {
-                        brand: {
-                            50: '#f0f9ff',
-                            100: '#e0f2fe',
-                            500: '#0284c7',
-                            600: '#0369a1',
-                            700: '#035485',
-                            800: '#075985',
-                            900: '#0c4a6e',
-                        },
-                        emerald: {
-                            500: '#10b981',
-                            600: '#059669',
-                            700: '#047857',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        /* Scrollbar personalizada */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f5f9;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Simulador IRPF 2026 - Aposentadoria e Alugueis</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--b:#0369a1;--bg:#f8fafc;--bd:#e2e8f0;--ok:#047857;--warn:#92400e}*{box-sizing:border-box}body{margin:0;font:14px Inter,system-ui,Segoe UI,Arial;background:#f8fafc;color:#1e293b;-webkit-font-smoothing:antialiased}header{background:linear-gradient(90deg,#0f172a,#0c4a6e,#0f172a);color:white;padding:16px 24px;box-shadow:0 10px 15px -12px #000;position:sticky;top:0;z-index:20}main{max-width:1480px;margin:auto;padding:24px 16px}.card{background:white;border:1px solid rgba(226,232,240,.9);border-radius:16px;padding:24px;margin:0 0 24px;box-shadow:0 1px 3px rgba(15,23,42,.05)}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}label{display:block;font-size:12px;font-weight:700;margin-bottom:5px}input,select{width:100%;padding:9px 12px;border:1px solid #cbd5e1;border-radius:8px;background:#f8fafc;color:#0f172a;font-weight:600}button{border:0;border-radius:8px;padding:9px 12px;font-weight:700;cursor:pointer}.primary{background:#0369a1;color:white;box-shadow:0 1px 2px rgba(0,0,0,.1)}.danger{background:#fee2e2;color:#991b1b}.metric{padding:16px;border-radius:12px;background:#f8fafc;border:1px solid #e2e8f0}.metric b{display:block;font-size:20px;margin-top:5px}table{width:100%;border-collapse:collapse}th,td{padding:8px;border-bottom:1px solid #e2e8f0;text-align:left}th{font-size:11px;text-transform:uppercase;letter-spacing:.04em;background:#f1f5f9;color:#475569}.num{text-align:right}.memo-row td{background:#f8fafc;color:#475569;font-size:12px;border-left:4px solid #0284c7;line-height:1.5}.memo-row strong{color:#0f172a}.note{font-size:12px;color:#475569;line-height:1.5}.warn{background:#fffbeb;border-color:#fde68a;box-shadow:none}.ok{color:var(--ok)}details{margin-top:10px}code{background:#f1f5f9;padding:2px 4px} @media(max-width:700px){.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}table{min-width:980px}}@media print{button,.no-print{display:none!important}header{position:static;box-shadow:none}body{background:white}.card{break-inside:avoid;box-shadow:none}details{display:block}details>summary{display:none}details>pre{display:block;white-space:pre-wrap}.memo-row{display:table-row!important}main{max-width:100%;padding:12px}}
 
-        .memo-row { display: none; }
-        .btn-toggle.open { transform: rotate(180deg); }
+/* Ajustes de espaço da grade de imóveis */
+.scroll{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+#rows input,#rows select{min-width:0;padding:7px 6px;font-size:12px}
+table{table-layout:auto}
+th,td{padding:7px 5px}
+th:nth-child(1),td:nth-child(1){width:34px;min-width:34px}
+th:nth-child(2),td:nth-child(2){width:78px;min-width:78px}
+th:nth-child(3),td:nth-child(3){min-width:115px}
+th:nth-child(4),td:nth-child(4),th:nth-child(5),td:nth-child(5){min-width:95px}
+th:nth-child(6),td:nth-child(6){min-width:125px}
+th:nth-child(7),td:nth-child(7){min-width:105px}
+th:nth-child(8),td:nth-child(8){min-width:110px}
+th:nth-child(9),td:nth-child(9){min-width:120px}
+th:nth-child(10),td:nth-child(10){width:42px;min-width:42px}
+@media(min-width:1180px){.card{padding:20px}.scroll table{min-width:100%}}
+@media(max-width:700px){main{padding:14px 8px}.card{padding:14px}.scroll table{min-width:1040px}}
 
-        /* Estilos específicos para Impressão / Salvar PDF */
-        @media print {
-            header, .no-print, button, .btn-del, .btn-toggle {
-                display: none !important;
-            }
-            body {
-                background: white !important;
-                color: black !important;
-            }
-            main {
-                max-width: 100% !important;
-                padding: 0 !important;
-                margin: 0 !important;
-            }
-            .shadow-sm, .shadow-xl, .shadow-lg {
-                box-shadow: none !important;
-            }
-            .border {
-                border-color: #e2e8f0 !important;
-            }
-            input, select {
-                border: none !important;
-                background: transparent !important;
-                appearance: none;
-                -webkit-appearance: none;
-                padding: 0 !important;
-            }
-        }
-    </style>
-</head>
-<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex flex-col justify-between">
-
-    <!-- Header Navbar -->
-    <header class="bg-gradient-to-r from-slate-900 via-brand-900 to-slate-900 text-white shadow-lg sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
-            <div class="flex items-center gap-3">
-                <div class="p-2 bg-brand-500/20 rounded-xl border border-brand-500/30">
-                    <i class="fa-solid fa-calculator text-2xl text-brand-500"></i>
-                </div>
-                <div>
-                    <h1 class="text-xl sm:text-2xl font-bold tracking-tight">Simulador IRPF – PF x PJ</h1>
-                    <p class="text-xs text-slate-300">Elaborado por Calc Center Soft</p>
-                </div>
-            </div>
-            <div class="flex items-center gap-3">
-                <button onclick="window.print()" class="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs px-4 py-2 rounded-lg shadow-md transition border border-emerald-400/30">
-                    <i class="fa-solid fa-print text-sm"></i>
-                    <span>Imprimir PDF</span>
-                </button>
-            </div>
-        </div>
-    </header>
-
-    <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full flex-grow space-y-6">
-        
-        <!-- Identificação Pessoal -->
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
-            <h2 class="text-sm font-bold uppercase tracking-wider text-brand-700 mb-4 flex items-center gap-2">
-                <i class="fa-solid fa-user text-brand-600"></i> Identificação do Contribuinte
-            </h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div class="md:col-span-2">
-                    <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Nome do Contribuinte</label>
-                    <input type="text" id="userName" placeholder="Digite o nome completo" oninput="this.setAttribute('value', this.value)" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 font-semibold focus:ring-2 focus:ring-brand-500 focus:bg-white transition text-sm">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">CPF</label>
-                    <input type="text" id="userCPF" placeholder="000.000.000-00" oninput="this.setAttribute('value', this.value)" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 font-semibold focus:ring-2 focus:ring-brand-500 focus:bg-white transition text-sm">
-                </div>
-            </div>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            
-            <!-- Left Column: Input Form -->
-            <div class="lg:col-span-4 bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 flex flex-col gap-5">
-                <div class="border-b border-slate-100 pb-3">
-                    <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
-                        <i class="fa-solid fa-sliders text-brand-600"></i> Parâmetros de Renda
-                    </h2>
-                    <p class="text-xs text-slate-500 mt-1">Informe a aposentadoria e deduções pessoais.</p>
-                </div>
-
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Aposentadoria mensal (R$)</label>
-                        <input id="apos" type="number" step="0.01" oninput="this.setAttribute('value', this.value); calcular()" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 font-semibold focus:ring-2 focus:ring-brand-500 focus:bg-white transition text-sm">
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Idade do aposentado</label>
-                        <input id="idade" type="number" oninput="this.setAttribute('value', this.value); calcular()" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 font-semibold focus:ring-2 focus:ring-brand-500 focus:bg-white transition text-sm">
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Despesas médicas anuais (R$)</label>
-                        <input id="med" type="number" step="0.01" oninput="this.setAttribute('value', this.value); calcular()" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 font-semibold focus:ring-2 focus:ring-brand-500 focus:bg-white transition text-sm">
-                    </div>
-                </div>
-            </div>
-
-            <!-- Right Column: Imóveis Table -->
-            <div class="lg:col-span-8 bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 flex flex-col justify-between">
-                <div>
-                    <div class="flex justify-between items-center border-b border-slate-100 pb-3 mb-4">
-                        <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
-                            <i class="fa-solid fa-building text-brand-600"></i> Rendimentos de Aluguéis
-                        </h3>
-                        <button class="btn-add no-print px-3 py-1.5 bg-brand-600 hover:bg-brand-700 text-white font-semibold text-xs rounded-lg shadow-sm transition flex items-center gap-1.5" onclick="adicionarLinha()">
-                            <i class="fa-solid fa-plus"></i> Adicionar Imóvel
-                        </button>
-                    </div>
-
-                    <div class="overflow-x-auto">
-                        <table id="imoveis" class="w-full text-left border-collapse text-xs">
-                            <thead>
-                                <tr class="bg-slate-100/80 text-slate-700 uppercase tracking-wider font-bold border-b border-slate-200">
-                                    <th class="py-3 px-2 w-8">#</th>
-                                    <th class="py-3 px-2 w-20">Tipo</th>
-                                    <th class="py-3 px-2">Aluguel (R$)</th>
-                                    <th class="py-3 px-2">Despesas (R$)</th>
-                                    <th class="py-3 px-2">Base (R$)</th>
-                                    <th class="py-3 px-2 text-right">IR (R$)</th>
-                                    <th class="py-3 px-2 text-center no-print">Ação</th>
-                                </tr>
-                            </thead>
-                            <tbody id="corpoTabela" class="divide-y divide-slate-100 text-slate-700 font-medium">
-                                <!-- Preenchido dinamicamente -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Metric Cards: Apuração Mensal -->
-        <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 space-y-4">
-            <h3 class="text-base font-bold text-slate-900 flex items-center gap-2 border-b border-slate-100 pb-3">
-                <i class="fa-solid fa-calendar-check text-brand-600"></i> Apuração Mensal (Cálculos Isolados)
-            </h3>
-            
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div class="bg-slate-50 rounded-xl p-4 border border-slate-200/80">
-                    <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500 block">IR sobre Aposentadoria</span>
-                    <strong id="resApos" class="text-xl font-extrabold text-slate-900 mt-1 block">R$ 0,00</strong>
-                </div>
-                <div class="bg-slate-50 rounded-xl p-4 border border-slate-200/80">
-                    <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500 block">Total IR Aluguéis PF</span>
-                    <strong id="resPF" class="text-xl font-extrabold text-slate-900 mt-1 block">R$ 0,00</strong>
-                </div>
-                <div class="bg-slate-50 rounded-xl p-4 border border-slate-200/80">
-                    <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500 block">Total IR Aluguéis PJ</span>
-                    <strong id="resPJ" class="text-xl font-extrabold text-slate-900 mt-1 block">R$ 0,00</strong>
-                </div>
-                <div class="bg-amber-50 rounded-xl p-4 border border-amber-200/80">
-                    <span class="text-[11px] font-bold uppercase tracking-wider text-amber-800 block">Total Mensal Retido</span>
-                    <strong id="resTotalM" class="text-xl font-extrabold text-amber-900 mt-1 block">R$ 0,00</strong>
-                </div>
-            </div>
-        </div>
-
-        <!-- Ajuste Anual e Planejamento -->
-        <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 space-y-6">
-            <h3 class="text-base font-bold text-slate-900 flex items-center gap-2 border-b border-slate-100 pb-3">
-                <i class="fa-solid fa-chart-pie text-brand-600"></i> Ajuste Anual (Consolidação de Dados)
-            </h3>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-50 p-4 rounded-xl text-xs border border-slate-200/60">
-                <div><strong>Aposentadoria Mensal:</strong> <span id="repApos">R$ 0,00</span></div>
-                <div><strong>Idade do Contribuinte:</strong> <span id="repIdade">---</span></div>
-                <div><strong>Assistência Médica Anual:</strong> <span id="repMed">R$ 0,00</span></div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200/80">
-                    <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500 block">Renda Bruta Anual (Total)</span>
-                    <strong id="rendaBruta" class="text-lg font-extrabold text-slate-900 block mt-1">R$ 0,00</strong>
-                </div>
-                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200/80">
-                    <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500 block">Total de IR Retido (Ano)</span>
-                    <strong id="pagoAno" class="text-lg font-extrabold text-slate-900 block mt-1">R$ 0,00</strong>
-                </div>
-                <div class="p-4 bg-emerald-50 rounded-xl border border-emerald-200/80">
-                    <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-800 block">Saldo Final de IR (Ajuste)</span>
-                    <strong id="irFinal" class="text-lg font-extrabold text-emerald-900 block mt-1">R$ 0,00</strong>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="p-4 bg-brand-50/60 rounded-xl border border-brand-100 space-y-1">
-                    <label class="block text-xs font-bold text-brand-900 uppercase tracking-wider">Taxa de Juros Mensal da Aplicação (%)</label>
-                    <input id="taxaJuros" type="number" step="0.001" value="0.85" oninput="this.setAttribute('value', this.value); calcular()" class="w-full px-3 py-1.5 bg-white border border-brand-200 rounded-md text-sm font-bold text-brand-900 focus:ring-2 focus:ring-brand-500">
-                </div>
-                <div class="p-4 bg-emerald-50/60 rounded-xl border border-emerald-100 space-y-1">
-                    <label class="block text-xs font-bold text-emerald-900 uppercase tracking-wider">Aporte Mensal para Quitar o IR</label>
-                    <div id="resProvisao" class="text-xl font-extrabold text-emerald-800 pt-1">R$ 0,00</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Gerenciar Dados -->
-        <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 space-y-4 no-print">
-            <h3 class="text-base font-bold text-slate-900 flex items-center gap-2 border-b border-slate-100 pb-3">
-                <i class="fa-solid fa-database text-brand-600"></i> Gerenciar Dados (JSON)
-            </h3>
-            <div class="flex flex-wrap gap-3">
-                <button onclick="exportarDados()" class="px-4 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition border border-slate-300 flex items-center gap-2">
-                    <i class="fa-solid fa-download"></i> Exportar Dados (Salvar)
-                </button>
-                <label for="inputImport" class="px-4 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition border border-slate-300 cursor-pointer flex items-center gap-2">
-                    <i class="fa-solid fa-upload"></i> Importar Dados (Carregar)
-                </label>
-                <input type="file" id="inputImport" class="hidden" accept=".json" onchange="importarDados(event)">
-                <button onclick="limparFormulario()" class="px-4 py-2 text-xs font-semibold text-rose-700 bg-rose-50 hover:bg-rose-100 rounded-lg transition border border-rose-200 flex items-center gap-2">
-                    <i class="fa-solid fa-trash"></i> Limpar Tudo
-                </button>
-            </div>
-        </div>
-
-    </main>
-
-    <!-- Footer -->
-    <footer class="bg-white border-t border-slate-200 mt-12 py-6 text-center text-xs text-slate-500">
-        <div class="max-w-7xl mx-auto px-4">
-            <p>Simulador de IR - Pessoa Física x Pessoa Jurídica.</p>
-            <p class="mt-1 text-slate-400">&copy; Calc Center Soft - Todos os direitos reservados.</p>
-        </div>
-    </footer>
-
-    <script>
-        const ISENCAO_65 = 2428.80;
-
-        function salvarLocalmente() {
-            const dados = {
-                userName: document.getElementById("userName").value,
-                userCPF: document.getElementById("userCPF").value,
-                apos: document.getElementById("apos").value,
-                idade: document.getElementById("idade").value,
-                med: document.getElementById("med").value,
-                taxaJuros: document.getElementById("taxaJuros").value,
-                imoveis: Array.from(document.querySelectorAll("#corpoTabela tr:not(.memo-row)")).map(r => ({
-                    tipo: r.querySelector(".tipo").value,
-                    aluguel: r.querySelector(".aluguel").value,
-                    despesas: r.querySelector(".despesas").value
-                }))
-            };
-            localStorage.setItem('dadosSimuladorIRPF', JSON.stringify(dados));
-        }
-
-        function carregarLocalmente() {
-            const salvo = localStorage.getItem('dadosSimuladorIRPF');
-            if (!salvo) return false;
-            try {
-                const d = JSON.parse(salvo);
-                document.getElementById("userName").value = d.userName || "";
-                document.getElementById("userCPF").value = d.userCPF || "";
-                document.getElementById("apos").value = d.apos || "";
-                document.getElementById("idade").value = d.idade || "";
-                document.getElementById("med").value = d.med || "";
-                if(d.taxaJuros !== undefined) document.getElementById("taxaJuros").value = d.taxaJuros;
-                document.getElementById("corpoTabela").innerHTML = "";
-                if (d.imoveis && d.imoveis.length > 0) d.imoveis.forEach(i => adicionarLinha(i));
-                else for(let i=0; i<5; i++) adicionarLinha();
-                return true;
-            } catch(err) { return false; }
-        }
-
-        function toggleMemo(btn) {
-            const memoRow = btn.closest('tr').nextElementSibling;
-            const isVisible = memoRow.style.display === 'table-row';
-            memoRow.style.display = isVisible ? 'none' : 'table-row';
-            btn.classList.toggle('open', !isVisible);
-        }
-
-        function motor2026(valor) {
-            let baseCompensada = Math.max(0, valor - 607.20);
-            let imp = 0;
-            let memoria = `Base Bruta: ${fmt(valor)} | Desc. Simplificado: R$ 607,20 | Base p/ Tabela: ${fmt(baseCompensada)}. `;
-
-            if (baseCompensada <= 2428.80) imp = 0;
-            else if (baseCompensada <= 2826.65) imp = (baseCompensada * 0.075) - 182.16;
-            else if (baseCompensada <= 3751.05) imp = (baseCompensada * 0.15) - 394.16;
-            else if (baseCompensada <= 4664.68) imp = (baseCompensada * 0.225) - 675.49;
-            else imp = (baseCompensada * 0.275) - 908.73;
-
-            if (valor <= 5000) {
-                return { valor: 0, msg: "Isento: Renda mensal até R$ 5.000,00." };
-            } else if (valor <= 7350) {
-                let reducao = 978.62 - (0.133145 * valor);
-                let final = Math.max(0, imp - reducao);
-                return { valor: final, msg: `${memoria} Aplicada Redução Especial de ${fmt(reducao)} conforme Lei 15.270.` };
-            }
-            return { valor: imp, msg: `${memoria} Cálculo via Tabela Progressiva Padrão.` };
-        }
-
-        /* Motor de cálculo estrito para aluguel com detalhamento completo na memória */
-        function motorAluguel2026(valor) {
-            let baseCompensada = Math.max(0, valor);
-            let impBruto = 0;
-            let aliquota = 0;
-            let deducaoParcela = 0;
-
-            // 1. Apuração pela Tabela Progressiva Padrão
-            if (baseCompensada <= 2428.80) {
-                aliquota = 0;
-                deducaoParcela = 0;
-            } else if (baseCompensada <= 2826.65) {
-                aliquota = 0.075;
-                deducaoParcela = 182.16;
-            } else if (baseCompensada <= 3751.05) {
-                aliquota = 0.15;
-                deducaoParcela = 394.16;
-            } else if (baseCompensada <= 4664.68) {
-                aliquota = 0.225;
-                deducaoParcela = 675.49;
-            } else {
-                aliquota = 0.275;
-                deducaoParcela = 908.73;
-            }
-
-            impBruto = Math.max(0, (baseCompensada * aliquota) - deducaoParcela);
-
-            // 2. Aplicação das Regras da Lei 15.270/2025
-            if (valor <= 5000) {
-                return { 
-                    valor: 0, 
-                    msg: `Base tributável: ${fmt(valor)} | Alíquota da Tabela: ${(aliquota * 100).toFixed(1)}% | Parcela a Deduzir: ${fmt(deducaoParcela)} | Imposto Bruto Tabela: ${fmt(impBruto)} | Isenção total de IRRF conforme Lei 15.270 (Renda até R$ 5.000,00) | Imposto Retido Final: R$ 0,00.` 
-                };
-            } else if (valor <= 7350) {
-                let reducao = 978.62 - (0.133145 * valor);
-                let impFinal = Math.max(0, impBruto - reducao);
-                return { 
-                    valor: impFinal, 
-                    msg: `Base tributável: ${fmt(valor)} | Alíquota da Tabela: ${(aliquota * 100).toFixed(1)}% | Parcela a Deduzir: ${fmt(deducaoParcela)} | Imposto Bruto Tabela: ${fmt(impBruto)} | Redução Especial (Lei 15.270): ${fmt(reducao)} | Imposto Retido Final: ${fmt(impFinal)}.` 
-                };
-            }
-
-            return { 
-                valor: impBruto, 
-                msg: `Base tributável: ${fmt(valor)} | Alíquota da Tabela: ${(aliquota * 100).toFixed(1)}% | Parcela a Deduzir: ${fmt(deducaoParcela)} | Imposto Retido Final: ${fmt(impBruto)}.` 
-            };
-        }
-
-        function fmt(v){ return v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"}); }
-
-        function adicionarLinha(dados = null) {
-            const corpo = document.getElementById("corpoTabela");
-            const tr = document.createElement("tr");
-            const trMemo = document.createElement("tr");
-            trMemo.className = "memo-row";
-            
-            tr.innerHTML = `
-                <td class="idx py-2.5 px-2 font-bold text-slate-900"></td>
-                <td class="py-2.5 px-2">
-                    <select class="tipo w-full py-1 px-1.5 bg-slate-50 border border-slate-300 rounded text-xs font-semibold text-slate-800" onchange="atualizarAtributoSelect(this); calcular(); salvarLocalmente()">
-                        <option value="PF" ${dados?.tipo === 'PF' ? 'selected' : ''}>PF</option>
-                        <option value="PJ" ${dados?.tipo === 'PJ' ? 'selected' : ''}>PJ</option>
-                    </select>
-                </td>
-                <td class="py-2.5 px-2"><input class="aluguel w-full py-1 px-2 bg-slate-50 border border-slate-300 rounded text-xs text-right font-medium" type="number" step="0.01" value="${dados?.aluguel || ''}" oninput="this.setAttribute('value', this.value); calcular(); salvarLocalmente()"></td>
-                <td class="py-2.5 px-2"><input class="despesas w-full py-1 px-2 bg-slate-50 border border-slate-300 rounded text-xs text-right font-medium" type="number" step="0.01" value="${dados?.despesas || ''}" oninput="this.setAttribute('value', this.value); calcular(); salvarLocalmente()"></td>
-                <td class="base py-2.5 px-2 font-semibold">R$ 0,00</td>
-                <td class="py-2.5 px-2 text-right">
-                    <div class="flex items-center justify-end gap-1">
-                        <span class="ir-val font-bold text-slate-900">R$ 0,00</span>
-                        <button class="btn-toggle no-print text-slate-400 hover:text-slate-600 transition" onclick="toggleMemo(this)"><i class="fa-solid fa-chevron-down text-[10px]"></i></button>
-                    </div>
-                </td>
-                <td class="py-2.5 px-2 text-center no-print">
-                    <button class="btn-del text-rose-600 hover:text-rose-800 text-xs font-semibold" onclick="removerLinha(this)"><i class="fa-solid fa-trash"></i></button>
-                </td>
-            `;
-            
-            trMemo.innerHTML = `<td colspan="7" class="p-3 bg-slate-50 border-y border-slate-100 text-xs text-slate-600 border-l-4 border-l-brand-500"><div class="memo-content">Aguardando valores...</div></td>`;
-            
-            corpo.appendChild(tr);
-            corpo.appendChild(trMemo);
-            renumerar();
-            calcular();
-        }
-
-        function atualizarAtributoSelect(el) {
-            el.querySelectorAll('option').forEach(opt => {
-                if(opt.value === el.value) opt.setAttribute('selected', 'selected');
-                else opt.removeAttribute('selected');
-            });
-        }
-
-        function removerLinha(btn) { 
-            const tr = btn.closest('tr');
-            tr.nextElementSibling.remove();
-            tr.remove(); 
-            renumerar(); calcular(); salvarLocalmente(); 
-        }
-
-        function renumerar() { document.querySelectorAll(".idx").forEach((td, i) => td.innerText = i + 1); }
-
-        function calcular(){
-            const apos = Number(document.getElementById("apos").value) || 0;
-            const idade = Number(document.getElementById("idade").value) || 0;
-            const med = Number(document.getElementById("med").value) || 0;
-            const taxaInput = Number(document.getElementById("taxaJuros").value) || 0;
-
-            salvarLocalmente();
-
-            const baseApos = (idade >= 65) ? Math.max(0, apos - ISENCAO_65) : apos;
-            const resApos = motor2026(baseApos);
-            let totalIRPF = 0, totalIRPJ = 0, brutoAnual = apos * 12, baseAnualSoma = baseApos;
-
-            document.querySelectorAll("#corpoTabela tr:not(.memo-row)").forEach(r => {
-                const tipo = r.querySelector(".tipo").value;
-                const v = Number(r.querySelector(".aluguel").value) || 0;
-                const d = Number(r.querySelector(".despesas").value) || 0;
-                const baseLinha = Math.max(0, v - d);
-                
-                r.querySelector(".base").innerText = fmt(baseLinha);
-                brutoAnual += (v * 12);
-                baseAnualSoma += baseLinha;
-                
-                const calc = motorAluguel2026(tipo === "PF" ? baseLinha : v);
-                if (tipo === "PF") totalIRPF += calc.valor; else totalIRPJ += calc.valor;
-                
-                r.querySelector(".ir-val").innerText = fmt(calc.valor);
-                r.nextElementSibling.querySelector(".memo-content").innerHTML = `<strong>Memória de Cálculo:</strong> ${calc.msg}`;
-            });
-
-            const pagoMensal = resApos.valor + totalIRPF + totalIRPJ;
-            document.getElementById("resApos").innerText = fmt(resApos.valor);
-            document.getElementById("resPF").innerText = fmt(totalIRPF);
-            document.getElementById("resPJ").innerText = fmt(totalIRPJ);
-            document.getElementById("resTotalM").innerText = fmt(pagoMensal);
-
-            const irAnualTotal = motorAluguel2026(Math.max(0, (baseAnualSoma * 12) - med) / 12).valor * 12;
-            const saldoFinalIR = Math.max(0, irAnualTotal - (pagoMensal * 12));
-            
-            document.getElementById("rendaBruta").innerText = fmt(brutoAnual);
-            document.getElementById("pagoAno").innerText = fmt(pagoMensal * 12);
-            document.getElementById("irFinal").innerText = fmt(saldoFinalIR);
-            document.getElementById("repApos").innerText = fmt(apos);
-            document.getElementById("repIdade").innerText = idade > 0 ? idade + " anos" : "---";
-            document.getElementById("repMed").innerText = fmt(med);
-
-            let aportePoupanca = 0;
-            if (saldoFinalIR > 0 && taxaInput > 0) {
-                const i = taxaInput / 100, n = 12;
-                aportePoupanca = saldoFinalIR / ((Math.pow(1 + i, n) - 1) / i);
-            } else if (saldoFinalIR > 0) {
-                aportePoupanca = saldoFinalIR / 12;
-            }
-            document.getElementById("resProvisao").innerText = fmt(aportePoupanca);
-        }
-
-        function exportarDados() {
-            const agora = new Date();
-            const dataFormatada = agora.toLocaleDateString('pt-BR').replace(/\//g, '-');
-            const horaFormatada = agora.getHours() + 'h' + agora.getMinutes().toString().padStart(2, '0');
-            const nomeArquivo = `Simulador_IRPF_PF_x_PJ_2026_${dataFormatada}_${horaFormatada}.json`;
-            const dados = {
-                userName: document.getElementById("userName").value,
-                userCPF: document.getElementById("userCPF").value,
-                apos: document.getElementById("apos").value,
-                idade: document.getElementById("idade").value,
-                med: document.getElementById("med").value,
-                taxaJuros: document.getElementById("taxaJuros").value,
-                imoveis: Array.from(document.querySelectorAll("#corpoTabela tr:not(.memo-row)")).map(r => ({
-                    tipo: r.querySelector(".tipo").value,
-                    aluguel: r.querySelector(".aluguel").value,
-                    despesas: r.querySelector(".despesas").value
-                }))
-            };
-            const blob = new Blob([JSON.stringify(dados, null, 2)], { type: "application/json" });
-            const a = document.createElement("a");
-            a.href = URL.createObjectURL(blob);
-            a.download = nomeArquivo;
-            a.click();
-        }
-
-        function importarDados(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-                try {
-                    const d = JSON.parse(ev.target.result);
-                    document.getElementById("userName").value = d.userName || "";
-                    document.getElementById("userCPF").value = d.userCPF || "";
-                    document.getElementById("apos").value = d.apos || "";
-                    document.getElementById("idade").value = d.idade || "";
-                    document.getElementById("med").value = d.med || "";
-                    document.getElementById("taxaJuros").value = d.taxaJuros || 0.85;
-                    document.getElementById("corpoTabela").innerHTML = "";
-                    d.imoveis.forEach(i => adicionarLinha(i));
-                } catch(err) { alert("Erro ao importar."); }
-            };
-            reader.readAsText(file);
-        }
-
-        function limparFormulario() {
-            if(confirm("Deseja limpar tudo?")) {
-                localStorage.removeItem('dadosSimuladorIRPF');
-                location.reload();
-            }
-        }
-
-        window.onload = () => { if (!carregarLocalmente()) for(let i=0; i<5; i++) adicionarLinha(); calcular(); };
-    </script>
-</body>
-</html>
+/* Impressao otimizada: preserva todos os dados sem corte */
+@page{size:A4 landscape;margin:8mm}
+@media print{
+  html,body{width:100%;margin:0!important;padding:0!important;background:#fff!important;font-size:9px!important}
+  header{position:static!important;padding:8px 12px!important;box-shadow:none!important}
+  header h1{font-size:16px!important}
+  main{width:100%!important;max-width:none!important;margin:0!important;padding:6px!important}
+  .card{width:100%!important;margin:0 0 8px!important;padding:8px!important;border-radius:6px!important;box-shadow:none!important;break-inside:avoid-page}
+  .scroll{overflow:visible!important;width:100%!important}
+  table,.scroll table{width:100%!important;min-width:0!important;max-width:100%!important;table-layout:fixed!important;font-size:8px!important}
+  th,td{padding:3px 2px!important;white-space:normal!important;overflow-wrap:anywhere!important;word-break:normal!important}
+  #rows input,#rows select{width:100%!important;min-width:0!important;padding:2px!important;border:0!important;background:transparent!important;font-size:8px!important;appearance:none!important;-webkit-appearance:none!important}
+  th:nth-child(1),td:nth-child(1){width:3%!important;min-width:0!important}
+  th:nth-child(2),td:nth-child(2){width:6%!important;min-width:0!important}
+  th:nth-child(3),td:nth-child(3){width:12%!important;min-width:0!important}
+  th:nth-child(4),td:nth-child(4){width:10%!important;min-width:0!important}
+  th:nth-child(5),td:nth-child(5){width:10%!important;min-width:0!important}
+  th:nth-child(6),td:nth-child(6){width:14%!important;min-width:0!important}
+  th:nth-child(7),td:nth-child(7){width:11%!important;min-width:0!important}
+  th:nth-child(8),td:nth-child(8){width:12%!important;min-width:0!important}
+  th:nth-child(9),td:nth-child(9){width:12%!important;min-width:0!important}
+  th:nth-child(10),td:nth-child(10){display:none!important}
+  .memo-row td{display:table-cell!important;width:auto!important;font-size:8px!important;padding:4px!important}
+  .grid{gap:6px!important}
+  .metric{padding:6px!important}
+  .metric b{font-size:12px!important}
+  details{display:block!important}
+  details>summary{display:none!important}
+  details>pre{display:block!important;white-space:pre-wrap!important;font-size:8px!important}
+  button,.no-print{display:none!important}
+}
+</style>
+</head><body>
+<header><div style="max-width:1280px;margin:auto;display:flex;justify-content:space-between;align-items:center;gap:16px"><div><h1 style="font-size:22px;margin:0;font-weight:800">Simulador IRPF – PF x PJ</h1><div style="font-size:12px;color:#cbd5e1;margin-top:3px">Ano-calendário 2026 • Aposentadoria e Rendimentos de Aluguéis</div></div><div class="no-print" style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end"><button type="button" class="primary" onclick="exportarDados()" style="background:#2563eb;white-space:nowrap">Exportar dados</button><button type="button" class="primary" onclick="document.getElementById('importarArquivo').click()" style="background:#7c3aed;white-space:nowrap">Importar dados</button><input id="importarArquivo" type="file" accept="application/json,.json" style="display:none" onchange="importarDados(event)"><button type="button" class="danger" onclick="limparDados()" style="white-space:nowrap">Limpar dados</button><button type="button" class="primary" onclick="imprimirCalculo()" style="background:#059669;white-space:nowrap">Imprimir cálculo / PDF</button></div></div></header>
+<main>
+<div class="card"><h2>Identificação do Contribuinte</h2><div class="grid"><div><label>Nome do contribuinte</label><input id="nomeContribuinte" type="text" placeholder="Digite o nome completo"></div></div></div>
+<div class="card warn"><b>Importante</b><div class="note">Estimativa educacional para o ano-calendario 2026. O calculo oficial deve ser conferido no Meu Imposto de Renda/Carne-Leao e nos comprovantes das fontes pagadoras. Nao contempla 13o salario, rendimentos recebidos acumuladamente, molestia grave, exterior, ganho de capital nem tributacao minima de altas rendas.</div></div>
+<div class="card"><h2>1. Aposentadoria mensal</h2><div class="grid">
+<div><label>Aposentadoria bruta mensal (R$)</label><input id="apos" type="number" min="0" step="0.01"></div>
+<div><label>Idade</label><input id="idade" type="number" min="0" step="1"></div>
+<div><label>Previdência oficial dedutível no mês (R$)</label><input id="prev" type="number" min="0" step="0.01"></div>
+<div><label>Número de dependentes</label><input id="deps" type="number" min="0" step="1" value="0"></div>
+</div><p class="note">Para 65 anos ou mais, aplica-se apenas a aposentadoria a parcela isenta mensal de R$ 1.903,98. Para formar a base da tabela, o simulador escolhe automaticamente o maior entre as deducoes legais informadas e o desconto simplificado mensal de R$ 607,20.</p></div>
+<div class="card"><div style="display:flex;justify-content:space-between;gap:10px;align-items:center"><h2>2. Rendimentos de Aluguéis</h2><button class="primary no-print" onclick="addRow()">+ Adicionar imovel</button></div><div class="scroll"><table><thead><tr><th>#</th><th>Fonte</th><th>Aluguel recebido</th><th>IPTU/taxas</th><th>Condominio</th><th>Cobranca/administracao</th><th>Sublocacao paga</th><th>Base aluguel</th><th>IR retido / mensal</th><th></th></tr></thead><tbody id="rows"></tbody></table></div><p class="note">So informe encargos efetivamente suportados pelo locador e legalmente excluiveis do rendimento de aluguel. Alugueis PF sao somados antes do calculo do Carne-Leao. Aluguéis pagos por PJ exibem na própria linha o IRRF estimado e a memória completa do cálculo. O resumo soma os valores exibidos nas linhas PJ. A fonte pagadora é responsável pela retenção.</p></div>
+<div class="card"><h2>3. Apuração Mensal (Cálculos Isolados)</h2><div class="grid"><div class="metric">IRRF estimado aposentadoria<b id="irApos">R$ 0,00</b></div><div class="metric">Carne-Leao alugueis PF<b id="irPF">R$ 0,00</b></div><div class="metric">IRRF estimado alugueis PJ<b id="irPJ">R$ 0,00</b></div><div class="metric">Total mensal estimado<b id="irMes">R$ 0,00</b></div></div><details><summary>Memoria mensal</summary><pre id="memo"></pre></details></div>
+<div class="card"><h2>4. Ajuste Anual (Consolidação de Dados)</h2><div class="grid">
+<div><label>Despesas médicas anuais dedutíveis (R$)</label><input id="med" type="number" min="0" step="0.01"></div>
+<div><label>Outras deduções legais anuais (R$)</label><input id="outras" type="number" min="0" step="0.01"></div>
+<div><label>Método da declaração</label><select id="metodo"><option value="auto">Mais vantajoso (automático)</option><option value="legal">Deduções legais</option><option value="simplificado">Desconto simplificado anual</option></select></div>
+</div><p class="note">Projecao pressupoe os mesmos valores mensais por 12 meses e nao inclui 13o. No metodo legal, considera dependentes (R$ 2.275,08/ano), previdencia informada, despesas medicas e outras deducoes informadas. No simplificado, usa ate R$ 17.640,00.</p><div class="grid"><div class="metric">Rendimentos tributaveis anuais<b id="rendAno">R$ 0,00</b></div><div class="metric">Base anual estimada<b id="baseAno">R$ 0,00</b></div><div class="metric">IR anual devido estimado<b id="irAno">R$ 0,00</b></div><div class="metric">IR mensal pago/retido x12<b id="pagoAno">R$ 0,00</b></div><div class="metric">Saldo projetado<b id="saldo">R$ 0,00</b></div></div><details><summary>Memoria anual</summary><pre id="memoAno"></pre></details></div>
+<div class="card"><h2>Parâmetros Normativos Utilizados</h2><div class="note">Mensal 2026: faixas 0% ate R$ 2.428,80; 7,5% ate R$ 2.826,65 (deducao R$ 182,16); 15% ate R$ 3.751,05 (R$ 394,16); 22,5% ate R$ 4.664,68 (R$ 675,49); 27,5% acima (R$ 908,73). Reducao: imposto zerado ate R$ 5.000,00 de rendimentos tributaveis; de R$ 5.000,01 a R$ 7.350,00, reducao = 978,62 - 0,133145 x rendimentos tributaveis. Anual: tabela propria de 2026 e reducao ate R$ 60.000,00, gradual ate R$ 88.200,00.</div></div>
+</main>
+<script>
+const C={is65:1903.98,simpM:607.20,depM:189.59,depA:2275.08,simpA:17640};
+const brl=v=>(Number(v)||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'}); const n=id=>Math.max(0,Number(document.getElementById(id).value)||0);
+function tabelaM(base){if(base<=2428.80)return 0;if(base<=2826.65)return base*.075-182.16;if(base<=3751.05)return base*.15-394.16;if(base<=4664.68)return base*.225-675.49;return base*.275-908.73}
+function reducaoM(imposto,rendTrib){let r=0;if(rendTrib<=5000)r=imposto;else if(rendTrib<=7350)r=Math.max(0,978.62-.133145*rendTrib);return Math.min(imposto,r)}
+function calcM(rendTrib,dedLegais=0,permitirSimpl=true){const ded=permitirSimpl?Math.max(dedLegais,C.simpM):dedLegais, base=Math.max(0,rendTrib-ded), bruto=Math.max(0,tabelaM(base)), red=reducaoM(bruto,rendTrib);return{rendTrib,ded,base,bruto,red,ir:Math.max(0,bruto-red)}}
+function faixaM(base){if(base<=2428.80)return{aliq:0,parcela:0};if(base<=2826.65)return{aliq:.075,parcela:182.16};if(base<=3751.05)return{aliq:.15,parcela:394.16};if(base<=4664.68)return{aliq:.225,parcela:675.49};return{aliq:.275,parcela:908.73}}
+function calcAluguelBase2026(base){base=Math.max(0,Number(base)||0);const f=faixaM(base),bruto=Math.max(0,base*f.aliq-f.parcela),red=reducaoM(bruto,base),ir=Math.max(0,bruto-red);return{base,aliq:f.aliq,parcela:f.parcela,bruto,red,ir}}
+function memoAluguel(c){return `<strong>Memória de Cálculo:</strong> Base tributável: ${brl(c.base)} | Alíquota da Tabela: ${(c.aliq*100).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})}% | Parcela a Deduzir: ${brl(c.parcela)} | Imposto Bruto Tabela: ${brl(c.bruto)} | Redução Especial (Lei 15.270): ${brl(c.red)} | Imposto Retido Final: ${brl(c.ir)}.`}
+function tabelaA(base){if(base<=29145.60)return 0;if(base<=33919.80)return base*.075-2185.92;if(base<=45012.60)return base*.15-4729.91;if(base<=55976.16)return base*.225-8105.85;return base*.275-10904.66}
+function reducaoA(imposto,rendTrib){let r=0;if(rendTrib<=60000)r=imposto;else if(rendTrib<=88200)r=Math.max(0,8429.73-.095575*rendTrib);return Math.min(imposto,r)}
+function addRow(d={}){const tr=document.createElement('tr');const memo=document.createElement('tr');memo.className='memo-row';tr.innerHTML=`<td class="idx"></td><td><select class="fonte"><option value="PF">PF</option><option value="PJ">PJ</option></select></td><td><input class="alug" type="number" min="0" step=".01"></td><td><input class="iptu" type="number" min="0" step=".01"></td><td><input class="cond" type="number" min="0" step=".01"></td><td><input class="adm" type="number" min="0" step=".01"></td><td><input class="sub" type="number" min="0" step=".01"></td><td class="base num"></td><td class="ir num">-</td><td><button class="danger no-print">x</button></td>`;memo.innerHTML='<td colspan="10" class="memo-content">Aguardando valores...</td>';for(const k of ['fonte','alug','iptu','cond','adm','sub']){let e=tr.querySelector('.'+k);if(d[k]!=null)e.value=d[k];e.addEventListener('input',calc);e.addEventListener('change',calc)}tr.querySelector('button').onclick=()=>{memo.remove();tr.remove();calc()};const body=document.getElementById('rows');body.appendChild(tr);body.appendChild(memo);calc();if(typeof salvarDados==='function')salvarDados()}
+function calc(){const apos=n('apos'),idade=n('idade'),prev=n('prev'),deps=n('deps'),isento65=idade>=65?Math.min(apos,C.is65):0,rendApos=Math.max(0,apos-isento65),legalM=prev+deps*C.depM,ca=calcM(rendApos,legalM,true);let pf=0,pj=0,rentTotal=0,totalIRPJ=0;const rs=[...document.querySelectorAll('#rows tr:not(.memo-row)')];rs.forEach((r,i)=>{r.querySelector('.idx').textContent=i+1;const get=c=>Math.max(0,Number(r.querySelector('.'+c).value)||0),a=get('alug'),ded=get('iptu')+get('cond')+get('adm')+get('sub'),base=Math.max(0,a-ded),fonte=r.querySelector('.fonte').value,memo=r.nextElementSibling.querySelector('.memo-content');r.querySelector('.base').textContent=brl(base);rentTotal+=base;const c=calcAluguelBase2026(base);if(fonte==='PF'){pf+=base;r.querySelector('.ir').textContent='No total PF';memo.innerHTML=`<strong>Memória do imóvel PF:</strong> Base tributável individual: ${brl(base)}. O Carnê-Leão é exibido abaixo sobre o total mensal dos aluguéis PF cadastrados.`;}else{pj+=base;totalIRPJ+=c.ir;r.querySelector('.ir').textContent=brl(c.ir);memo.innerHTML=memoAluguel(c);}});const cpf=calcAluguelBase2026(pf),cpjConsolidado=calcAluguelBase2026(pj);document.getElementById('irApos').textContent=brl(ca.ir);document.getElementById('irPF').textContent=brl(cpf.ir);document.getElementById('irPJ').textContent=brl(totalIRPJ);const pagoM=ca.ir+cpf.ir+totalIRPJ;document.getElementById('irMes').textContent=brl(pagoM);document.getElementById('memo').textContent=`Aposentadoria: tributável ${brl(rendApos)}; parcela 65+ ${brl(isento65)}; dedução usada ${brl(ca.ded)}; base ${brl(ca.base)}; imposto tabela ${brl(ca.bruto)}; redução ${brl(ca.red)}; IR ${brl(ca.ir)}.\nAluguéis PF somados: base tributável ${brl(pf)}; imposto tabela ${brl(cpf.bruto)}; redução ${brl(cpf.red)}; Carnê-Leão estimado ${brl(cpf.ir)}.\nAluguéis PJ: IRRF calculado individualmente por imóvel/fonte pagadora e somado no resumo: ${brl(totalIRPJ)}. Base PJ total apenas informativa: ${brl(pj)}.`;const rendAno=(rendApos+rentTotal)*12,legalA=prev*12+deps*C.depA+n('med')+n('outras'),simpA=Math.min(C.simpA,rendAno),met=document.getElementById('metodo').value;let dedA=met==='legal'?legalA:met==='simplificado'?simpA:Math.max(legalA,simpA),nome=dedA===legalA?'legais':'simplificado';const baseA=Math.max(0,rendAno-dedA),brutoA=Math.max(0,tabelaA(baseA)),redA=reducaoA(brutoA,rendAno),irA=Math.max(0,brutoA-redA),pagoA=pagoM*12,saldo=irA-pagoA;document.getElementById('rendAno').textContent=brl(rendAno);document.getElementById('baseAno').textContent=brl(baseA);document.getElementById('irAno').textContent=brl(irA);document.getElementById('pagoAno').textContent=brl(pagoA);document.getElementById('saldo').textContent=(saldo>0?'A pagar ':'A restituir ')+brl(Math.abs(saldo));document.getElementById('memoAno').textContent=`Projeção de 12 meses. Rendimentos tributáveis: ${brl(rendAno)}. Deduções legais: ${brl(legalA)}. Desconto simplificado: ${brl(simpA)}. Método usado: ${nome}. Base anual: ${brl(baseA)}. Imposto pela tabela anual: ${brl(brutoA)}. Redução anual: ${brl(redA)}. IR devido: ${brl(irA)}. IR pago/retido projetado: ${brl(pagoA)}.`;}
+const STORAGE_KEY='simuladorIRPF2026_dados';
+function salvarDados(){
+  const dados={
+    nomeContribuinte:document.getElementById('nomeContribuinte')?.value||'',
+    apos:document.getElementById('apos')?.value||'', idade:document.getElementById('idade')?.value||'',
+    prev:document.getElementById('prev')?.value||'', deps:document.getElementById('deps')?.value||'',
+    med:document.getElementById('med')?.value||'', outras:document.getElementById('outras')?.value||'',
+    metodo:document.getElementById('metodo')?.value||'auto',
+    imoveis:[...document.querySelectorAll('#rows tr:not(.memo-row)')].map(r=>({
+      fonte:r.querySelector('.fonte').value, alug:r.querySelector('.alug').value,
+      iptu:r.querySelector('.iptu').value, cond:r.querySelector('.cond').value,
+      adm:r.querySelector('.adm').value, sub:r.querySelector('.sub').value
+    }))
+  };
+  localStorage.setItem(STORAGE_KEY,JSON.stringify(dados));
+}
+function carregarDados(){
+  try{
+    const raw=localStorage.getItem(STORAGE_KEY); if(!raw)return false;
+    const d=JSON.parse(raw);
+    for(const id of ['nomeContribuinte','apos','idade','prev','deps','med','outras','metodo']){
+      if(d[id]!==undefined && document.getElementById(id)) document.getElementById(id).value=d[id];
+    }
+    document.getElementById('rows').innerHTML='';
+    (d.imoveis||[]).forEach(x=>addRow(x));
+    if(!(d.imoveis||[]).length){addRow();addRow();}
+    calc(); return true;
+  }catch(e){console.warn('Não foi possível restaurar os dados salvos.',e);return false;}
+}
+function ativarSalvamentoAutomatico(){
+  document.addEventListener('input',salvarDados);
+  document.addEventListener('change',salvarDados);
+  window.addEventListener('beforeunload',salvarDados);
+}
+function exportarDados(){
+  salvarDados();
+  const raw=localStorage.getItem(STORAGE_KEY)||'{}';
+  const blob=new Blob([raw],{type:'application/json;charset=utf-8'});
+  const a=document.createElement('a');
+  const agora=new Date();
+  const dataFormatada=String(agora.getDate()).padStart(2,'0')+'-'+String(agora.getMonth()+1).padStart(2,'0')+'-'+agora.getFullYear();
+  const horaFormatada=String(agora.getHours()).padStart(2,'0')+'-'+String(agora.getMinutes()).padStart(2,'0')+'-'+String(agora.getSeconds()).padStart(2,'0');
+  a.href=URL.createObjectURL(blob);a.download=`Simulador_IRPF_PF_x_PJ_2026_${dataFormatada}_${horaFormatada}.json`;
+  document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(a.href);
+}
+function importarDados(event){
+  const arquivo=event.target.files&&event.target.files[0];if(!arquivo)return;
+  const leitor=new FileReader();
+  leitor.onload=()=>{try{const d=JSON.parse(leitor.result);localStorage.setItem(STORAGE_KEY,JSON.stringify(d));carregarDados();salvarDados();}catch(e){alert('Arquivo de dados inválido.');}event.target.value='';};
+  leitor.readAsText(arquivo,'utf-8');
+}
+function limparDados(){
+  if(!confirm('Deseja limpar todos os dados preenchidos neste simulador?'))return;
+  localStorage.removeItem(STORAGE_KEY);
+  for(const id of ['nomeContribuinte','apos','idade','prev','med','outras']){const e=document.getElementById(id);if(e)e.value='';}
+  document.getElementById('deps').value='0';document.getElementById('metodo').value='auto';document.getElementById('rows').innerHTML='';addRow();addRow();calc();salvarDados();
+}
+function imprimirCalculo(){calc();const nome=document.getElementById('nomeContribuinte').value.trim();const tituloOriginal=document.title;if(nome)document.title='Simulador IRPF 2026 - '+nome;window.print();document.title=tituloOriginal}
+for(const id of ['apos','idade','prev','deps','med','outras','metodo'])document.getElementById(id).addEventListener('input',calc);if(!carregarDados()){addRow();addRow();calc();}ativarSalvamentoAutomatico();
+</script></body></html>
