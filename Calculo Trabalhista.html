@@ -170,15 +170,19 @@
                         <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Dependentes</label>
                         <input type="number" id="dependentes" value="0" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 font-semibold focus:ring-2 focus:ring-brand-500 focus:bg-white transition text-sm">
                     </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Meses de Contrato</label>
-                        <input type="number" id="mesesContrato" placeholder="Total meses" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 font-semibold focus:ring-2 focus:ring-brand-500 focus:bg-white transition text-sm">
+                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Data de Admissão</label>
+                        <input type="date" id="dataAdmissao" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 font-semibold focus:ring-2 focus:ring-brand-500 focus:bg-white transition text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Data de Desligamento</label>
+                        <input type="date" id="dataDesligamento" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 font-semibold focus:ring-2 focus:ring-brand-500 focus:bg-white transition text-sm">
                     </div>
                 </div>
             </div>
-
             <hr class="border-slate-100">
-
             <!-- 3. Benefícios & Descontos -->
             <div>
                 <h2 class="text-sm font-bold uppercase tracking-wider text-brand-700 mb-3 flex items-center gap-2">
@@ -186,26 +190,38 @@
                 </h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Vale Transporte (R$)</label>
+                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Custo VT Empresa (R$)</label>
                         <input type="number" id="vt" value="0" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 font-semibold focus:ring-2 focus:ring-brand-500 focus:bg-white transition text-sm">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Vale Refeição (R$)</label>
+                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Custo VR Empresa (R$)</label>
                         <input type="number" id="vr" value="0" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 font-semibold focus:ring-2 focus:ring-brand-500 focus:bg-white transition text-sm">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Assistência Médica (R$)</label>
+                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Custo Saúde Empresa (R$)</label>
                         <input type="number" id="saude" value="0" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 font-semibold focus:ring-2 focus:ring-brand-500 focus:bg-white transition text-sm">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Pensão Alimentícia (R$)</label>
-                        <input type="number" id="pensao" value="0" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 font-semibold focus:ring-2 focus:ring-brand-500 focus:bg-white transition text-sm">
+                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Pensão: valor fixo ou percentual</label>
+                        <input type="number" id="pensao" value="0" min="0" step="0.01" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 font-semibold focus:ring-2 focus:ring-brand-500 focus:bg-white transition text-sm">
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Desconto VT Empregado (R$)</label>
+                        <input type="number" id="descVt" value="0" min="0" step="0.01" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 font-semibold focus:ring-2 focus:ring-brand-500 focus:bg-white transition text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Desconto VR Empregado (R$)</label>
+                        <input type="number" id="descVr" value="0" min="0" step="0.01" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 font-semibold focus:ring-2 focus:ring-brand-500 focus:bg-white transition text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Desconto Saúde Empregado (R$)</label>
+                        <input type="number" id="descSaude" value="0" min="0" step="0.01" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 font-semibold focus:ring-2 focus:ring-brand-500 focus:bg-white transition text-sm">
                     </div>
                 </div>
             </div>
-
             <hr class="border-slate-100">
-
             <!-- 4. Situação de Saída -->
             <div>
                 <h2 class="text-sm font-bold uppercase tracking-wider text-brand-700 mb-3 flex items-center gap-2">
@@ -221,8 +237,68 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Saldo Inicial FGTS (R$)</label>
-                        <input type="number" id="fgtsAnterior" value="0" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 font-semibold focus:ring-2 focus:ring-brand-500 focus:bg-white transition text-sm">
+                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Saldo FGTS informado (R$)</label>
+                        <input type="number" id="fgtsAnterior" value="0" min="0" step="0.01" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 font-semibold focus:ring-2 focus:ring-brand-500 focus:bg-white transition text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Base rescisória FGTS informada (R$)</label>
+                        <input type="number" id="baseMultaFgts" value="0" min="0" step="0.01" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 font-semibold focus:ring-2 focus:ring-brand-500 focus:bg-white transition text-sm">
+                    </div>
+                    <div class="grid grid-cols-3 gap-2">
+                        <div><label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">INSS Patronal %</label><input type="number" id="aliqPatronal" value="20" min="0" step="0.1" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 font-semibold text-sm"></div>
+                        <div><label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">RAT %</label><input type="number" id="aliqRat" value="2" min="0" step="0.1" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 font-semibold text-sm"></div>
+                        <div><label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Terceiros %</label><input type="number" id="aliqTerceiros" value="5.8" min="0" step="0.1" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 font-semibold text-sm"></div>
+                    </div>
+                </div>
+            </div>
+
+
+            <hr class="border-slate-100">
+            <!-- 5. Parâmetros Rescisórios -->
+            <div>
+                <h2 class="text-sm font-bold uppercase tracking-wider text-brand-700 mb-3 flex items-center gap-2">
+                    <i class="fa-solid fa-sliders text-brand-600"></i> Parâmetros Rescisórios
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Modalidade do Aviso</label>
+                        <select id="modoAviso" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 font-semibold text-sm">
+                            <option value="indenizado">Indenizado</option>
+                            <option value="trabalhado">Trabalhado</option>
+                            <option value="descontado">Descontado do empregado</option>
+                            <option value="naoAplica">Não se aplica</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Férias integrais adquiridas e não gozadas</label>
+                        <input type="number" id="feriasIntegrais" value="0" min="0" step="1" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 font-semibold text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Períodos de férias em dobro</label>
+                        <input type="number" id="feriasDobro" value="0" min="0" step="1" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 font-semibold text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Modo do FGTS</label>
+                        <select id="modoFgts" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 font-semibold text-sm">
+                            <option value="informado">Usar saldo e base informados</option>
+                            <option value="projetado">Projetar desde a admissão</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Tipo de pensão</label>
+                        <select id="tipoPensao" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 font-semibold text-sm">
+                            <option value="fixa">Valor fixo total</option>
+                            <option value="percentual">Percentual das verbas selecionadas</option>
+                        </select>
+                    </div>
+                    <div class="md:col-span-1">
+                        <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">Incidência da pensão</label>
+                        <div class="grid grid-cols-2 gap-2 text-xs text-slate-700">
+                            <label><input type="checkbox" id="pensaoSalario" checked> Salário/saldo</label>
+                            <label><input type="checkbox" id="pensao13"> 13º</label>
+                            <label><input type="checkbox" id="pensaoFerias"> Férias</label>
+                            <label><input type="checkbox" id="pensaoAviso"> Aviso</label>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -286,7 +362,7 @@
             </div>
             
             <p class="text-[11px] text-slate-400 italic">
-                * Custos provisionados incluem Férias e 13º mensais. Rendimento FGTS calculado com base em 3% ao ano sobre o saldo acumulado conforme solicitado.
+                * Simulação estimativa com tabelas de INSS e IRRF vigentes desde janeiro de 2026. INSS e IRRF do 13º são apurados separadamente. Férias indenizadas e FGTS ficam discriminados. O modo projetado do FGTS não substitui o extrato nem a base rescisória oficial.
             </p>
         </div>
 
@@ -301,146 +377,118 @@
     </footer>
 
     <script>
-        function formatar(valor) {
-            return valor.toLocaleString('pt-br', {style: 'currency', currency: 'BRL'});
+        const arredondar = valor => Math.round((Number(valor) * 100) + 1e-8) / 100;
+        const numero = id => Math.max(0, parseFloat(document.getElementById(id)?.value) || 0);
+        const inteiro = id => Math.max(0, parseInt(document.getElementById(id)?.value) || 0);
+        const marcado = id => Boolean(document.getElementById(id)?.checked);
+        function formatar(valor) { return arredondar(valor).toLocaleString('pt-BR', {style:'currency', currency:'BRL'}); }
+        function dataLocal(valor) { if (!valor) return null; const [a,m,d]=valor.split('-').map(Number); return new Date(a,m-1,d); }
+        function diasNoMes(data) { return new Date(data.getFullYear(), data.getMonth()+1, 0).getDate(); }
+        function adicionarDias(data,dias) { const r=new Date(data); r.setDate(r.getDate()+dias); return r; }
+        function primeiroDiaMes(data) { return new Date(data.getFullYear(),data.getMonth(),1); }
+        function ultimoDiaMes(data) { return new Date(data.getFullYear(),data.getMonth()+1,0); }
+        function anosCompletos(inicio,fim) { let a=fim.getFullYear()-inicio.getFullYear(); const aniv=new Date(fim.getFullYear(),inicio.getMonth(),inicio.getDate()); if(fim<aniv)a--; return Math.max(0,a); }
+        function diasTrabalhadosNoMes(inicio,fim,mesRef) {
+            const ini=new Date(Math.max(inicio.getTime(),primeiroDiaMes(mesRef).getTime()));
+            const ter=new Date(Math.min(fim.getTime(),ultimoDiaMes(mesRef).getTime()));
+            return ter<ini?0:Math.min(30,ter.getDate()-ini.getDate()+1);
         }
-
+        function mesesComQuinzeDias(inicio,fim) {
+            let total=0,cursor=primeiroDiaMes(inicio),limite=primeiroDiaMes(fim);
+            while(cursor<=limite){ if(diasTrabalhadosNoMes(inicio,fim,cursor)>=15)total++; cursor=new Date(cursor.getFullYear(),cursor.getMonth()+1,1); }
+            return total;
+        }
+        function avos13(inicio,fim) { const inicioAno=new Date(fim.getFullYear(),0,1), ini=new Date(Math.max(inicio.getTime(),inicioAno.getTime())); return Math.min(12,mesesComQuinzeDias(ini,fim)); }
+        function inicioPeriodoAquisitivo(admissao,fim) { let i=new Date(fim.getFullYear(),admissao.getMonth(),admissao.getDate()); if(i>fim)i.setFullYear(i.getFullYear()-1); return i<admissao?admissao:i; }
+        function avosFeriasProporcionais(admissao,fim) { return Math.min(12,mesesComQuinzeDias(inicioPeriodoAquisitivo(admissao,fim),fim)); }
         function limparForm() {
-            const inputs = document.querySelectorAll('input');
-            inputs.forEach(input => {
-                const defaults = ['dependentes', 'fgtsAnterior', 'vt', 'vr', 'saude', 'pensao'];
-                input.value = defaults.includes(input.id) ? "0" : "";
-            });
-            document.getElementById('tipoSaida').selectedIndex = 0;
-            document.getElementById('results').style.display = 'none';
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.querySelectorAll('input').forEach(input=>{ if(input.type==='checkbox'){input.checked=input.id==='pensaoSalario';return;} const zeros=['dependentes','fgtsAnterior','baseMultaFgts','vt','vr','saude','pensao','descVt','descVr','descSaude','feriasIntegrais','feriasDobro']; input.value=zeros.includes(input.id)?'0':input.id==='aliqPatronal'?'20':input.id==='aliqRat'?'2':input.id==='aliqTerceiros'?'5.8':''; });
+            document.getElementById('tipoSaida').selectedIndex=0; document.getElementById('modoAviso').value='indenizado'; document.getElementById('modoFgts').value='informado'; document.getElementById('tipoPensao').value='fixa'; document.getElementById('results').style.display='none'; window.scrollTo({top:0,behavior:'smooth'});
         }
-
-        function calcularINSS(salario) {
-            // Tabela INSS 2026 - Baseada no salário mínimo de R$ 1.621,00
-            if (salario <= 1621.00) {
-                return salario * 0.075;
-            } else if (salario <= 2902.84) {
-                return (salario * 0.09) - 24.32;
-            } else if (salario <= 4354.27) {
-                return (salario * 0.12) - 111.40;
-            } else if (salario <= 8475.55) {
-                return (salario * 0.14) - 198.49;
-            } else {
-                return 988.09; // Teto máximo de contribuição para 2026
+        // Tabelas vigentes a partir de janeiro de 2026.
+        const PARAMETROS_2026 = Object.freeze({
+            inss: Object.freeze([
+                Object.freeze({ limite: 1621.00, aliquota: 0.075 }),
+                Object.freeze({ limite: 2902.84, aliquota: 0.09 }),
+                Object.freeze({ limite: 4354.27, aliquota: 0.12 }),
+                Object.freeze({ limite: 8475.55, aliquota: 0.14 })
+            ]),
+            irrf: Object.freeze({
+                dependente: 189.59,
+                simplificada: 607.20,
+                reducaoIntegralAte: 5000.00,
+                reducaoParcialAte: 7350.00
+            })
+        });
+        function calcularINSS(base) {
+            const salarioContribuicao=Math.min(Math.max(0,Number(base)||0),8475.55);
+            let anterior=0,total=0;
+            for(const faixa of PARAMETROS_2026.inss){
+                const parcela=Math.max(0,Math.min(salarioContribuicao,faixa.limite)-anterior);
+                total+=parcela*faixa.aliquota;
+                if(salarioContribuicao<=faixa.limite)break;
+                anterior=faixa.limite;
             }
+            return arredondar(total);
         }
-
-        function calcularIRRF(salario, dependentes, pensao) {
-            const inss = calcularINSS(salario);
-            
-            // Deduções Legais (INSS, dependentes e pensão)
-            const baseDeducoes = salario - inss - (dependentes * 189.59) - pensao;
-            
-            // Desconto Simplificado Mensal (Essencial para garantir a isenção de 5k)
-            const descontoSimplificado = 624.00; 
-            const baseSimplificada = salario - descontoSimplificado;
-            
-            // A regra atual utiliza a base que for mais vantajosa ao trabalhador
-            const baseFinal = Math.min(baseDeducoes, baseSimplificada);
-
-            // Tabela Progressiva IRRF 2026 - Ajustada para continuidade das faixas
-            if (baseFinal <= 4376.00) return 0; // Faixa de Isenção (Garante 5k isento)
-            if (baseFinal <= 5250.00) return (baseFinal * 0.075) - 328.20;
-            if (baseFinal <= 6600.00) return (baseFinal * 0.15) - 721.95;
-            if (baseFinal <= 7900.00) return (baseFinal * 0.225) - 1216.95;
-            return (baseFinal * 0.275) - 1611.95;
+        function calcularIRRF(rendimento,dependentes,pensaoDedutivel=0) {
+            const bruto=Math.max(0,Number(rendimento)||0);
+            const inss=calcularINSS(bruto);
+            const deducoesLegais=inss+(Math.max(0,Number(dependentes)||0)*PARAMETROS_2026.irrf.dependente)+Math.max(0,Number(pensaoDedutivel)||0);
+            const deducao=Math.max(deducoesLegais,PARAMETROS_2026.irrf.simplificada);
+            const base=Math.max(0,bruto-deducao);
+            let imposto=0;
+            if(base<=2428.80)imposto=0;
+            else if(base<=2826.65)imposto=base*0.075-182.16;
+            else if(base<=3751.05)imposto=base*0.15-394.16;
+            else if(base<=4664.68)imposto=base*0.225-675.49;
+            else imposto=base*0.275-908.73;
+            imposto=Math.max(0,imposto);
+            let reducao=0;
+            if(bruto<=PARAMETROS_2026.irrf.reducaoIntegralAte)reducao=Math.min(imposto,312.89);
+            else if(bruto<=PARAMETROS_2026.irrf.reducaoParcialAte)reducao=Math.max(0,978.62-(0.133145*bruto));
+            return arredondar(Math.max(0,imposto-Math.min(imposto,reducao)));
         }
-
+        function calcularPensao(componentes) {
+            const entrada=numero('pensao'), tipo=document.getElementById('tipoPensao').value;
+            const bases={salario:marcado('pensaoSalario')?componentes.salario:0,decimo:marcado('pensao13')?componentes.decimo:0,ferias:marcado('pensaoFerias')?componentes.ferias:0,aviso:marcado('pensaoAviso')?componentes.aviso:0};
+            const soma=Object.values(bases).reduce((a,b)=>a+b,0); if(entrada<=0||soma<=0)return {total:0,salario:0,decimo:0,ferias:0,aviso:0};
+            if(tipo==='percentual'){const f=entrada/100; return {total:arredondar(soma*f),salario:arredondar(bases.salario*f),decimo:arredondar(bases.decimo*f),ferias:arredondar(bases.ferias*f),aviso:arredondar(bases.aviso*f)};}
+            const total=Math.min(entrada,soma); return {total:arredondar(total),salario:arredondar(total*bases.salario/soma),decimo:arredondar(total*bases.decimo/soma),ferias:arredondar(total*bases.ferias/soma),aviso:arredondar(total*bases.aviso/soma)};
+        }
+        function projetarFgts(admissao,fim,salario,decimoRescisao) {
+            let saldo=0,base=0,cursor=primeiroDiaMes(admissao),limite=primeiroDiaMes(fim),anoAnterior=null,avosAno=0;
+            while(cursor<=limite){ const dias=diasTrabalhadosNoMes(admissao,fim,cursor),remuneracao=salario*dias/30,dep=remuneracao*0.08; saldo+=dep;base+=dep; const ano=cursor.getFullYear(); if(anoAnterior!==null&&ano!==anoAnterior){const dep13=salario*(Math.min(12,avosAno)/12)*0.08;saldo+=dep13;base+=dep13;avosAno=0;} if(dias>=15)avosAno++; anoAnterior=ano; cursor=new Date(cursor.getFullYear(),cursor.getMonth()+1,1); }
+            const dep13Final=Math.max(0,decimoRescisao)*0.08; saldo+=dep13Final;base+=dep13Final; return {saldo:arredondar(saldo),base:arredondar(base)};
+        }
+        function linha(desc,provento=null,desconto=null,classe='') { return `<tr class="${classe}"><td class="py-2.5 px-4">${desc}</td><td class="py-2.5 px-4 ${provento!==null?'positive':''}">${provento===null?'-':formatar(provento)}</td><td class="py-2.5 px-4 ${desconto!==null?'negative':''}">${desconto===null?'-':formatar(desconto)}</td></tr>`; }
         function calcular() {
-            const salario = parseFloat(document.getElementById('salario').value) || 0;
-            const dependentes = parseInt(document.getElementById('dependentes').value) || 0;
-            const meses = parseInt(document.getElementById('mesesContrato').value) || 0;
-            const tipo = document.getElementById('tipoSaida').value;
-            const fgtsInicial = parseFloat(document.getElementById('fgtsAnterior').value) || 0;
-            const nome = document.getElementById('nome').value || "Não Informado";
-            
-            const vt = parseFloat(document.getElementById('vt').value) || 0;
-            const vr = parseFloat(document.getElementById('vr').value) || 0;
-            const saude = parseFloat(document.getElementById('saude').value) || 0;
-            const pensao = parseFloat(document.getElementById('pensao').value) || 0;
-
-            document.getElementById('nomeExibido').innerText = nome;
-
-            const inssEmpregado = calcularINSS(salario);
-            const irrf = calcularIRRF(salario, dependentes, pensao);
-
-            // --- CÁLCULO CUSTO EMPREGADOR 2026 ---
-            const inssPatronal = salario * 0.20; 
-            const fgtsMensal = salario * 0.08;   
-            const provisao13 = salario / 12;
-            const provisaoFerias = (salario / 12) * 1.3333;
-            const fgtsSobreProvisoes = (provisao13 + provisaoFerias) * 0.08;
-
-            // SOMA DOS BENEFÍCIOS AO CUSTO (Pontual)
-            const custoBeneficios = vt + vr + saude;
-
-            // O custo total real agora reflete o salário, encargos e benefícios informados
-            const custoTotalReal = salario + inssPatronal + fgtsMensal + provisao13 + provisaoFerias + fgtsSobreProvisoes + custoBeneficios;
-
-            // --- RENDIMENTO FGTS (3% a.a.) ---
-            const taxaAnual = 0.03;
-            const taxaMensal = Math.pow(1 + taxaAnual, 1/12) - 1; 
-            
-            let saldoAcumulado = fgtsInicial;
-            for (let i = 0; i < meses; i++) {
-                saldoAcumulado = (saldoAcumulado + fgtsMensal) * (1 + taxaMensal);
-            }
-
-            let htmlFunc = `
-                <tr><td class="py-2.5 px-4">Salário Mensal Bruto</td><td class="py-2.5 px-4 positive">${formatar(salario)}</td><td class="py-2.5 px-4">-</td></tr>
-                <tr><td class="py-2.5 px-4">INSS (Desconto)</td><td class="py-2.5 px-4">-</td><td class="py-2.5 px-4 negative">${formatar(inssEmpregado)}</td></tr>
-                <tr><td class="py-2.5 px-4">IRRF (Base c/ Pensão e Depend.)</td><td class="py-2.5 px-4">-</td><td class="py-2.5 px-4 negative">${formatar(irrf)}</td></tr>
-                <tr><td class="py-2.5 px-4">Pensão Alimentícia</td><td class="py-2.5 px-4">-</td><td class="py-2.5 px-4 negative">${formatar(pensao)}</td></tr>
-                <tr><td class="py-2.5 px-4">Outros Descontos (VT/VR/Saúde)</td><td class="py-2.5 px-4">-</td><td class="py-2.5 px-4 negative">${formatar(vt + vr + saude)}</td></tr>
-            `;
-
-            let totalProventos = salario;
-            let totalDescontos = inssEmpregado + irrf + vt + vr + saude + pensao;
-
-            if (tipo !== 'mensal') {
-                const mesesProp = meses % 12 || 12;
-                const decimo = (salario / 12) * mesesProp;
-                const ferias = ((salario / 12) * mesesProp) * 1.3333;
-                htmlFunc += `<tr><td class="py-2.5 px-4">13º e Férias Proporcionais</td><td class="py-2.5 px-4 positive">${formatar(decimo + ferias)}</td><td class="py-2.5 px-4">-</td></tr>`;
-                totalProventos += (decimo + ferias);
-                
-                if (tipo === 'semJusta') {
-                    const aviso = salario;
-                    const multa = saldoAcumulado * 0.40;
-                    
-                    htmlFunc += `<tr><td class="py-2.5 px-4">Aviso Prévio Indenizado</td><td class="py-2.5 px-4 positive">${formatar(aviso)}</td><td class="py-2.5 px-4">-</td></tr>`;
-                    
-                    // --- DETALHAMENTO DO FGTS PARA O FUNCIONÁRIO ---
-                    htmlFunc += `<tr class="fgts-row"><td class="py-2.5 px-4">Saldo Acumulado no Banco (Corrigido 3% a.a.)</td><td class="py-2.5 px-4 positive">${formatar(saldoAcumulado)}</td><td class="py-2.5 px-4">-</td></tr>`;
-                    htmlFunc += `<tr class="fgts-row"><td class="py-2.5 px-4">Multa Rescisória (40% sobre o saldo)</td><td class="py-2.5 px-4 positive">${formatar(multa)}</td><td class="py-2.5 px-4">-</td></tr>`;
-                    
-                    totalProventos += (aviso + multa);
-                    
-                    htmlFunc += `<tr class="fgts-total"><td class="py-2.5 px-4">VALOR TOTAL PARA SAQUE NA CAIXA (Saldo + Multa)</td><td colspan="2" class="py-2.5 px-4 text-right">${formatar(saldoAcumulado + multa)}</td></tr>`;
+            const salario=numero('salario'), dependentes=inteiro('dependentes'), tipo=document.getElementById('tipoSaida').value, admissao=dataLocal(document.getElementById('dataAdmissao').value), desligamento=dataLocal(document.getElementById('dataDesligamento').value), nome=document.getElementById('nome').value||'Não Informado';
+            if(salario<=0){alert('Informe um salário bruto maior que zero.');return;} if(tipo!=='mensal'&&(!admissao||!desligamento||desligamento<admissao)){alert('Para rescisão, informe datas válidas de admissão e desligamento.');return;} if(document.getElementById('tipoPensao').value==='percentual'&&numero('pensao')>100){alert('O percentual de pensão não pode ser maior que 100%.');return;} if(tipo==='semJusta'&&document.getElementById('modoFgts').value==='informado'&&numero('baseMultaFgts')===0){alert('Informe a base rescisória do FGTS ou selecione o modo projetado.');return;}
+            const vt=numero('vt'),vr=numero('vr'),saude=numero('saude'),descBeneficios=numero('descVt')+numero('descVr')+numero('descSaude'); document.getElementById('nomeExibido').innerText=nome;
+            const fgtsMensal=arredondar(salario*0.08),provisao13=salario/12,provisaoFerias=(salario/12)*(4/3),aliqEnc=numero('aliqPatronal')+numero('aliqRat')+numero('aliqTerceiros'),patronal=salario*numero('aliqPatronal')/100,rat=salario*numero('aliqRat')/100,terceiros=salario*numero('aliqTerceiros')/100,fgtsProv=(provisao13+provisaoFerias)*0.08,encProv=(provisao13+provisaoFerias)*aliqEnc/100;
+            const custoBrutoBeneficios=arredondar(vt+vr+saude),participacaoBeneficiosEmpresa=Math.min(descBeneficios,custoBrutoBeneficios),custoLiquidoBeneficios=arredondar(custoBrutoBeneficios-participacaoBeneficiosEmpresa),custoTotal=arredondar(salario+patronal+rat+terceiros+fgtsMensal+provisao13+provisaoFerias+fgtsProv+encProv+custoLiquidoBeneficios);
+            let html='',totalDireto=0,totalDescontos=0;
+            if(tipo==='mensal'){
+                const pensao=calcularPensao({salario,decimo:0,ferias:0,aviso:0}),inss=calcularINSS(salario),irrf=calcularIRRF(salario,dependentes,pensao.salario); totalDireto=salario; totalDescontos=inss+irrf+pensao.total+descBeneficios;
+                html+=linha('Salário mensal bruto',salario)+linha('INSS',null,inss)+linha('IRRF',null,irrf)+linha('Pensão alimentícia',null,pensao.total)+linha('Coparticipações VT/VR/Saúde',null,descBeneficios);
+            } else {
+                const modoAviso=document.getElementById('modoAviso').value,anos=anosCompletos(admissao,desligamento),diasAviso=Math.min(90,30+3*anos),avisoIndenizado=tipo==='semJusta'&&modoAviso==='indenizado'?arredondar(salario*diasAviso/30):0,avisoDescontado=tipo==='pedido'&&modoAviso==='descontado'?arredondar(salario):0,fimProjetado=tipo==='semJusta'&&modoAviso==='indenizado'?adicionarDias(desligamento,diasAviso):desligamento;
+                const diasSaldo=diasTrabalhadosNoMes(admissao,desligamento,desligamento),saldo=arredondar(salario*diasSaldo/30),avos13Valor=avos13(admissao,fimProjetado),decimo=arredondar(salario*avos13Valor/12),avosFerias=avosFeriasProporcionais(admissao,fimProjetado),feriasProp=arredondar(salario*avosFerias/12),tercoProp=arredondar(feriasProp/3),feriasIntegrais=arredondar(salario*inteiro('feriasIntegrais')),tercoIntegrais=arredondar(feriasIntegrais/3),feriasDobro=arredondar(salario*2*inteiro('feriasDobro')),tercoDobro=arredondar(feriasDobro/3),totalFerias=feriasProp+tercoProp+feriasIntegrais+tercoIntegrais+feriasDobro+tercoDobro;
+                const pensao=calcularPensao({salario:saldo,decimo,ferias:totalFerias,aviso:avisoIndenizado}),inssSaldo=calcularINSS(saldo),inss13=calcularINSS(decimo),irrfSaldo=calcularIRRF(saldo,dependentes,pensao.salario),irrf13=calcularIRRF(decimo,dependentes,pensao.decimo);
+                totalDireto=saldo+decimo+totalFerias+avisoIndenizado; totalDescontos=inssSaldo+inss13+irrfSaldo+irrf13+pensao.total+descBeneficios+avisoDescontado;
+                html+=linha(`Saldo de salário (${diasSaldo} dias)`,saldo)+linha(`13º proporcional (${avos13Valor}/12)`,decimo)+linha(`Férias proporcionais (${avosFerias}/12)`,feriasProp)+linha('1/3 sobre férias proporcionais',tercoProp);
+                if(feriasIntegrais>0)html+=linha('Férias integrais não gozadas',feriasIntegrais)+linha('1/3 sobre férias integrais',tercoIntegrais); if(feriasDobro>0)html+=linha('Férias em dobro',feriasDobro)+linha('1/3 sobre férias em dobro',tercoDobro); if(avisoIndenizado>0)html+=linha(`Aviso-prévio indenizado (${diasAviso} dias)`,avisoIndenizado); if(avisoDescontado>0)html+=linha('Aviso-prévio não cumprido',null,avisoDescontado);
+                html+=linha('INSS sobre saldo de salário',null,inssSaldo)+linha('INSS sobre 13º',null,inss13)+linha('IRRF sobre saldo de salário',null,irrfSaldo)+linha('IRRF sobre 13º',null,irrf13)+linha('Pensão alimentícia',null,pensao.total)+linha('Coparticipações VT/VR/Saúde',null,descBeneficios);
+                if(tipo==='semJusta'){
+                    let fgts; if(document.getElementById('modoFgts').value==='informado')fgts={saldo:numero('fgtsAnterior'),base:numero('baseMultaFgts')}; else fgts=projetarFgts(admissao,fimProjetado,salario,decimo); const multa=arredondar(fgts.base*0.40);
+                    html+=`<tr class="fgts-row"><td class="py-2.5 px-4">Saldo FGTS estimado/informado, fora do pagamento direto</td><td colspan="2" class="py-2.5 px-4 text-right">${formatar(fgts.saldo)}</td></tr><tr class="fgts-row"><td class="py-2.5 px-4">Multa rescisória de 40%, destinada à conta vinculada</td><td colspan="2" class="py-2.5 px-4 text-right">${formatar(multa)}</td></tr><tr class="fgts-total"><td class="py-2.5 px-4">TOTAL ESTIMADO NA CONTA FGTS</td><td colspan="2" class="py-2.5 px-4 text-right">${formatar(fgts.saldo+multa)}</td></tr>`;
                 }
             }
-
-            htmlFunc += `<tr class="total-row"><td class="py-3 px-4">TOTAL LÍQUIDO FINAL (Rescisão + Multa)</td><td colspan="2" class="py-3 px-4 text-right">${formatar(totalProventos - totalDescontos)}</td></tr>`;
-
-            let htmlEmp = `
-                <tr><td class="py-2.5 px-4">Salário Bruto + INSS Patronal (20%)</td><td class="py-2.5 px-4">${formatar(salario + inssPatronal)}</td></tr>
-                <tr><td class="py-2.5 px-4">FGTS Mensal (Depósito 8%)</td><td class="py-2.5 px-4">${formatar(fgtsMensal)}</td></tr>
-                <tr><td class="py-2.5 px-4">Provisão Mensal (13º + Férias)</td><td class="py-2.5 px-4">${formatar(provisao13 + provisaoFerias)}</td></tr>
-                <tr><td class="py-2.5 px-4">FGTS sobre Provisões</td><td class="py-2.5 px-4">${formatar(fgtsSobreProvisoes)}</td></tr>
-                <tr><td class="py-2.5 px-4">Benefícios (VT + VR + Saúde)</td><td class="py-2.5 px-4">${formatar(custoBeneficios)}</td></tr>
-                <tr class="employer-row"><td class="py-3 px-4">CUSTO REAL MENSAL PARA EMPRESA</td><td class="py-3 px-4">${formatar(custoTotalReal)}</td></tr>
-            `;
-
-            document.getElementById('resultBody').innerHTML = htmlFunc;
-            document.getElementById('employerBody').innerHTML = htmlEmp;
-            document.getElementById('results').style.display = 'block';
-            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+            const titulo=tipo==='mensal'?'TOTAL LÍQUIDO MENSAL':'TOTAL LÍQUIDO DE PAGAMENTO DIRETO'; html+=`<tr class="total-row"><td class="py-3 px-4">${titulo}</td><td colspan="2" class="py-3 px-4 text-right">${formatar(totalDireto-totalDescontos)}</td></tr>`;
+            document.getElementById('resultBody').innerHTML=html;
+            document.getElementById('employerBody').innerHTML=`<tr><td class="py-2.5 px-4">Salário bruto</td><td class="py-2.5 px-4">${formatar(salario)}</td></tr><tr><td class="py-2.5 px-4">INSS patronal</td><td class="py-2.5 px-4">${formatar(patronal)}</td></tr><tr><td class="py-2.5 px-4">RAT</td><td class="py-2.5 px-4">${formatar(rat)}</td></tr><tr><td class="py-2.5 px-4">Terceiros</td><td class="py-2.5 px-4">${formatar(terceiros)}</td></tr><tr><td class="py-2.5 px-4">FGTS mensal</td><td class="py-2.5 px-4">${formatar(fgtsMensal)}</td></tr><tr><td class="py-2.5 px-4">Provisão mensal de 13º e férias + 1/3</td><td class="py-2.5 px-4">${formatar(provisao13+provisaoFerias)}</td></tr><tr><td class="py-2.5 px-4">FGTS e encargos sobre provisões</td><td class="py-2.5 px-4">${formatar(fgtsProv+encProv)}</td></tr><tr><td class="py-2.5 px-4">Custo bruto dos benefícios</td><td class="py-2.5 px-4">${formatar(custoBrutoBeneficios)}</td></tr><tr><td class="py-2.5 px-4">(-) Participação do empregado</td><td class="py-2.5 px-4">${formatar(-participacaoBeneficiosEmpresa)}</td></tr><tr><td class="py-2.5 px-4">Custo líquido dos benefícios</td><td class="py-2.5 px-4">${formatar(custoLiquidoBeneficios)}</td></tr><tr class="employer-row"><td class="py-3 px-4">CUSTO MENSAL ESTIMADO PARA A EMPRESA</td><td class="py-3 px-4">${formatar(custoTotal)}</td></tr>`;
+            document.getElementById('results').style.display='block'; document.getElementById('results').scrollIntoView({behavior:'smooth'});
         }
     </script>
 </body>
