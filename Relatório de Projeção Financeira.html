@@ -273,6 +273,87 @@
             html += `<tr class="highlight border-t-2 border-emerald-200"><td colspan="1" class="py-3 px-4 font-extrabold text-slate-900 text-center">TOTAL PAGO</td><td colspan="4" class="py-3 px-4 font-black text-emerald-700 text-left pl-6 text-sm">${formatar(totalPago)}</td></tr>`;
             document.getElementById('res_sac').innerHTML = html + '</tbody></table>';
         }
+
+
+        // Persistência local: mantém campos e resultados ao fechar e reabrir o HTML.
+        const CHAVE_MEMORIA = 'simuladorFinanceiro_dados_v1';
+        const IDS_CAMPOS = [
+            'anual_p', 'anual_m', 'anual_r', 'anual_taxa', 'anual_anos',
+            'mensal_p', 'mensal_m', 'mensal_r', 'mensal_taxa', 'mensal_meses',
+            'sac_v', 'sac_j', 'sac_t'
+        ];
+        const IDS_RESULTADOS = ['res_anual', 'res_mensal', 'res_sac'];
+
+        function salvarMemoria() {
+            try {
+                const dados = {
+                    campos: {},
+                    resultados: {}
+                };
+
+                IDS_CAMPOS.forEach(id => {
+                    const elemento = document.getElementById(id);
+                    if (elemento) dados.campos[id] = elemento.value;
+                });
+
+                IDS_RESULTADOS.forEach(id => {
+                    const elemento = document.getElementById(id);
+                    if (elemento) dados.resultados[id] = elemento.innerHTML;
+                });
+
+                localStorage.setItem(CHAVE_MEMORIA, JSON.stringify(dados));
+            } catch (erro) {
+                console.warn('Não foi possível salvar os dados localmente.', erro);
+            }
+        }
+
+        function restaurarMemoria() {
+            try {
+                const textoSalvo = localStorage.getItem(CHAVE_MEMORIA);
+                if (!textoSalvo) return;
+
+                const dados = JSON.parse(textoSalvo);
+
+                IDS_CAMPOS.forEach(id => {
+                    const elemento = document.getElementById(id);
+                    if (elemento && dados.campos && Object.prototype.hasOwnProperty.call(dados.campos, id)) {
+                        elemento.value = dados.campos[id];
+                    }
+                });
+
+                IDS_RESULTADOS.forEach(id => {
+                    const elemento = document.getElementById(id);
+                    if (elemento && dados.resultados && Object.prototype.hasOwnProperty.call(dados.resultados, id)) {
+                        elemento.innerHTML = dados.resultados[id];
+                    }
+                });
+            } catch (erro) {
+                console.warn('Não foi possível restaurar os dados salvos.', erro);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            restaurarMemoria();
+
+            IDS_CAMPOS.forEach(id => {
+                const elemento = document.getElementById(id);
+                if (elemento) elemento.addEventListener('input', salvarMemoria);
+            });
+
+            IDS_RESULTADOS.forEach(id => {
+                const elemento = document.getElementById(id);
+                if (elemento) {
+                    new MutationObserver(salvarMemoria).observe(elemento, {
+                        childList: true,
+                        subtree: true,
+                        characterData: true
+                    });
+                }
+            });
+        });
+
+        window.addEventListener('beforeunload', salvarMemoria);
+
     </script>
 </body>
 </html>
