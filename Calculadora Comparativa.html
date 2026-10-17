@@ -57,9 +57,16 @@
         }
 
         /* Estilos específicos para Impressão / Salvar PDF */
+        /* Resumo dos parâmetros: oculto na tela e exibido somente na impressão */
+        #printParameters { display: none; }
         @media print {
             header, #simulationForm, #toggleTableBtn, button {
                 display: none !important;
+            }
+            #printParameters {
+                display: block !important;
+                break-inside: avoid;
+                page-break-inside: avoid;
             }
             body {
                 background: white !important;
@@ -236,6 +243,23 @@
             <!-- Right Column: Key Results & Graphs -->
             <div class="lg:col-span-8 space-y-6">
                 
+                <!-- Parâmetros usados: visíveis somente na impressão -->
+                <section id="printParameters" class="bg-white rounded-xl p-5 border border-slate-200 shadow-sm">
+                    <h3 class="text-base font-bold text-slate-900 mb-3">Parâmetros utilizados no cálculo</h3>
+                    <div class="grid grid-cols-2 gap-x-6 gap-y-2 text-xs text-slate-700">
+                        <div><span class="font-semibold">Patrimônio inicial:</span> <span id="printPatrimonioInicial"></span></div>
+                        <div><span class="font-semibold">Quantidade de imóveis:</span> <span id="printQtdImoveis"></span></div>
+                        <div><span class="font-semibold">Valor médio por imóvel:</span> <span id="printValorMedioImovel"></span></div>
+                        <div><span class="font-semibold">Retirada:</span> <span id="printRetirada"></span></div>
+                        <div><span class="font-semibold">Correção da retirada pela inflação:</span> <span id="printReajusteInflacao"></span></div>
+                        <div><span class="font-semibold">Rendimento da aplicação:</span> <span id="printRendimentoAplicacao"></span></div>
+                        <div><span class="font-semibold">Inflação IPCA:</span> <span id="printInflacao"></span></div>
+                        <div><span class="font-semibold">Valorização do imóvel:</span> <span id="printValorizacaoImovel"></span></div>
+                        <div><span class="font-semibold">Aluguel líquido:</span> <span id="printYieldAluguel"></span></div>
+                        <div><span class="font-semibold">Prazo da simulação:</span> <span id="printPrazoAnos"></span></div>
+                    </div>
+                </section>
+
                 <!-- Hero Banner / Main Result Callout -->
                 <div id="resultHeroCard" class="bg-gradient-to-br from-brand-900 via-slate-900 to-slate-900 rounded-2xl p-6 text-white shadow-xl border border-brand-800/40 relative overflow-hidden">
                     <div class="absolute -right-10 -bottom-10 opacity-10 pointer-events-none">
@@ -605,10 +629,33 @@
             };
         }
 
+        function updatePrintParameters(patrimonio, qtd) {
+            const tipoRetiradaTextos = {
+                fixo: 'Valor fixo mensal',
+                percentual_ano: '% do patrimônio ao ano',
+                percentual_mes: '% do patrimônio ao mês'
+            };
+            const tipo = tipoRetiradaSelect.value;
+            const valorRetirada = tipo === 'fixo'
+                ? formatCurrency(parseCurrencyValue(valorRetiradaInput.value))
+                : `${formatNumber(parsePercentageValue(valorRetiradaInput.value), 2)}%`;
+            document.getElementById('printPatrimonioInicial').innerText = formatCurrency(patrimonio);
+            document.getElementById('printQtdImoveis').innerText = qtd;
+            document.getElementById('printValorMedioImovel').innerText = formatCurrency(patrimonio / qtd);
+            document.getElementById('printRetirada').innerText = `${tipoRetiradaTextos[tipo]}: ${valorRetirada}`;
+            document.getElementById('printReajusteInflacao').innerText = reajustaInflacaoCheck.checked ? 'Sim' : 'Não';
+            document.getElementById('printRendimentoAplicacao').innerText = `${formatNumber(parsePercentageValue(rendimentoAplicacaoInput.value), 2)}% a.a.`;
+            document.getElementById('printInflacao').innerText = `${formatNumber(parsePercentageValue(inflacaoInput.value), 2)}% a.a.`;
+            document.getElementById('printValorizacaoImovel').innerText = `${formatNumber(parsePercentageValue(valorizacaoImovelInput.value), 2)}% a.a.`;
+            document.getElementById('printYieldAluguel').innerText = `${formatNumber(parsePercentageValue(yieldAluguelInput.value), 2)}% a.a.`;
+            document.getElementById('printPrazoAnos').innerText = `${Math.max(1, parseInt(prazoAnosInput.value, 10) || 10)} anos`;
+        }
+
         function updateSimulation() {
             const patrimonio = parseCurrencyValue(patrimonioInicialInput.value);
             const qtd = Math.max(1, parseInt(qtdImoveisInput.value, 10) || 1);
             valorMedioImovelDisplay.innerText = formatCurrency(patrimonio / qtd);
+            updatePrintParameters(patrimonio, qtd);
 
             const simData = runSimulation();
             const resFinal = simData.resultadoFinal;
