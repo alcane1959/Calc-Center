@@ -378,6 +378,7 @@
                             <th class="py-3 px-4">Saldo Inicial (R$)</th>
                             <th class="py-3 px-4">Rendimento Anual (R$)</th>
                             <th class="py-3 px-4 text-amber-600">Retirada Total Ano (R$)</th>
+                            <th class="py-3 px-4 text-amber-600">Retirada Mensal (R$)</th>
                             <th class="py-3 px-4 font-bold text-brand-700">Saldo Final Aplicado (R$)</th>
                             <th class="py-3 px-4">Valor de 1 Imóvel (R$)</th>
                             <th class="py-3 px-4 text-emerald-700 font-bold bg-emerald-50/50 text-center">Nº de Imóveis Equivalentes</th>
@@ -534,20 +535,8 @@
             let totalRetiradoImoveis = 0;
             let totalAluguelLiquido = 0;
             const yearlyData = [];
-
-            yearlyData.push({
-                ano: 0,
-                saldoInicial: patrimonioInicial,
-                rendimentoAno: 0,
-                retiradaAno: 0,
-                saldoFinal: patrimonioInicial,
-                valorUmImovel: valorInicialImovel,
-                imoveisEquivalentes: qtdImoveis,
-                patrimonioImoveisTotal: patrimonioInicial,
-                imoveisMantidosEquivalentes: qtdImoveis,
-                aluguelLiquidoAno: 0,
-                retiradaImoveisAno: 0
-            });
+            // O primeiro ciclo de 12 meses e identificado como Ano 0.
+            // O prazo total e o motor de calculo mensal permanecem inalterados.
 
             const totalMeses = prazoAnos * 12;
             let acumuladoRendimentoAno = 0;
@@ -589,7 +578,7 @@
                 totalRetiradoImoveis += retiradaImoveisMes;
 
                 if (mes % 12 === 0) {
-                    const anoAtual = mes / 12;
+                    const anoAtual = (mes / 12) - 1;
                     const imoveisEqAplicacao = valorUmImovel > 0 ? saldoAplicacao / valorUmImovel : 0;
                     const imoveisEqMantidos = valorUmImovel > 0 ? patrimonioImoveis / valorUmImovel : 0;
 
@@ -795,6 +784,7 @@
                     <td class="py-2.5 px-4">${formatCurrency(d.saldoInicial)}</td>
                     <td class="py-2.5 px-4 text-emerald-600">+${formatCurrency(d.rendimentoAno)}</td>
                     <td class="py-2.5 px-4 text-amber-600 font-semibold">-${formatCurrency(d.retiradaAno)}</td>
+                    <td class="py-2.5 px-4 text-amber-600 font-semibold">-${formatCurrency(d.retiradaAno / 12)}</td>
                     <td class="py-2.5 px-4 font-bold text-brand-700">${formatCurrency(d.saldoFinal)}</td>
                     <td class="py-2.5 px-4 text-slate-600">${formatCurrency(d.valorUmImovel)}</td>
                     <td class="py-2.5 px-4 text-center font-extrabold bg-emerald-50/30 text-emerald-800">
