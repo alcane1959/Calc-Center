@@ -139,13 +139,68 @@
         function imprimirSilencioso(id, titulo) {
             const conteudo = document.getElementById(id).innerHTML;
             if (!conteudo) return alert('Gere o cálculo primeiro!');
+
+            const configuracoes = {
+                res_anual: [
+                    ['Investimento Inicial', 'anual_p', 'moeda'],
+                    ['Aporte Mensal', 'anual_m', 'moeda'],
+                    ['Retirada Mensal', 'anual_r', 'moeda'],
+                    ['Taxa Anual', 'anual_taxa', 'percentual'],
+                    ['Quantidade de Anos', 'anual_anos', 'numero']
+                ],
+                res_mensal: [
+                    ['Investimento Inicial', 'mensal_p', 'moeda'],
+                    ['Aporte Mensal', 'mensal_m', 'moeda'],
+                    ['Retirada Mensal', 'mensal_r', 'moeda'],
+                    ['Taxa Mensal', 'mensal_taxa', 'percentual'],
+                    ['Quantidade de Meses', 'mensal_meses', 'numero']
+                ],
+                res_sac: [
+                    ['Valor da Dívida', 'sac_v', 'moeda'],
+                    ['Juros Anual', 'sac_j', 'percentual'],
+                    ['Prazo', 'sac_t', 'meses']
+                ]
+            };
+
+            const formatarEntrada = (valor, tipo) => {
+                const numero = Number(valor);
+                if (!Number.isFinite(numero)) return valor;
+                if (tipo === 'moeda') return numero.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                if (tipo === 'percentual') return numero.toLocaleString('pt-BR', { maximumFractionDigits: 6 }) + '%';
+                if (tipo === 'meses') return numero.toLocaleString('pt-BR') + (numero === 1 ? ' mês' : ' meses');
+                return numero.toLocaleString('pt-BR');
+            };
+
+            const dados = (configuracoes[id] || []).map(([rotulo, campoId, tipo]) => {
+                const campo = document.getElementById(campoId);
+                return `<div class="dado"><span>${rotulo}</span><strong>${formatarEntrada(campo ? campo.value : '', tipo)}</strong></div>`;
+            }).join('');
+
+            const dataHora = new Date().toLocaleString('pt-BR');
             const frame = document.getElementById('printFrame');
             const doc = frame.contentWindow.document;
             doc.open();
-            doc.write(`<html><head><title>${titulo}</title><style>body{font-family:sans-serif;padding:20px;}table{width:100%;border-collapse:collapse;margin-top:20px;}th,td{border:1px solid #ddd;padding:8px;text-align:center;font-size:12px;}th{background:#0284c7;color:white;}h1{color:#0f172a;text-align:center;}.highlight{background:#f0fdf4;font-weight:bold;}</style></head><body><h1>${titulo}</h1>${conteudo}<script>window.onload=function(){window.print();}<\/script></body></html>`);
+            doc.write(`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>${titulo}</title><style>
+                @page{size:landscape;margin:12mm;}
+                *{box-sizing:border-box;}
+                body{font-family:Arial,sans-serif;margin:0;color:#0f172a;background:#fff;}
+                h1{margin:0 0 4px;text-align:center;font-size:20px;color:#0f172a;}
+                .emitido{text-align:center;color:#64748b;font-size:10px;margin-bottom:14px;}
+                .dados{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;margin:0 0 14px;padding:10px;border:1px solid #cbd5e1;border-radius:8px;background:#f8fafc;}
+                .dado{display:flex;flex-direction:column;gap:3px;padding:5px 7px;}
+                .dado span{font-size:9px;color:#64748b;text-transform:uppercase;font-weight:700;}
+                .dado strong{font-size:12px;color:#0f172a;}
+                table{width:100%;border-collapse:collapse;margin-top:8px;table-layout:auto;}
+                thead{display:table-header-group;}
+                tr{break-inside:avoid;page-break-inside:avoid;}
+                th,td{border:1px solid #cbd5e1;padding:6px 5px;text-align:center;font-size:10px;white-space:nowrap;}
+                th{background:#0284c7 !important;color:#fff !important;font-weight:700;}
+                .highlight{background:#f0fdf4 !important;font-weight:bold;}
+                .negative{color:#dc2626 !important;}
+                @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}}
+            </style></head><body><h1>${titulo}</h1><div class="emitido">Relatório emitido em ${dataHora}</div><div class="dados">${dados}</div>${conteudo}<script>window.onload=function(){setTimeout(function(){window.print();},100);};<\/script></body></html>`);
             doc.close();
         }
-
         function calcularAnual() {
             const p = obterNumero('anual_p', 'o investimento inicial');
             const m = obterNumero('anual_m', 'o aporte mensal');
