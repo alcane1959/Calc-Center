@@ -52,12 +52,13 @@
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full flex-grow space-y-8">
         <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 space-y-6">
             <div class="border-b border-slate-100 pb-3"><h2 class="text-lg font-bold text-slate-900 flex items-center gap-2"><i class="fa-solid fa-calendar-days text-brand-600"></i> 1. Projeção de Investimento (Visão Anual)</h2><p class="text-xs text-slate-500 mt-1">Simulação de crescimento patrimonial composto com horizonte em anos.</p></div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 no-print">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 no-print">
                 <div><label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Investimento Inicial</label><input type="number" id="anual_p" placeholder="Ex: 5000" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 font-semibold focus:ring-2 focus:ring-brand-500 focus:bg-white transition text-sm"></div>
                 <div><label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Aporte Mensal</label><input type="number" id="anual_m" placeholder="Ex: 200" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 font-semibold focus:ring-2 focus:ring-brand-500 focus:bg-white transition text-sm"></div>
                 <div><label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Retirada Mensal</label><input type="number" id="anual_r" placeholder="Ex: 50" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 font-semibold focus:ring-2 focus:ring-brand-500 focus:bg-white transition text-sm"></div>
                 <div><label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Taxa Anual (%)</label><input type="number" id="anual_taxa" placeholder="Ex: 11.5" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 font-semibold focus:ring-2 focus:ring-brand-500 focus:bg-white transition text-sm"></div>
                 <div><label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Qtd Anos</label><input type="number" id="anual_anos" placeholder="Ex: 10" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 font-semibold focus:ring-2 focus:ring-brand-500 focus:bg-white transition text-sm"></div>
+                <div><label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Valor Final / Meta</label><input type="number" id="anual_final" placeholder="Calculado ou informe a meta" class="w-full px-3 py-2 bg-emerald-50 border border-emerald-300 rounded-lg text-emerald-900 font-semibold focus:ring-2 focus:ring-emerald-500 focus:bg-white transition text-sm"></div>
             </div>
             <div class="flex flex-wrap gap-3 no-print">
                 <button onclick="calcularAnual()" class="px-4 py-2 text-xs font-semibold text-white bg-brand-600 hover:bg-brand-700 rounded-lg transition shadow-sm flex items-center gap-2"><i class="fa-solid fa-calculator"></i> Calcular Anual</button>
@@ -68,12 +69,13 @@
         </div>
         <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 space-y-6">
             <div class="border-b border-slate-100 pb-3"><h2 class="text-lg font-bold text-slate-900 flex items-center gap-2"><i class="fa-solid fa-calendar-stroke text-brand-600"></i> 2. Projeção de Investimento (Visão Mensal)</h2><p class="text-xs text-slate-500 mt-1">Detalhamento mês a mês da rentabilidade, aportes e amortizações do saldo.</p></div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 no-print">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 no-print">
                 <div><label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Investimento Inicial</label><input type="number" id="mensal_p" placeholder="Ex: 1000" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 font-semibold focus:ring-2 focus:ring-brand-500 focus:bg-white transition text-sm"></div>
                 <div><label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Aporte Mensal</label><input type="number" id="mensal_m" placeholder="Ex: 100" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 font-semibold focus:ring-2 focus:ring-brand-500 focus:bg-white transition text-sm"></div>
                 <div><label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Retirada Mensal</label><input type="number" id="mensal_r" placeholder="Ex: 50" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 font-semibold focus:ring-2 focus:ring-brand-500 focus:bg-white transition text-sm"></div>
                 <div><label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Taxa Mensal (%)</label><input type="number" id="mensal_taxa" placeholder="Ex: 0.8" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 font-semibold focus:ring-2 focus:ring-brand-500 focus:bg-white transition text-sm"></div>
                 <div><label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Qtd Meses</label><input type="number" id="mensal_meses" placeholder="Ex: 24" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 font-semibold focus:ring-2 focus:ring-brand-500 focus:bg-white transition text-sm"></div>
+                <div><label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Valor Final / Meta</label><input type="number" id="mensal_final" placeholder="Calculado ou informe a meta" class="w-full px-3 py-2 bg-emerald-50 border border-emerald-300 rounded-lg text-emerald-900 font-semibold focus:ring-2 focus:ring-emerald-500 focus:bg-white transition text-sm"></div>
             </div>
             <div class="flex flex-wrap gap-3 no-print">
                 <button onclick="calcularMensal()" class="px-4 py-2 text-xs font-semibold text-white bg-brand-600 hover:bg-brand-700 rounded-lg transition shadow-sm flex items-center gap-2"><i class="fa-solid fa-calculator"></i> Calcular Mensal</button>
@@ -146,14 +148,14 @@
                     ['Aporte Mensal', 'anual_m', 'moeda'],
                     ['Retirada Mensal', 'anual_r', 'moeda'],
                     ['Taxa Anual', 'anual_taxa', 'percentual'],
-                    ['Quantidade de Anos', 'anual_anos', 'numero']
+                    ['Quantidade de Anos', 'anual_anos', 'numero'], ['Valor Final / Meta', 'anual_final', 'moeda']
                 ],
                 res_mensal: [
                     ['Investimento Inicial', 'mensal_p', 'moeda'],
                     ['Aporte Mensal', 'mensal_m', 'moeda'],
                     ['Retirada Mensal', 'mensal_r', 'moeda'],
                     ['Taxa Mensal', 'mensal_taxa', 'percentual'],
-                    ['Quantidade de Meses', 'mensal_meses', 'numero']
+                    ['Quantidade de Meses', 'mensal_meses', 'numero'], ['Valor Final / Meta', 'mensal_final', 'moeda']
                 ],
                 res_sac: [
                     ['Valor da Dívida', 'sac_v', 'moeda'],
@@ -201,56 +203,14 @@
             </style></head><body><h1>${titulo}</h1><div class="emitido">Relatório emitido em ${dataHora}</div><div class="dados">${dados}</div>${conteudo}<script>window.onload=function(){setTimeout(function(){window.print();},100);};<\/script></body></html>`);
             doc.close();
         }
-        function calcularAnual() {
-            const p = obterNumero('anual_p', 'o investimento inicial');
-            const m = obterNumero('anual_m', 'o aporte mensal');
-            const r = obterNumero('anual_r', 'a retirada mensal');
-            const taxaPercentual = obterNumero('anual_taxa', 'a taxa anual', { minimo: -100, maiorQueMinimo: true });
-            const anos = obterNumero('anual_anos', 'a quantidade de anos', { minimo: 0, maiorQueMinimo: true, inteiro: true });
-            if ([p, m, r, taxaPercentual, anos].some(valor => valor === null)) return;
-
-            const iM = taxaAnualEfetivaParaMensal(taxaPercentual / 100);
-            let saldo = arredondarMoeda(p);
-            let html = `<table class="w-full text-left border-collapse text-xs"><thead class="bg-slate-100/80 text-slate-700 uppercase tracking-wider font-bold border-b border-slate-200 sticky top-0"><tr><th class="py-3 px-4 text-center">Ano</th><th class="py-3 px-4 text-center">Aportes no Ano</th><th class="py-3 px-4 text-center">Retiradas no Ano</th><th class="py-3 px-4 text-center">Rendimento Ano</th><th class="py-3 px-4 text-center">Saldo Final</th></tr></thead><tbody class="divide-y divide-slate-100 text-slate-700 font-medium">`;
-            for (let a = 1; a <= anos; a++) {
-                const inicioAno = saldo;
-                const totalAporteAno = arredondarMoeda(m * 12);
-                const totalRetiradaAno = arredondarMoeda(r * 12);
-                let rendAno = 0;
-                for (let mes = 1; mes <= 12; mes++) {
-                    const baseRendimento = arredondarMoeda(saldo + m);
-                    const rendimento = arredondarMoeda(baseRendimento * iM);
-                    rendAno = arredondarMoeda(rendAno + rendimento);
-                    saldo = arredondarMoeda(baseRendimento + rendimento - r);
-                }
-                const conferido = arredondarMoeda(saldo - inicioAno - totalAporteAno + totalRetiradaAno);
-                rendAno = conferido;
-                html += `<tr class="${a % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'} hover:bg-slate-100/50"><td class="py-2.5 px-4 text-center font-bold text-slate-900">Ano ${a}</td><td class="py-2.5 px-4 text-center">${formatar(totalAporteAno)}</td><td class="py-2.5 px-4 text-center text-amber-600">${formatar(totalRetiradaAno)}</td><td class="py-2.5 px-4 text-center text-emerald-600">${formatar(rendAno)}</td><td class="py-2.5 px-4 text-center highlight ${saldo < 0 ? 'negative font-bold' : 'text-brand-700 font-bold'}">${formatar(saldo)}</td></tr>`;
-            }
-            document.getElementById('res_anual').innerHTML = html + '</tbody></table>';
-        }
-
-        function calcularMensal() {
-            const p = obterNumero('mensal_p', 'o investimento inicial');
-            const m = obterNumero('mensal_m', 'o aporte mensal');
-            const r = obterNumero('mensal_r', 'a retirada mensal');
-            const taxaPercentual = obterNumero('mensal_taxa', 'a taxa mensal', { minimo: -100, maiorQueMinimo: true });
-            const meses = obterNumero('mensal_meses', 'a quantidade de meses', { minimo: 0, maiorQueMinimo: true, inteiro: true });
-            if ([p, m, r, taxaPercentual, meses].some(valor => valor === null)) return;
-
-            const iM = taxaPercentual / 100;
-            let saldo = arredondarMoeda(p);
-            let html = `<table class="w-full text-left border-collapse text-xs"><thead class="bg-slate-100/80 text-slate-700 uppercase tracking-wider font-bold border-b border-slate-200 sticky top-0"><tr><th class="py-3 px-4 text-center">Mês</th><th class="py-3 px-4 text-center">Saldo Inicial</th><th class="py-3 px-4 text-center">Aporte</th><th class="py-3 px-4 text-center">Rendimento</th><th class="py-3 px-4 text-center">Retirada</th><th class="py-3 px-4 text-center">Saldo Final</th></tr></thead><tbody class="divide-y divide-slate-100 text-slate-700 font-medium">`;
-            for (let i = 1; i <= meses; i++) {
-                const inicial = saldo;
-                const baseRendimento = arredondarMoeda(saldo + m);
-                const rend = arredondarMoeda(baseRendimento * iM);
-                saldo = arredondarMoeda(baseRendimento + rend - r);
-                html += `<tr class="${i % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'} hover:bg-slate-100/50"><td class="py-2.5 px-4 text-center font-bold text-slate-900">Mês ${i}</td><td class="py-2.5 px-4 text-center">${formatar(inicial)}</td><td class="py-2.5 px-4 text-center">${formatar(m)}</td><td class="py-2.5 px-4 text-center text-emerald-600">${formatar(rend)}</td><td class="py-2.5 px-4 text-center text-amber-600">${formatar(r)}</td><td class="py-2.5 px-4 text-center highlight ${saldo < 0 ? 'negative font-bold' : 'text-brand-700 font-bold'}">${formatar(saldo)}</td></tr>`;
-            }
-            document.getElementById('res_mensal').innerHTML = html + '</tbody></table>';
-        }
-
+        function ler(id){const t=document.getElementById(id).value.trim();return t===''?null:Number(t)}
+        function sim(p,m,r,i,n){let x=arredondarMoeda(p);for(let k=0;k<n;k++){let b=arredondarMoeda(x+m);x=arredondarMoeda(b+arredondarMoeda(b*i)-r)}return x}
+        function taxaMeta(meta,p,m,r,n){let lo=-.999999,hi=.01,f=x=>sim(p,m,r,x,n)-meta,fl=f(lo),fh=f(hi);for(let z=0;fl*fh>0&&z<60;z++){hi=hi*2+.01;fh=f(hi)}if(fl*fh>0)return null;for(let z=0;z<120;z++){let md=(lo+hi)/2,fm=f(md);if(Math.abs(fm)<.005)return md;if(fl*fm<=0)hi=md;else{lo=md;fl=fm}}return(lo+hi)/2}
+        function prazoMeta(meta,p,m,r,i,max){let best=null;for(let n=1;n<=max;n++){let saldo=sim(p,m,r,i,n),d=Math.abs(saldo-meta);if(!best||d<best.d)best={n,d};if(d<=.01)break}return best.n}
+        function preparar(tipo){const an=tipo==='anual',ids=an?{p:'anual_p',m:'anual_m',r:'anual_r',t:'anual_taxa',n:'anual_anos',f:'anual_final'}:{p:'mensal_p',m:'mensal_m',r:'mensal_r',t:'mensal_taxa',n:'mensal_meses',f:'mensal_final'},v={};Object.keys(ids).forEach(k=>v[k]=ler(ids[k]));if(Object.values(v).some(x=>x!==null&&!Number.isFinite(x)))return alert('Revise os valores.'),null;let vaz=Object.keys(v).filter(k=>v[k]===null);if(vaz.length!==1)return alert('Deixe exatamente um campo vazio.'),null;let q=vaz[0],meses=v.n===null?null:(an?v.n*12:v.n),i=v.t===null?null:(an?taxaAnualEfetivaParaMensal(v.t/100):v.t/100);if(q!=='f'&&v.f===null)return alert('Informe o Valor Final / Meta.'),null;if(q==='f')v.f=sim(v.p,v.m,v.r,i,meses);else if(q==='t'){i=taxaMeta(v.f,v.p,v.m,v.r,meses);if(i===null)return alert('Não foi possível calcular a taxa.'),null;v.t=an?(Math.pow(1+i,12)-1)*100:i*100}else if(q==='n'){let nm=prazoMeta(v.f,v.p,v.m,v.r,i,2400);v.n=an?Math.ceil(nm/12):nm;meses=an?v.n*12:v.n}else{let z0=sim(q==='p'?0:v.p,q==='m'?0:v.m,q==='r'?0:v.r,i,meses),z1=sim(q==='p'?1:v.p,q==='m'?1:v.m,q==='r'?1:v.r,i,meses),coef=z1-z0;if(Math.abs(coef)<1e-12)return alert('Não foi possível calcular o campo.'),null;v[q]=(v.f-z0)/coef}document.getElementById(ids[q]).value=q==='n'?v[q]:v[q].toFixed(q==='t'?6:2);return{an,v,i,calculado:q}}
+        function aviso(q){return `<div class="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 p-4"><p class="text-xs font-bold uppercase text-emerald-700">Campo calculado e preenchido: ${q}</p></div>`}
+        function calcularAnual(){let d=preparar('anual');if(!d)return;let{v,i}=d,x=arredondarMoeda(v.p),h=`<table class="w-full text-left border-collapse text-xs"><thead><tr><th>Ano</th><th>Aportes no Ano</th><th>Retiradas no Ano</th><th>Rendimento Ano</th><th>Saldo Final</th></tr></thead><tbody>`;for(let a=1;a<=v.n;a++){let ini=x,ap=arredondarMoeda(v.m*12),rt=arredondarMoeda(v.r*12);for(let k=0;k<12;k++){let b=arredondarMoeda(x+v.m);x=arredondarMoeda(b+arredondarMoeda(b*i)-v.r)}let rd=arredondarMoeda(x-ini-ap+rt);h+=`<tr><td class="py-2.5 px-4 text-center">Ano ${a}</td><td class="text-center">${formatar(ap)}</td><td class="text-center">${formatar(rt)}</td><td class="text-center">${formatar(rd)}</td><td class="text-center highlight">${formatar(x)}</td></tr>`}document.getElementById('anual_final').value=x.toFixed(2);document.getElementById('res_anual').innerHTML=h+'</tbody></table>'+aviso(d.calculado)}
+        function calcularMensal(){let d=preparar('mensal');if(!d)return;let{v,i}=d,x=arredondarMoeda(v.p),h=`<table class="w-full text-left border-collapse text-xs"><thead><tr><th>Mês</th><th>Saldo Inicial</th><th>Aporte</th><th>Rendimento</th><th>Retirada</th><th>Saldo Final</th></tr></thead><tbody>`;for(let k=1;k<=v.n;k++){let ini=x,b=arredondarMoeda(x+v.m),rd=arredondarMoeda(b*i);x=arredondarMoeda(b+rd-v.r);h+=`<tr><td class="text-center">Mês ${k}</td><td class="text-center">${formatar(ini)}</td><td class="text-center">${formatar(v.m)}</td><td class="text-center">${formatar(rd)}</td><td class="text-center">${formatar(v.r)}</td><td class="text-center highlight">${formatar(x)}</td></tr>`}document.getElementById('mensal_final').value=x.toFixed(2);document.getElementById('res_mensal').innerHTML=h+'</tbody></table>'+aviso(d.calculado)}
         function calcularSAC() {
             const p = obterNumero('sac_v', 'o valor da dívida', { minimo: 0, maiorQueMinimo: true });
             const taxaPercentual = obterNumero('sac_j', 'a taxa anual', { minimo: -100, maiorQueMinimo: true });
@@ -278,8 +238,8 @@
         // Persistência local: mantém campos e resultados ao fechar e reabrir o HTML.
         const CHAVE_MEMORIA = 'simuladorFinanceiro_dados_v1';
         const IDS_CAMPOS = [
-            'anual_p', 'anual_m', 'anual_r', 'anual_taxa', 'anual_anos',
-            'mensal_p', 'mensal_m', 'mensal_r', 'mensal_taxa', 'mensal_meses',
+            'anual_p', 'anual_m', 'anual_r', 'anual_taxa', 'anual_anos', 'anual_final',
+            'mensal_p', 'mensal_m', 'mensal_r', 'mensal_taxa', 'mensal_meses', 'mensal_final',
             'sac_v', 'sac_j', 'sac_t'
         ];
         const IDS_RESULTADOS = ['res_anual', 'res_mensal', 'res_sac'];
