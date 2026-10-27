@@ -148,7 +148,7 @@
                         <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Patrimônio Inicial em Imóveis</label>
                         <div class="relative">
                             <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 font-medium">R$</span>
-                            <input type="text" id="patrimonioInicial" value="5.000.000" class="w-full pl-10 pr-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 font-semibold focus:ring-2 focus:ring-brand-500 focus:bg-white transition text-sm">
+                            <input type="text" id="patrimonioInicial" value="0" class="w-full pl-10 pr-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 font-semibold focus:ring-2 focus:ring-brand-500 focus:bg-white transition text-sm">
                         </div>
                     </div>
 
@@ -156,12 +156,12 @@
                     <div class="grid grid-cols-2 gap-3">
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Nº Imóveis</label>
-                            <input type="number" id="qtdImoveis" value="10" min="1" max="1000" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 font-semibold focus:ring-2 focus:ring-brand-500 focus:bg-white transition text-sm">
+                            <input type="number" id="qtdImoveis" value="0" min="1" max="1000" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 font-semibold focus:ring-2 focus:ring-brand-500 focus:bg-white transition text-sm">
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Méd. por Imóvel</label>
                             <div class="py-2 px-2 bg-slate-100 rounded-lg border border-slate-200 text-xs font-bold text-slate-600 truncate" id="valorMedioImovelDisplay">
-                                R$ 500.000
+                                R$ 0
                             </div>
                         </div>
                     </div>
@@ -182,7 +182,7 @@
                                 </select>
                             </div>
                             <div>
-                                <input type="text" id="valorRetirada" value="25.000" class="w-full px-3 py-1.5 bg-white border border-brand-200 rounded-md text-xs font-bold text-slate-900 focus:ring-2 focus:ring-brand-500">
+                                <input type="text" id="valorRetirada" value="0" class="w-full px-3 py-1.5 bg-white border border-brand-200 rounded-md text-xs font-bold text-slate-900 focus:ring-2 focus:ring-brand-500">
                             </div>
                         </div>
 
@@ -197,14 +197,14 @@
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1" title="Rentabilidade nominal bruta da aplicação">Rend. Aplicação (% a.a.)</label>
                             <div class="relative">
-                                <input type="number" id="rendimentoAplicação" value="10.5" step="0.1" class="w-full pr-7 pl-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 font-semibold focus:ring-2 focus:ring-brand-500 focus:bg-white transition text-sm">
+                                <input type="number" id="rendimentoAplicação" value="0" step="0.1" class="w-full pr-7 pl-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 font-semibold focus:ring-2 focus:ring-brand-500 focus:bg-white transition text-sm">
                                 <span class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400 text-xs font-bold">%</span>
                             </div>
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Inflação IPCA (% a.a.)</label>
                             <div class="relative">
-                                <input type="number" id="inflacao" value="4.5" step="0.1" class="w-full pr-7 pl-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 font-semibold focus:ring-2 focus:ring-brand-500 focus:bg-white transition text-sm">
+                                <input type="number" id="inflacao" value="0" step="0.1" class="w-full pr-7 pl-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 font-semibold focus:ring-2 focus:ring-brand-500 focus:bg-white transition text-sm">
                                 <span class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400 text-xs font-bold">%</span>
                             </div>
                         </div>
@@ -215,14 +215,14 @@
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Valorização Imóvel (% a.a.)</label>
                             <div class="relative">
-                                <input type="number" id="valorizacaoImovel" value="6.0" step="0.1" class="w-full pr-7 pl-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 font-semibold focus:ring-2 focus:ring-brand-500 focus:bg-white transition text-sm">
+                                <input type="number" id="valorizacaoImovel" value="0" step="0.1" class="w-full pr-7 pl-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 font-semibold focus:ring-2 focus:ring-brand-500 focus:bg-white transition text-sm">
                                 <span class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400 text-xs font-bold">%</span>
                             </div>
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Aluguel Líquido (% a.a.)</label>
                             <div class="relative">
-                                <input type="number" id="yieldAluguel" value="4.5" step="0.1" class="w-full pr-7 pl-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 font-semibold focus:ring-2 focus:ring-brand-500 focus:bg-white transition text-sm">
+                                <input type="number" id="yieldAluguel" value="0" step="0.1" class="w-full pr-7 pl-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 font-semibold focus:ring-2 focus:ring-brand-500 focus:bg-white transition text-sm">
                                 <span class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400 text-xs font-bold">%</span>
                             </div>
                         </div>
@@ -232,9 +232,9 @@
                     <div>
                         <div class="flex justify-between items-center mb-1">
                             <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider">Prazo da Simulação</label>
-                            <span id="prazoValueDisplay" class="text-xs font-bold text-brand-600 bg-brand-50 px-2 py-0.5 rounded">10 Anos</span>
+                            <span id="prazoValueDisplay" class="text-xs font-bold text-brand-600 bg-brand-50 px-2 py-0.5 rounded">1 Ano</span>
                         </div>
-                        <input type="range" id="prazoAnos" min="1" max="30" value="10" class="w-full accent-brand-600 bg-slate-200 h-2 rounded-lg cursor-pointer">
+                        <input type="range" id="prazoAnos" min="1" max="30" value="1" class="w-full accent-brand-600 bg-slate-200 h-2 rounded-lg cursor-pointer">
                     </div>
 
                 </form>
@@ -269,13 +269,13 @@
                     <div class="relative z-10 flex flex-col md:flex-row justify-between gap-6 items-start md:items-center">
                         <div class="space-y-2 max-w-xl">
                             <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-500/20 text-brand-300 text-xs font-semibold border border-brand-400/20">
-                                <i class="fa-solid fa-bullseye"></i> Diagnóstico ao final de <span id="heroPrazoText">10 anos</span>
+                                <i class="fa-solid fa-bullseye"></i> Diagnóstico ao final de <span id="heroPrazoText">1 ano</span>
                             </div>
                             <h3 class="text-2xl sm:text-3xl font-extrabold text-white leading-tight">
                                 Com o saldo financeiro você compraria <span id="imoveisFinaisHero" class="text-emerald-400 underline decoration-emerald-500 decoration-4 underline-offset-4">0.0</span> imóveis.
                             </h3>
                             <p id="heroSubtitle" class="text-slate-300 text-xs sm:text-sm leading-relaxed">
-                                Você começou com <strong class="text-white">10 imóveis</strong>. Após realizar retiradas mensais e contar com a valorização dos imóveis, seu poder de compra em termos de imóveis variou.
+                                Você começou com <strong class="text-white">0 imóveis</strong>. Após realizar retiradas mensais e contar com a valorização dos imóveis, seu poder de compra em termos de imóveis variou.
                             </p>
                         </div>
 
@@ -452,6 +452,23 @@
         const prazoAnosInput = document.getElementById('prazoAnos');
         const prazoValueDisplay = document.getElementById('prazoValueDisplay');
 
+        // Estado visual dos campos: zero/vazio em cinza; valor informado em preto.
+        // Esta rotina altera somente a apresentação e não interfere no motor de cálculo.
+        function updateInputVisualState(element) {
+            if (!element || element.type === 'checkbox' || element.tagName === 'SELECT' || element.type === 'range') return;
+            const rawValue = String(element.value ?? '').trim();
+            const numericValue = element.id === 'patrimonioInicial' || element.id === 'valorRetirada'
+                ? parseCurrencyValue(rawValue)
+                : parsePercentageValue(rawValue);
+            const isEmptyOrZero = rawValue === '' || numericValue === 0;
+            element.classList.toggle('text-slate-400', isEmptyOrZero);
+            element.classList.toggle('text-slate-900', !isEmptyOrZero);
+        }
+
+        function refreshInputVisualStates() {
+            simulationInputs.forEach(updateInputVisualState);
+        }
+
 
         // Persistencia local: conserva somente os parametros do ultimo calculo.
         // O motor de calculo e o layout permanecem inalterados.
@@ -468,6 +485,13 @@
             yieldAluguelInput,
             prazoAnosInput
         ];
+
+        simulationInputs.forEach((element) => {
+            if (element.type !== 'checkbox' && element.tagName !== 'SELECT' && element.type !== 'range') {
+                element.addEventListener('input', () => updateInputVisualState(element));
+                element.addEventListener('change', () => updateInputVisualState(element));
+            }
+        });
 
         function saveLastCalculation() {
             try {
@@ -496,13 +520,14 @@
                         element.value = savedValues[element.id];
                     }
                 });
-                prazoValueDisplay.innerText = `${prazoAnosInput.value} Anos`;
+                prazoValueDisplay.innerText = `${prazoAnosInput.value} ${prazoAnosInput.value === '1' ? 'Ano' : 'Anos'}`;
             } catch (error) {
                 console.warn('Nao foi possivel restaurar o ultimo calculo.', error);
             }
         }
 
         restoreLastCalculation();
+        refreshInputVisualStates();
 
         // Event Listeners for Dynamic Recalculation
         [
@@ -528,18 +553,12 @@
         });
 
         tipoRetiradaSelect.addEventListener('change', () => {
-            if (tipoRetiradaSelect.value === 'percentual_ano') {
-                valorRetiradaInput.value = '6,0';
-            } else if (tipoRetiradaSelect.value === 'percentual_mes') {
-                valorRetiradaInput.value = '0,5';
-            } else {
-                valorRetiradaInput.value = '25.000';
-            }
             updateSimulation();
+            updateInputVisualState(valorRetiradaInput);
         });
 
         prazoAnosInput.addEventListener('input', (e) => {
-            prazoValueDisplay.innerText = `${e.target.value} Anos`;
+            prazoValueDisplay.innerText = `${e.target.value} ${e.target.value === '1' ? 'Ano' : 'Anos'}`;
         });
 
         function runSimulation() {
@@ -551,7 +570,7 @@
             const inflacaoAnual = parsePercentageValue(inflacaoInput.value) / 100;
             const valorizacaoAnualImovel = parsePercentageValue(valorizacaoImovelInput.value) / 100;
             const yieldAnualAluguel = parsePercentageValue(yieldAluguelInput.value) / 100;
-            const prazoAnos = Math.max(1, parseInt(prazoAnosInput.value, 10) || 10);
+            const prazoAnos = Math.max(1, parseInt(prazoAnosInput.value, 10) || 1);
             const reajustarRetirada = reajustaInflacaoCheck.checked;
 
             // Monthly equivalent rates. Values below -100% are limited to avoid invalid roots.
@@ -689,7 +708,7 @@
             document.getElementById('printInflacao').innerText = `${formatNumber(parsePercentageValue(inflacaoInput.value), 2)}% a.a.`;
             document.getElementById('printValorizacaoImovel').innerText = `${formatNumber(parsePercentageValue(valorizacaoImovelInput.value), 2)}% a.a.`;
             document.getElementById('printYieldAluguel').innerText = `${formatNumber(parsePercentageValue(yieldAluguelInput.value), 2)}% a.a.`;
-            document.getElementById('printPrazoAnos').innerText = `${Math.max(1, parseInt(prazoAnosInput.value, 10) || 10)} anos`;
+            document.getElementById('printPrazoAnos').innerText = `${Math.max(1, parseInt(prazoAnosInput.value, 10) || 1)} anos`;
         }
 
         function updateSimulation() {
@@ -703,7 +722,7 @@
             const resFinal = simData.resultadoFinal;
 
             // 1. Update Hero Banner
-            document.getElementById('heroPrazoText').innerText = `${simData.prazoAnos} anos`;
+            document.getElementById('heroPrazoText').innerText = `${simData.prazoAnos} ${simData.prazoAnos === 1 ? 'ano' : 'anos'}`;
             document.getElementById('imoveisFinaisHero').innerText = formatNumber(resFinal.imoveisEquivalentes, 1);
 
             const diffImoveis = resFinal.imoveisEquivalentes - simData.qtdImoveis;
