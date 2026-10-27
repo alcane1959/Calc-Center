@@ -117,3 +117,7 @@ A imagem de fundo e as fontes são carregadas de serviços externos. Sem conexã
 ## Licença
 
 Todos os direitos reservados. Defina neste documento os termos de uso, distribuição e modificação aplicáveis ao projeto.
+
+---
+
+Este projeto é uma demonstração educacional desenvolvida para estudos de HTML, CSS e JavaScript. A empresa mencionada é fictícia e qualquer semelhança com empresas reais é mera coincidência.
